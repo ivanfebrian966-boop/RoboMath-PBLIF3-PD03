@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['admin', 'guru', 'orangtua', 'siswa'])->default('siswa');
+            $table->string('avatar')->nullable();
+            $table->unsignedTinyInteger('kelas')->nullable(); // 1-6 SD
+            $table->unsignedInteger('total_score')->default(0);
+            $table->unsignedInteger('level')->default(1);
             $table->rememberToken();
             $table->timestamps();
         });

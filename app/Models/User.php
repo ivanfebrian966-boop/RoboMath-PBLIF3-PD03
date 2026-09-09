@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role', 'avatar', 'kelas', 'total_score', 'level'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -27,6 +28,112 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'kelas' => 'integer',
+            'total_score' => 'integer',
+            'level' => 'integer',
         ];
+    }
+
+    // === Role Helpers ===
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isGuru(): bool
+    {
+        return $this->role === 'guru';
+    }
+
+    public function isOrangtua(): bool
+    {
+        return $this->role === 'orangtua';
+    }
+
+    public function isSiswa(): bool
+    {
+        return $this->role === 'siswa';
+    }
+
+    // === Relationships ===
+
+    public function quizAttempts(): HasMany
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    public function progress(): HasMany
+    {
+        return $this->hasMany(Progress::class);
+    }
+
+    public function badges(): BelongsToMany
+    {
+        return $this->belongsToMany(Badge::class, 'user_badges')->withPivot('earned_at')->withTimestamps();
+    }
+
+    public function chatMessages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class);
+    }
+
+    /**
+     * Students linked to this parent
+     */
+    public function students(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'parent_student', 'parent_id', 'student_id')->withTimestamps();
+    }
+
+    /**
+     * Parents linked to this student
+     */
+    public function parents(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'parent_student', 'student_id', 'parent_id')->withTimestamps();
+    }
+
+    // === Gamification Helpers ===
+
+    public function addScore(int $points): void
+    {
+        $this->increment('total_score', $points);
+        $this->updateLevel();
+    }
+
+    public function updateLevel(): void
+    {
+        $score = $this->total_score;
+        $level = match (true) {
+            $score >= 5000 => 5, // Diamond
+            $score >= 3000 => 4, // Platinum
+            $score >= 1500 => 3, // Gold
+            $score >= 500 => 2,  // Silver
+            default => 1,        // Bronze
+        };
+        $this->update(['level' => $level]);
+    }
+
+    public function getLevelNameAttribute(): string
+    {
+        return match ($this->level) {
+            5 => 'Diamond',
+            4 => 'Platinum',
+            3 => 'Gold',
+            2 => 'Silver',
+            default => 'Bronze',
+        };
+    }
+
+    public function getLevelColorAttribute(): string
+    {
+        return match ($this->level) {
+            5 => '#B9F2FF',
+            4 => '#E5E4E2',
+            3 => '#FFD700',
+            2 => '#C0C0C0',
+            default => '#CD7F32',
+        };
     }
 }
