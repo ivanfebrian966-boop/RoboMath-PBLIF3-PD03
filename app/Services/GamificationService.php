@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Badge;
 use App\Models\Progress;
 use App\Models\QuizAttempt;
+use App\Models\Topic;
 use App\Models\User;
 
 class GamificationService
@@ -61,12 +62,12 @@ class GamificationService
     private function getMasteredTopicsCount(User $user): int
     {
         // A topic is "mastered" if accuracy >= 80%
-        $topics = \App\Models\Topic::where('kelas_level', $user->kelas)->get();
+        $topics = Topic::where('kelas_level', $user->kelas)->get();
         $mastered = 0;
 
         foreach ($topics as $topic) {
             $attempts = QuizAttempt::where('user_id', $user->id)
-                ->whereHas('quiz', fn($q) => $q->where('topic_id', $topic->id))
+                ->whereHas('quiz', fn ($q) => $q->where('topic_id', $topic->id))
                 ->get();
 
             if ($attempts->count() >= 5) {

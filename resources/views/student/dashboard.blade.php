@@ -66,10 +66,12 @@
     @if($weakTopics->count() > 0)
         <div class="bg-amber-50 border-2 border-amber-300 p-6 rounded-3xl space-y-3">
             <div class="flex items-center gap-3">
-                <span class="text-3xl animate-spin">🤖</span>
+                <div class="w-12 h-12 rounded-2xl bg-amber-400 p-0.5 shadow-sm overflow-hidden flex-shrink-0">
+                    <img src="{{ asset('images/maskot.png') }}" alt="RoboBot AI" class="w-full h-full object-contain rounded-xl">
+                </div>
                 <div>
-                    <h3 class="font-extrabold text-amber-900 text-lg">Rekomendasi Latihan dari AI AlgoBot!</h3>
-                    <p class="text-xs text-amber-800 font-semibold">Berdasarkan hasil kuis kamu, yuk tingkatkan kemampuan di topik berikut:</p>
+                    <h3 class="font-extrabold text-amber-900 text-lg">Rekomendasi Latihan dari AI RoboBot!</h3>
+                    <p class="text-xs text-amber-800 font-semibold">Berdasarkan hasil latihan kamu, yuk tingkatkan kemampuan di topik berikut:</p>
                 </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">

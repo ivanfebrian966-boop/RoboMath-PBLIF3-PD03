@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Badge;
 use App\Models\Lesson;
 use App\Models\Progress;
-use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\Topic;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class StudentDashboardController extends Controller
@@ -19,7 +17,7 @@ class StudentDashboardController extends Controller
 
         $totalTopics = Topic::where('kelas_level', $user->kelas)->where('is_active', true)->count();
         $completedLessons = Progress::where('user_id', $user->id)->where('status', 'selesai')->count();
-        $totalLessons = Lesson::whereHas('topic', fn($q) => $q->where('kelas_level', $user->kelas))->count();
+        $totalLessons = Lesson::whereHas('topic', fn ($q) => $q->where('kelas_level', $user->kelas))->count();
         $totalAttempts = QuizAttempt::where('user_id', $user->id)->count();
         $correctAttempts = QuizAttempt::where('user_id', $user->id)->where('is_correct', true)->count();
         $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100) : 0;
@@ -40,6 +38,7 @@ class StudentDashboardController extends Controller
                 $topic->progress_percent = $topic->lessons_count > 0
                     ? round(($completedInTopic / $topic->lessons_count) * 100)
                     : 0;
+
                 return $topic;
             });
 
@@ -56,14 +55,15 @@ class StudentDashboardController extends Controller
             ->get()
             ->map(function ($topic) use ($user) {
                 $attempts = QuizAttempt::where('user_id', $user->id)
-                    ->whereHas('quiz', fn($q) => $q->where('topic_id', $topic->id))
+                    ->whereHas('quiz', fn ($q) => $q->where('topic_id', $topic->id))
                     ->get();
                 $total = $attempts->count();
                 $correct = $attempts->where('is_correct', true)->count();
                 $topic->accuracy = $total > 0 ? round(($correct / $total) * 100) : null;
+
                 return $topic;
             })
-            ->filter(fn($t) => $t->accuracy !== null && $t->accuracy < 60)
+            ->filter(fn ($t) => $t->accuracy !== null && $t->accuracy < 60)
             ->take(3);
 
         return view('student.dashboard', compact(

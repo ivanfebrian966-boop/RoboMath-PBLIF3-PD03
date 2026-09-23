@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AiRecommendation;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\Topic;
@@ -81,6 +82,32 @@ class QuizController extends Controller
         // Check badges
         app(GamificationService::class)->checkBadges($user);
 
+        // Generate AI recommendation if student is struggling (3+ wrong on this topic)
+        if (! $isCorrect) {
+            $wrongCount = QuizAttempt::where('user_id', $user->id)
+                ->where('is_correct', false)
+                ->whereHas('quiz', fn ($q) => $q->where('topic_id', $quiz->topic_id))
+                ->count();
+
+            if ($wrongCount >= 3) {
+                // Only create if no pending recommendation for this topic
+                $exists = AiRecommendation::where('student_id', $user->id)
+                    ->where('topic_id', $quiz->topic_id)
+                    ->where('status', 'pending')
+                    ->exists();
+
+                if (! $exists) {
+                    AiRecommendation::create([
+                        'student_id' => $user->id,
+                        'topic_id' => $quiz->topic_id,
+                        'quiz_id' => $quiz->id,
+                        'reason' => "Siswa menjawab salah {$wrongCount}x pada topik ini.",
+                        'status' => 'pending',
+                    ]);
+                }
+            }
+        }
+
         return response()->json([
             'correct' => $isCorrect,
             'points' => $pointsEarned,
@@ -94,7 +121,7 @@ class QuizController extends Controller
     {
         $user = Auth::user();
         $attempts = QuizAttempt::where('user_id', $user->id)
-            ->whereHas('quiz', fn($q) => $q->where('topic_id', $topic->id))
+            ->whereHas('quiz', fn ($q) => $q->where('topic_id', $topic->id))
             ->with('quiz')
             ->latest()
             ->take(10)

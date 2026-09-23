@@ -11,16 +11,16 @@ class RoleMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  string  ...$roles
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         if (! $request->user() || ! in_array($request->user()->role, $roles)) {
             if ($request->user()) {
                 // Redirect to appropriate dashboard based on role
-                return redirect()->route($request->user()->role . '.dashboard');
+                return redirect()->route($request->user()->role.'.dashboard');
             }
+
             return redirect()->route('login');
         }
 

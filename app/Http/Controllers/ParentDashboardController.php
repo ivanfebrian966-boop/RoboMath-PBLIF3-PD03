@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Progress;
 use App\Models\QuizAttempt;
-use App\Models\Topic;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ParentDashboardController extends Controller

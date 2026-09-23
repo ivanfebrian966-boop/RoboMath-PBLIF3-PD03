@@ -86,12 +86,15 @@
             <p class="text-4xl font-black text-emerald-600">+<span x-text="totalSessionPoints"></span> Poin</p>
         </div>
 
-        <div class="flex justify-center gap-4">
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="{{ route('siswa.quiz.result', $topic) }}" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black px-6 py-3 rounded-2xl shadow-md transition">
+                📊 Lihat Nilai & Pembahasan
+            </a>
             <a href="{{ route('siswa.quiz') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold px-6 py-3 rounded-2xl">
                 Pilih Kuis Lain 📋
             </a>
             <a href="{{ route('siswa.dashboard') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-8 py-3 rounded-2xl shadow-lg">
-                Kembali ke Dashboard 🏠
+                Dashboard 🏠
             </a>
         </div>
     </div>

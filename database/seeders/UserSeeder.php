@@ -12,9 +12,9 @@ class UserSeeder extends Seeder
     {
         // Admin
         User::updateOrCreate(
-            ['email' => 'admin@algokids.id'],
+            ['email' => 'admin@robomath.id'],
             [
-                'name' => 'Admin AlgoKids',
+                'name' => 'Admin RoboMath',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
             ]
@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
 
         // Guru
         $guru = User::updateOrCreate(
-            ['email' => 'guru@algokids.id'],
+            ['email' => 'guru@robomath.id'],
             [
                 'name' => 'Ibu Guru Budi',
                 'password' => Hash::make('password'),
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
 
         // Orang Tua
         $parent = User::updateOrCreate(
-            ['email' => 'orangtua@algokids.id'],
+            ['email' => 'orangtua@robomath.id'],
             [
                 'name' => 'Bapak Hendra (Orang Tua)',
                 'password' => Hash::make('password'),
@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
 
         // Siswa 1
         $siswa1 = User::updateOrCreate(
-            ['email' => 'siswa@algokids.id'],
+            ['email' => 'siswa@robomath.id'],
             [
                 'name' => 'Budi Pratama',
                 'password' => Hash::make('password'),
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
 
         // Siswa 2
         $siswa2 = User::updateOrCreate(
-            ['email' => 'ani@algokids.id'],
+            ['email' => 'ani@robomath.id'],
             [
                 'name' => 'Ani Lestari',
                 'password' => Hash::make('password'),
@@ -65,6 +65,26 @@ class UserSeeder extends Seeder
                 'level' => 1,
             ]
         );
+
+        // Alias for backwards compatibility
+        User::updateOrCreate(['email' => 'siswa@algokids.id'], [
+            'name' => 'Budi Pratama',
+            'password' => Hash::make('password'),
+            'role' => 'siswa',
+            'kelas' => 1,
+            'total_score' => 120,
+            'level' => 1,
+        ]);
+        User::updateOrCreate(['email' => 'guru@algokids.id'], [
+            'name' => 'Ibu Guru Budi',
+            'password' => Hash::make('password'),
+            'role' => 'guru',
+        ]);
+        User::updateOrCreate(['email' => 'orangtua@algokids.id'], [
+            'name' => 'Bapak Hendra (Orang Tua)',
+            'password' => Hash::make('password'),
+            'role' => 'orangtua',
+        ]);
 
         // Relasi Orang tua - Siswa
         $parent->students()->syncWithoutDetaching([$siswa1->id, $siswa2->id]);

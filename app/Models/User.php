@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'avatar', 'kelas', 'total_score', 'level'])]
+#[Fillable(['name', 'email', 'password', 'role', 'avatar', 'kelas', 'total_score', 'level', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -31,6 +31,7 @@ class User extends Authenticatable
             'kelas' => 'integer',
             'total_score' => 'integer',
             'level' => 'integer',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -54,6 +55,11 @@ class User extends Authenticatable
     public function isSiswa(): bool
     {
         return $this->role === 'siswa';
+    }
+
+    public function isActiveAccount(): bool
+    {
+        return (bool) $this->is_active;
     }
 
     // === Relationships ===
@@ -92,6 +98,24 @@ class User extends Authenticatable
     public function parents(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'parent_student', 'student_id', 'parent_id')->withTimestamps();
+    }
+
+    /**
+     * ClassRooms this teacher manages (guru) or student enrolled in (siswa)
+     */
+    public function classRooms(): BelongsToMany
+    {
+        return $this->belongsToMany(ClassRoom::class, 'class_room_student', 'student_id', 'class_room_id')
+            ->withPivot('joined_at')
+            ->withTimestamps();
+    }
+
+    /**
+     * ClassRooms this teacher teaches
+     */
+    public function teachingClassRooms(): HasMany
+    {
+        return $this->hasMany(ClassRoom::class, 'teacher_id');
     }
 
     // === Gamification Helpers ===

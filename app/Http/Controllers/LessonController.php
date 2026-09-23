@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Lesson;
 use App\Models\Progress;
 use App\Models\Topic;
-use Illuminate\Http\Request;
+use App\Services\GamificationService;
 use Illuminate\Support\Facades\Auth;
 
 class LessonController extends Controller
@@ -26,6 +26,7 @@ class LessonController extends Controller
                 $topic->progress_percent = $topic->lessons_count > 0
                     ? round(($completedCount / $topic->lessons_count) * 100)
                     : 0;
+
                 return $topic;
             });
 
@@ -90,9 +91,9 @@ class LessonController extends Controller
         $user->addScore(20);
 
         // Check for badges
-        app(\App\Services\GamificationService::class)->checkBadges($user);
+        app(GamificationService::class)->checkBadges($user);
 
         return redirect()->route('siswa.topics.show', $lesson->topic)
-            ->with('success', 'Selamat! Kamu telah menyelesaikan materi "' . $lesson->title . '"! 🎉');
+            ->with('success', 'Selamat! Kamu telah menyelesaikan materi "'.$lesson->title.'"! 🎉');
     }
 }

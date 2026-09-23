@@ -31,39 +31,43 @@ class AIService
         $name = $user->name;
 
         // Pattern matching for common questions
+        if (str_contains($lowerMessage, 'apa itu robomath')) {
+            return "Hai $name! 🤖 **RoboMath** adalah Aplikasi Web Berbasis AI untuk Pengembangan Pembelajaran Matematika Anak Sekolah Dasar! Di sini kamu bisa belajar penjumlahan, perkalian, pecahan, hingga logika matematika secara interaktif! 🚀🌟";
+        }
+
         if (str_contains($lowerMessage, 'apa itu algoritma')) {
-            return "Hai $name! 🤖 Algoritma itu seperti **resep masakan** lho! Bayangkan kamu mau membuat nasi goreng. Kamu harus:\n\n1. 🍚 Siapkan nasi\n2. 🧈 Panaskan minyak\n3. 🥚 Masukkan telur\n4. 🍚 Masukkan nasi\n5. 🧂 Beri bumbu\n6. 🍽️ Sajikan!\n\nNah, langkah-langkah berurutan seperti itu namanya **algoritma**! Setiap langkah harus dilakukan dengan urutan yang benar ya! 😊";
+            return "Hai $name! 🤖 Algoritma matematika itu seperti **langkah-langkah resep masakan** lho! Bayangkan kamu mau menghitung perkalian 4 x 5. Kamu bisa melakukan langkah berurutan:\n\n1. 🔢 Ambil angka 5\n2. ➕ Tambahkan 5 sebanyak 4 kali (5 + 5 + 5 + 5)\n3. 🎯 Hasilnya = 20!\n\nSetiap langkah perhitungan berurutan seperti itu dinamakan **algoritma matematika**! 😊";
         }
 
         if (str_contains($lowerMessage, 'apa itu percabangan') || str_contains($lowerMessage, 'if')) {
-            return "Hai $name! 🌟 **Percabangan** itu seperti ketika kamu harus **memilih**!\n\nContoh:\n- ☔ **JIKA** hujan → bawa payung\n- ☀️ **JIKA TIDAK** hujan → pakai topi\n\nDalam algoritma, ini disebut **IF-ELSE**. Komputer juga perlu membuat pilihan, sama seperti kamu setiap hari! Keren kan? 😎";
+            return "Hai $name! 🌟 **Percabangan (IF-ELSE)** dalam logika matematika itu seperti membuat **keputusan**!\n\nContoh:\n- 🎯 **JIKA** nilai kamu ≥ 80 → Selamat, kamu dapat lencana Emas! 🏆\n- ⭐ **JIKA TIDAK** → Tetap semangat latihan lagi ya! 💪\n\nKomputer dan kalkulator menggunakan logika percabangan ini untuk membantu menghitung! Keren kan? 😎";
         }
 
-        if (str_contains($lowerMessage, 'apa itu pengulangan') || str_contains($lowerMessage, 'loop')) {
-            return "Hai $name! 🔄 **Pengulangan** (atau **loop**) itu ketika kamu melakukan sesuatu **berulang-ulang**!\n\nContoh:\n- 🎵 Nyanyikan lagu \"Balonku\" sebanyak 3 kali\n- ✏️ Tulis namamu 5 kali\n- 🏃 Lari keliling lapangan 4 kali\n\nDalam komputer, pengulangan membuat pekerjaan jadi lebih mudah. Bayangkan kalau harus menulis kode yang sama 1000 kali! 😱 Dengan loop, cukup tulis sekali! 🎉";
+        if (str_contains($lowerMessage, 'apa itu pengulangan') || str_contains($lowerMessage, 'loop') || str_contains($lowerMessage, 'perkalian')) {
+            return "Hai $name! 🔄 **Pengulangan** (atau **loop**) sangat penting di matematika! Perkalian sebenarnya adalah penjumlahan yang **diulang-ulang**!\n\nContoh:\n- ✖️ 3 x 4 = 4 + 4 + 4 = 12\n- 🏃 Mengulang hitungan 1 sampai 10\n\nDengan perkalian dan loop, kamu bisa menghitung banyak hal dengan sangat cepat! 🎉";
         }
 
         if (str_contains($lowerMessage, 'apa itu urutan') || str_contains($lowerMessage, 'sequence')) {
-            return "Hai $name! 📋 **Urutan** (Sequence) adalah langkah-langkah yang dilakukan **satu per satu** secara berurutan!\n\nContoh urutan gosok gigi:\n1. 🪥 Ambil sikat gigi\n2. 💧 Basahi sikat gigi\n3. 🧴 Beri pasta gigi\n4. 😁 Sikat gigi atas dan bawah\n5. 💦 Kumur-kumur\n6. ✨ Gigi bersih!\n\nUrutannya tidak boleh tertukar ya! Masa kumur dulu baru sikat? 😂";
+            return "Hai $name! 📋 **Urutan** (Sequence) adalah langkah penyelesaian soal matematika yang dilakukan **satu per satu** secara berurutan!\n\nContoh urutan berhitung:\n1. ✏️ Kerjakan operasi dalam kurung dulu\n2. ✖️ Kerjakan perkalian atau pembagian\n3. ➕ Kerjakan penjumlahan atau pengurangan\n\nUrutannya harus tepat agar hasilnya benar ya! ✨";
         }
 
         if (str_contains($lowerMessage, 'halo') || str_contains($lowerMessage, 'hai') || str_contains($lowerMessage, 'hello')) {
-            return "Halo $name! 👋😊 Aku **AlgoBot**, teman belajarmu di AlgoKids! Aku bisa membantu kamu belajar tentang:\n\n🔢 **Urutan** - Langkah-langkah berurutan\n🔀 **Percabangan** - Membuat pilihan\n🔄 **Pengulangan** - Mengulang kegiatan\n🧩 **Pola** - Menemukan pola\n\nMau belajar apa hari ini? 📚";
+            return "Halo $name! 👋😊 Aku **RoboBot**, teman belajarmu di **RoboMath**! Aku bisa membantumu belajar tentang:\n\n➕ **Penjumlahan & Pengurangan**\n✖️ **Perkalian & Pembagian**\n🔀 **Logika Matematika & Algoritma**\n🧩 **Pola Angka & Teori Bilangan**\n\nMau belajar matematika apa hari ini? 📚";
         }
 
         if (str_contains($lowerMessage, 'terima kasih') || str_contains($lowerMessage, 'makasih')) {
-            return "Sama-sama $name! 🌈 Senang bisa membantu! Kalau ada yang mau ditanyakan lagi, jangan ragu ya! Semangat belajarnya! 💪🎉";
+            return "Sama-sama $name! 🤖 Senang bisa membantu! Kalau ada soal matematika yang membingungkan, tanyakan padaku kapan saja ya! Semangat belajarnya! 💪🎉";
         }
 
         if (str_contains($lowerMessage, 'sulit') || str_contains($lowerMessage, 'susah') || str_contains($lowerMessage, 'tidak mengerti')) {
-            return "Jangan khawatir $name! 🤗 Belajar hal baru memang kadang terasa sulit, tapi kamu pasti bisa!\n\n💡 Tips dariku:\n1. Coba baca materinya pelan-pelan\n2. Latihan soal dari yang mudah dulu\n3. Kalau bingung, tanya aku ya!\n4. Istirahat sebentar kalau capek\n\nIngat, semua ahli pernah jadi pemula! Kamu hebat karena mau terus belajar! ⭐🌟";
+            return "Jangan khawatir $name! 🤗 Belajar matematika memang butuh proses, tapi kamu pasti bisa!\n\n💡 Tips dari RoboBot:\n1. Coba baca penjelasan materi pelan-pelan\n2. Gunakan corak/gambar untuk membayangkan angka\n3. Mulai dari latihan soal yang paling mudah\n4. Tanya RoboBot kalau bingung!\n\nKamu anak yang pintar dan pasti bisa! ⭐🌟";
         }
 
         if (str_contains($lowerMessage, 'pola') || str_contains($lowerMessage, 'pattern')) {
-            return "Hai $name! 🧩 **Pola** itu sesuatu yang berulang dengan aturan tertentu!\n\nContoh pola:\n- 🔴🔵🔴🔵🔴🔵 → selanjutnya? **🔴**!\n- 1, 3, 5, 7, ... → selanjutnya? **9**!\n- ⬆️➡️⬇️⬅️⬆️➡️ → selanjutnya? **⬇️**!\n\nMenemukan pola itu seperti jadi detektif! 🕵️ Kamu harus mengamati dengan teliti! 🔍";
+            return "Hai $name! 🧩 **Pola Angka** adalah deretan angka yang mempunyai aturan tertentu!\n\nContoh pola matematika:\n- 🔴🔵🔴🔵🔴🔵 → selanjutnya **🔴**!\n- 2, 4, 6, 8, ... → tambah 2, selanjutnya **10**!\n- 5, 10, 15, 20, ... → kelipatan 5, selanjutnya **25**!\n\nMenemukan pola matematika bikin otak kita makin cerdas! 🕵️✨";
         }
 
         // Default response
-        return "Hai $name! 🤖 Pertanyaan yang bagus! Aku AlgoBot, asisten belajarmu di AlgoKids.\n\nCoba tanyakan aku tentang:\n- 📋 Apa itu **urutan** (sequence)?\n- 🔀 Apa itu **percabangan** (if-else)?\n- 🔄 Apa itu **pengulangan** (loop)?\n- 🧩 Apa itu **pola** (pattern)?\n\nAtau ceritakan kesulitanmu, aku siap membantu! 😊✨";
+        return "Hai $name! 🤖 Pertanyaan yang bagus! Aku RoboBot, asisten belajarmu di RoboMath.\n\nCoba tanyakan aku tentang:\n- 🤖 Apa itu **RoboMath**?\n- ✖️ Cara belajar **perkalian cepat**\n- 🔀 Apa itu **algoritma matematika**?\n- 🧩 Menemukan **pola angka**\n\nAtau tuliskan soal matematika yang ingin kamu pelajari! 😊✨";
     }
 }
