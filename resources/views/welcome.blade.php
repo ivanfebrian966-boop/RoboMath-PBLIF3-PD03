@@ -48,10 +48,6 @@
                     <a href="{{ route('login') }}" class="border border-red-300 text-red-600 hover:bg-red-50 px-4 py-1.5 rounded-full font-bold transition">
                         Masuk
                     </a>
-                    <a href="{{ route('register') }}" class="bg-slate-950 hover:bg-slate-800 text-white px-4 py-2 rounded-full shadow-sm flex items-center gap-1.5 transition transform active:scale-95">
-                        <span>Mulai Gratis</span>
-                        <span class="text-amber-300">✨</span>
-                    </a>
                 @endauth
             </div>
 
@@ -65,20 +61,6 @@
     <section id="hero" class="relative pt-10 sm:pt-14 pb-16 text-center z-10">
         <div class="max-w-3xl mx-auto px-6 space-y-4">
 
-            <!-- Rating Pill -->
-            <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/90 border border-slate-200 text-slate-700 text-[11px] font-bold shadow-xs">
-                <span class="text-red-500 font-black">G</span>
-                <span>4.9 Rating</span>
-                <span class="text-slate-300">•</span>
-                <span class="text-teal-600 font-extrabold flex items-center gap-1">
-                    <span>★</span> Trustpilot
-                </span>
-                <span class="text-slate-300">•</span>
-                <span class="bg-amber-100 text-amber-900 font-black text-[10px] px-2 py-0.5 rounded-full">
-                    🤖 AI Math SD
-                </span>
-            </div>
-
             <!-- Big Main Headline -->
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.2] max-w-2xl mx-auto">
                 Belajar Matematika SD<br>
@@ -87,73 +69,11 @@
                     Interaktif &amp; Seru
                 </span>
             </h1>
-
             <!-- Subtitle -->
             <p class="text-xs sm:text-sm text-slate-600 font-semibold max-w-xl mx-auto leading-relaxed">
                 Dari penjumlahan dasar hingga pemecahan logika tingkat lanjut, RoboMath membantu siswa SD belajar mandiri dengan <strong>Asisten AI RoboBot</strong> dan gamifikasi poin.
             </p>
-
-            <!-- Dual Action Buttons -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                <a href="{{ route('register') }}"
-                   class="w-full sm:w-auto bg-slate-950 hover:bg-slate-800 text-white font-black text-xs sm:text-sm px-7 py-3 rounded-full shadow-lg transform hover:-translate-y-0.5 transition flex items-center justify-center gap-2">
-                    <span>Mulai Belajar Gratis</span>
-                    <span>&rarr;</span>
-                </a>
-                <a href="#chat-demo"
-                   class="w-full sm:w-auto bg-white/90 hover:bg-white text-slate-800 font-black text-xs sm:text-sm px-6 py-3 rounded-full border border-slate-200 shadow-xs transition flex items-center justify-center gap-2">
-                    <span>Tanya RoboBot AI</span>
-                    <span class="text-sm">🤖</span>
-                </a>
-            </div>
-
         </div>
-
-        <!-- ====== CONCENTRIC ORBIT MASCOT CONTAINER ====== -->
-        <div class="relative w-full max-w-2xl mx-auto mt-12 px-4 h-[380px] flex items-center justify-center">
-
-            <!-- Orbit Rings -->
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div class="w-[320px] h-[320px] sm:w-[420px] sm:h-[420px] rounded-full border border-slate-300/40"></div>
-                <div class="absolute w-[240px] h-[240px] sm:w-[320px] sm:h-[320px] rounded-full border border-amber-300/40"></div>
-                <div class="absolute w-[160px] h-[160px] sm:w-[220px] sm:h-[220px] rounded-full border border-indigo-200/40"></div>
-            </div>
-
-            <!-- Floating Badge Chip 1: Top Left -->
-            <div class="absolute top-6 left-4 sm:left-12 bg-white/95 border border-red-200 px-3.5 py-1.5 rounded-full shadow-md flex items-center gap-2 font-bold text-xs text-red-600 animate-bounce" style="animation-duration: 4s;">
-                <span class="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center text-xs">➕</span>
-                <span>Penjumlahan SD</span>
-            </div>
-
-            <!-- Floating Badge Chip 2: Bottom Left -->
-            <div class="absolute bottom-10 left-4 sm:left-10 bg-white/95 border border-amber-200 px-3.5 py-1.5 rounded-full shadow-md flex items-center gap-2 font-bold text-xs text-amber-700 animate-bounce" style="animation-duration: 4.5s; animation-delay: 1s;">
-                <span class="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center text-xs">⚡</span>
-                <span>Perkalian Cepat</span>
-            </div>
-
-            <!-- Floating Badge Chip 3: Top Right -->
-            <div class="absolute top-6 right-4 sm:right-12 bg-white/95 border border-indigo-200 px-3.5 py-1.5 rounded-full shadow-md flex items-center gap-2 font-bold text-xs text-indigo-700 animate-bounce" style="animation-duration: 3.8s; animation-delay: 0.5s;">
-                <span class="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center text-xs">🤖</span>
-                <span>Asisten AI 24/7</span>
-            </div>
-
-            <!-- Floating Badge Chip 4: Bottom Right -->
-            <div class="absolute bottom-10 right-4 sm:right-10 bg-white/95 border border-emerald-200 px-3.5 py-1.5 rounded-full shadow-md flex items-center gap-2 font-bold text-xs text-emerald-700 animate-bounce" style="animation-duration: 4.2s; animation-delay: 1.5s;">
-                <span class="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center text-xs">🏆</span>
-                <span>Skor &amp; Lencana</span>
-            </div>
-
-            <!-- Center Mascot 3D Visual -->
-            <div class="relative z-10 group">
-                <div class="w-40 h-40 sm:w-48 sm:h-48 relative flex items-center justify-center">
-                    <img src="{{ asset('images/maskot.png') }}"
-                         alt="RoboBot Mascot"
-                         class="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(79,70,229,0.3)] hover:scale-105 transition-transform duration-300">
-                </div>
-            </div>
-
-        </div>
-
     </section>
 
 
@@ -163,13 +83,6 @@
     <section id="fitur" class="max-w-5xl mx-auto px-6 py-14 relative z-10">
         
         <div class="text-center max-w-xl mx-auto mb-10 space-y-2">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-slate-200 text-slate-700 text-[11px] font-bold shadow-xs">
-                <span class="text-red-500 font-black">G</span> 4.9 Rating
-                <span class="text-slate-300">•</span>
-                <span class="text-teal-600 font-extrabold">★ Trustpilot</span>
-                <span class="text-slate-300">•</span>
-                <span class="bg-amber-100 text-amber-900 font-black text-[10px] px-2 py-0.5 rounded-full">AI Math SD</span>
-            </div>
             <h2 class="text-3xl font-black text-slate-900 tracking-tight">Fitur Utama</h2>
         </div>
 
@@ -238,97 +151,6 @@
                 </div>
             </div>
 
-        </div>
-
-        <div class="text-center mt-8">
-            <a href="{{ route('register') }}" class="inline-flex items-center gap-2 bg-slate-950 hover:bg-slate-800 text-white font-black text-xs px-7 py-3 rounded-full shadow-md transition transform active:scale-95">
-                <span>Sign up for Demo</span>
-                <span>&rarr;</span>
-            </a>
-        </div>
-
-    </section>
-
-
-    <!-- ============================================================ -->
-    <!-- 4. CHAT PREVIEW MOCKUP (Image 2 Column 2 Bottom) -->
-    <!-- ============================================================ -->
-    <section id="chat-demo" class="max-w-4xl mx-auto px-6 py-14 relative z-10">
-        <div class="text-center max-w-xl mx-auto mb-8 space-y-2">
-            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                Tanya RoboBot AI Secara Langsung
-            </h2>
-            <p class="text-xs sm:text-sm text-slate-600 font-semibold">
-                Interaktif chat UI sangat intuitif menjawab segala persoalan matematika anak-anak.
-            </p>
-        </div>
-
-        <!-- Chat Panel Mockup with Mascot Side-by-Side -->
-        <div class="bg-white rounded-[36px] p-6 sm:p-8 border-2 border-amber-200/80 shadow-xl flex flex-col md:flex-row items-center gap-8">
-            
-            <!-- Left: Mascot -->
-            <div class="flex-shrink-0 flex flex-col items-center text-center">
-                <img src="{{ asset('images/maskot.png') }}" alt="RoboBot" class="w-32 h-32 sm:w-40 sm:h-40 object-contain drop-shadow-lg">
-                <div class="mt-2 px-3 py-1 bg-emerald-100 text-emerald-800 font-black text-[11px] rounded-full flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                    <span>RoboBot Online</span>
-                </div>
-            </div>
-
-            <!-- Right: Realistic Clean Chat UI -->
-            <div class="flex-1 w-full bg-[#f8fafc] rounded-3xl border border-slate-200 overflow-hidden shadow-inner flex flex-col justify-between min-h-[280px]">
-                
-                <!-- Chat Window Header -->
-                <div class="bg-white px-5 py-3 border-b border-slate-200 flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs">🤖</div>
-                        <div>
-                            <span class="font-black text-slate-800">RoboBot AI</span>
-                            <span class="text-[10px] text-emerald-600 font-bold block leading-none">Siap Membantu</span>
-                        </div>
-                    </div>
-                    <div class="text-slate-400 font-mono text-[10px]">12:10 AM</div>
-                </div>
-
-                <!-- Chat Messages Body -->
-                <div class="p-4 space-y-3 text-xs font-semibold">
-                    <!-- User Message Bubble (Right) -->
-                    <div class="flex justify-end">
-                        <div class="bg-slate-900 text-white px-4 py-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-xs">
-                            Berapa 15 + 237?
-                        </div>
-                    </div>
-
-                    <!-- Bot Response Bubble (Left) -->
-                    <div class="flex items-start gap-2 max-w-sm">
-                        <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[10px] flex-shrink-0 mt-1">🤖</div>
-                        <div class="bg-white border border-slate-200 text-slate-800 p-3.5 rounded-2xl rounded-tl-none shadow-xs leading-relaxed">
-                            Berapa <strong>15 + 237</strong>? Caranya mudah! 
-                            <br>1️⃣ 15 + 200 = 215
-                            <br>2️⃣ 215 + 37 = <strong>252</strong>!
-                            <br>Hasil akhirnya adalah <strong>252</strong>. Hebat kan! 🤖✨
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chat Input Footer Bar -->
-                <div class="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
-                    <input type="text" placeholder="Tanya robobot..." readonly 
-                           class="flex-1 bg-slate-100 text-slate-700 text-xs px-4 py-2.5 rounded-full border-none outline-none font-semibold">
-                    <button type="button" class="w-8 h-8 rounded-full bg-slate-950 text-white flex items-center justify-center text-xs shadow-md">
-                        ➤
-                    </button>
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="text-center mt-6">
-            <a href="{{ route('register') }}" class="inline-flex items-center gap-2 bg-slate-950 hover:bg-slate-800 text-white font-black text-xs px-7 py-3 rounded-full shadow-md transition transform active:scale-95">
-                <span>Sign up for Demo</span>
-                <span>&rarr;</span>
-            </a>
         </div>
 
     </section>
@@ -427,56 +249,6 @@
 
     </section>
 
-
-    <!-- ============================================================ -->
-    <!-- 6. TESTIMONI & PRESTASI (Image 2 Column 3 Middle) -->
-    <!-- ============================================================ -->
-    <section class="max-w-4xl mx-auto px-6 py-12 relative z-10">
-        
-        <div class="text-center max-w-xl mx-auto mb-8 space-y-1">
-            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Testimoni &amp; Prestasi</h2>
-            <p class="text-xs text-slate-500 font-semibold">Testimoni dari orangtua &amp; siswa yang telah membuktikannya.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <!-- Testimonial 1 -->
-            <div class="bg-white p-6 rounded-3xl border-2 border-amber-200/70 shadow-sm flex items-start gap-4">
-                <div class="w-12 h-12 rounded-full bg-amber-100 flex-shrink-0 flex items-center justify-center text-2xl border-2 border-amber-300">
-                    👩‍💼
-                </div>
-                <div class="space-y-2">
-                    <p class="text-xs text-slate-700 font-semibold leading-relaxed">
-                        "Sejak menggunakan RoboMath, anak saya kelas 4 SD jadi lebih mandiri belajar matematika. Penjelasan AI RoboBot sangat ramah anak dan sabar mendampingi langkah demi langkah!"
-                    </p>
-                    <div>
-                        <h4 class="font-black text-slate-900 text-xs">Siti, Ibu</h4>
-                        <p class="text-[10px] text-slate-400 font-bold">Orang Tua Siswa Kelas 4 SD</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Testimonial 2 -->
-            <div class="bg-white p-6 rounded-3xl border-2 border-amber-200/70 shadow-sm flex items-start gap-4">
-                <div class="w-12 h-12 rounded-full bg-blue-100 flex-shrink-0 flex items-center justify-center text-2xl border-2 border-blue-300">
-                    🧒
-                </div>
-                <div class="space-y-2">
-                    <p class="text-xs text-slate-700 font-semibold leading-relaxed">
-                        "Belajar matematika seperti main petualangan game seru! Setiap selesai kuis saya dapat skor dan lencana baru yang bikin semangat buat lanjut ke level berikutnya!"
-                    </p>
-                    <div>
-                        <h4 class="font-black text-slate-900 text-xs">Elny</h4>
-                        <p class="text-[10px] text-slate-400 font-bold">Siswa Kelas 4 SD</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    </section>
-
-
     <!-- ============================================================ -->
     <!-- 7. LENCANA PRESTASI (Image 2 Column 3 Lower) -->
     <!-- ============================================================ -->
@@ -531,36 +303,6 @@
     <!-- 8. FOOTER (Image 2 Column 3 Bottom) -->
     <!-- ============================================================ -->
     <footer class="border-t border-slate-200/80 bg-white/60 backdrop-blur-md py-8 px-6 mt-12 relative z-10">
-        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-            
-            <!-- Left: Nav Links -->
-            <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-slate-600">
-                <a href="#hero" class="hover:text-red-500 transition">Beranda</a>
-                <a href="#modul" class="hover:text-red-500 transition">Modul SD</a>
-                <a href="#fitur" class="hover:text-red-500 transition">Untuk Siapa</a>
-                <a href="{{ route('login') }}" class="hover:text-red-500 transition">Latihan</a>
-                <a href="#chat-demo" class="hover:text-red-500 transition">Kontak</a>
-            </div>
-
-            <!-- Center: Social Icons -->
-            <div class="flex items-center gap-3">
-                <a href="#" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-bold transition">
-                    f
-                </a>
-                <a href="#" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-bold transition">
-                    𝕏
-                </a>
-                <a href="#" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-700 text-xs font-bold transition">
-                    📷
-                </a>
-            </div>
-
-            <!-- Right: RoboMath Logo -->
-            <div class="flex items-center gap-2">
-                <img src="{{ asset('images/logo.png') }}" alt="RoboMath" class="h-6 w-auto">
-            </div>
-
-        </div>
     </footer>
 
 </div>
