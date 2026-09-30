@@ -4,101 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Admin Panel - RoboMath' }}</title>
+    <title>{{ $title ?? 'Panel Admin - RoboMath' }}</title>
+    <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap" rel="stylesheet">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-slate-950 font-sans text-slate-100 antialiased min-h-screen flex">
+<body class="bg-[#FAF6EF] font-sans text-slate-800 antialiased min-h-screen flex flex-col selection:bg-amber-200 selection:text-amber-900">
 
-    {{-- Sidebar --}}
-    <aside class="w-64 flex-shrink-0 bg-slate-900 border-r border-slate-800 min-h-screen flex flex-col">
-        {{-- Logo --}}
-        <div class="p-6 border-b border-slate-800">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
-                <img src="{{ asset('images/logo.png') }}" alt="RoboMath" class="h-8 w-auto">
-                <div>
-                    <div class="text-xs font-black text-amber-400 uppercase tracking-widest">Admin Panel</div>
-                    <div class="text-sm font-bold text-white">RoboMath</div>
-                </div>
-            </a>
-        </div>
+    <!-- Top Navbar -->
+    @include('components.navbar')
 
-        {{-- Navigation --}}
-        <nav class="flex-1 p-4 space-y-1">
-            <a href="{{ route('admin.dashboard') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-amber-500 text-slate-900' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                <span class="text-lg">📊</span> Dashboard
-            </a>
-            <a href="{{ route('admin.quizzes.index') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all {{ request()->routeIs('admin.quizzes*') ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                <span class="text-lg">🎯</span> Manajemen Soal
-            </a>
-            <a href="{{ route('admin.lessons.index') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all {{ request()->routeIs('admin.lessons*') ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                <span class="text-lg">📚</span> Manajemen Materi
-            </a>
-            <a href="{{ route('admin.reports.index') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all {{ request()->routeIs('admin.reports*') ? 'bg-purple-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                <span class="text-lg">📈</span> Laporan Performa
-            </a>
-            <a href="{{ route('admin.ai-recommendations.index') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all {{ request()->routeIs('admin.ai-recommendations*') ? 'bg-rose-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                <span class="text-lg">🤖</span> Rekomendasi AI
-                @php $pendingAI = \App\Models\AiRecommendation::where('status','pending')->count(); @endphp
-                @if($pendingAI > 0)
-                    <span class="ml-auto bg-rose-500 text-white text-xs font-black px-2 py-0.5 rounded-full">{{ $pendingAI }}</span>
-                @endif
-            </a>
-            <a href="{{ route('admin.users.index') }}"
-               class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all {{ request()->routeIs('admin.users*') ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                <span class="text-lg">👥</span> Manajemen Pengguna
-            </a>
-        </nav>
+    <!-- Tata Letak Kontainer Utama (Sama persis dengan Aktor Lain) -->
+    <div class="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
+        <!-- Sidebar Navigation Komponen -->
+        @include('components.sidebar')
 
-        {{-- User info --}}
-        <div class="p-4 border-t border-slate-800">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-9 h-9 rounded-full bg-amber-500 flex items-center justify-center font-black text-slate-900 text-sm">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div class="text-xs font-bold text-white truncate">{{ auth()->user()->name }}</div>
-                    <div class="text-xs text-slate-500">Administrator</div>
-                </div>
-            </div>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-rose-400 text-xs font-semibold transition-all">
-                    <span>🚪</span> Logout
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    {{-- Main Content --}}
-    <div class="flex-1 flex flex-col min-h-screen">
-        {{-- Top bar --}}
-        <header class="bg-slate-900 border-b border-slate-800 px-8 py-4 flex items-center justify-between">
-            <div>
-                <h1 class="text-lg font-black text-white">@yield('page-title', 'Dashboard')</h1>
-                <p class="text-xs text-slate-400">@yield('page-subtitle', 'Panel Administrator RoboMath')</p>
-            </div>
-            <div class="text-sm text-slate-400">{{ now()->format('d M Y, H:i') }} WIB</div>
-        </header>
-
-        <main class="flex-1 p-8">
+        <!-- Area Konten Utama -->
+        <main class="flex-1 min-w-0" id="main-content">
             @if(session('success'))
-                <div class="mb-6 p-4 rounded-xl bg-emerald-900/50 border border-emerald-700 text-emerald-300 font-semibold flex items-center gap-3">
-                    <span class="text-xl">✅</span> {{ session('success') }}
+                <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-300 text-emerald-800 font-bold flex items-center gap-3 shadow-sm">
+                    <svg class="w-5 h-5 flex-shrink-0 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>{{ session('success') }}</span>
                 </div>
             @endif
+
             @if($errors->any())
-                <div class="mb-6 p-4 rounded-xl bg-rose-900/50 border border-rose-700 text-rose-300 font-semibold space-y-1">
+                <div class="mb-6 p-4 rounded-2xl bg-red-50 border-2 border-red-300 text-red-800 font-semibold space-y-1 shadow-sm">
                     @foreach($errors->all() as $error)
-                        <div class="flex items-center gap-2"><span>❌</span> {{ $error }}</div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 flex-shrink-0 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            {{ $error }}
+                        </div>
                     @endforeach
                 </div>
             @endif
@@ -106,6 +46,17 @@
             @yield('content')
         </main>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-white/80 backdrop-blur-md border-t border-amber-200/70 py-5 text-center text-sm text-slate-500 mt-auto">
+        <div class="flex flex-col items-center gap-1.5">
+            <img src="{{ asset('images/logo.png') }}" alt="RoboMath" class="h-7 w-auto hover:scale-105 transition-transform duration-200">
+            <div class="flex items-center gap-1 text-[10px] font-black text-amber-900/60 uppercase tracking-widest">
+                <span class="text-red-500">R</span><span class="text-orange-500">o</span><span class="text-amber-500">b</span><span class="text-blue-500">o</span><span class="text-emerald-500">M</span><span class="text-teal-500">a</span><span class="text-cyan-500">t</span><span class="text-indigo-500">h</span>
+            </div>
+            <p class="text-xs">© {{ date('Y') }} <strong>RoboMath</strong> — Aplikasi Web Berbasis AI untuk Pengembangan Pembelajaran Matematika Anak Sekolah Dasar</p>
+        </div>
+    </footer>
 
     @stack('scripts')
 </body>

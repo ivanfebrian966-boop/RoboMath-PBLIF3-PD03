@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import './spa.js';
 
 window.Alpine = Alpine;
 Alpine.start();
