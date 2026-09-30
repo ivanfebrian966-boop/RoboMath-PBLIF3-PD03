@@ -15,6 +15,89 @@
 </head>
 <body class="bg-[#FAF6EF] font-sans text-slate-800 antialiased min-h-screen flex flex-col selection:bg-amber-200 selection:text-amber-900">
 
+    <!-- ====== RoboMath Loading Screen ====== -->
+    <div id="robomath-loader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6"
+         style="background: linear-gradient(135deg, #FAF6EF 0%, #FFF8ED 50%, #F0F4FF 100%);">
+
+        <style>
+            /* Follow-the-leader orbit animation — adapted for RoboMath */
+            @keyframes robo-orbit {
+                0%   { transform: rotate(0deg)   translateY(-28px); }
+                60%, 100% { transform: rotate(360deg) translateY(-28px); }
+            }
+
+            .robo-leader {
+                position: relative;
+                width: 56px;
+                height: 56px;
+            }
+
+            .robo-leader div {
+                animation: robo-orbit 1.875s infinite backwards;
+                border-radius: 100%;
+                height: 10px;
+                width: 10px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                margin: -5px 0 0 -5px;
+            }
+
+            .robo-leader div:nth-child(1) { animation-delay: 0.00s; background: #FF5733; box-shadow: 0 0 8px #FF5733aa; }
+            .robo-leader div:nth-child(2) { animation-delay: 0.15s; background: #FF9500; box-shadow: 0 0 8px #FF9500aa; }
+            .robo-leader div:nth-child(3) { animation-delay: 0.30s; background: #FFCC00; box-shadow: 0 0 8px #FFCC00aa; }
+            .robo-leader div:nth-child(4) { animation-delay: 0.45s; background: #3478F6; box-shadow: 0 0 8px #3478F6aa; }
+            .robo-leader div:nth-child(5) { animation-delay: 0.60s; background: #6C63FF; box-shadow: 0 0 8px #6C63FFaa; }
+
+            @keyframes loader-mascot-float {
+                0%, 100% { transform: translateY(0px) rotate(-2deg); }
+                50%       { transform: translateY(-8px) rotate(2deg); }
+            }
+
+            #robomath-loader .mascot-img {
+                animation: loader-mascot-float 2.4s ease-in-out infinite;
+                filter: drop-shadow(0 12px 24px rgba(108, 99, 255, 0.25));
+            }
+
+            #robomath-loader.fade-out {
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.5s ease-out;
+            }
+        </style>
+
+        <!-- Mascot -->
+        <img src="{{ asset('images/maskot.png') }}" alt="RoboBot" class="mascot-img w-24 h-24 object-contain">
+
+        <!-- Logo -->
+        <img src="{{ asset('images/logo.png') }}" alt="RoboMath" class="h-8 w-auto">
+
+        <!-- Orbit Animation -->
+        <div class="robo-leader">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+
+        <!-- Loading Text -->
+        <p class="text-sm font-black text-slate-500 tracking-widest uppercase animate-pulse">
+            Memuat RoboMath…
+        </p>
+    </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            var loader = document.getElementById('robomath-loader');
+            if (loader) {
+                loader.classList.add('fade-out');
+                setTimeout(function () { loader.style.display = 'none'; }, 520);
+            }
+        });
+    </script>
+    <!-- ====== End Loading Screen ====== -->
+
     <!-- Top Navbar -->
     @include('components.navbar')
 
