@@ -18,7 +18,7 @@ class GeminiProvider implements AIProviderInterface
     public function __construct(?string $apiKey = null, ?string $model = null)
     {
         $this->apiKey = $apiKey ?? config('services.gemini.api_key', env('GEMINI_API_KEY', ''));
-        $this->model = $model ?? config('services.gemini.model', 'gemini-1.5-flash');
+        $this->model = $model ?? config('services.gemini.model', 'gemini-flash-latest');
     }
 
     public function chat(string $message, ?User $user = null, ?string $context = null): AIChatResponse
@@ -29,25 +29,36 @@ class GeminiProvider implements AIProviderInterface
             return (new MockProvider)->chat($message, $user, $context);
         }
 
-        $systemInstruction = RoboBotPrompt::systemPrompt($user, $context);
+        $systemInstruction = ($context === 'json' || $context === 'raw')
+            ? 'You are an expert AI assistant and educational assessment specialist. Always output valid JSON strictly as requested.'
+            : RoboBotPrompt::systemPrompt($user, $context);
+
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
 
-        try {
-            $response = Http::timeout(30)->post($url, [
-                'system_instruction' => [
+        $payload = [
+            'system_instruction' => [
+                'parts' => [
+                    ['text' => $systemInstruction],
+                ],
+            ],
+            'contents' => [
+                [
+                    'role' => 'user',
                     'parts' => [
-                        ['text' => $systemInstruction],
+                        ['text' => $message],
                     ],
                 ],
-                'contents' => [
-                    [
-                        'role' => 'user',
-                        'parts' => [
-                            ['text' => $message],
-                        ],
-                    ],
-                ],
-            ]);
+            ],
+        ];
+
+        if ($context === 'json') {
+            $payload['generationConfig'] = [
+                'responseMimeType' => 'application/json',
+            ];
+        }
+
+        try {
+            $response = Http::timeout(45)->post($url, $payload);
 
             if ($response->successful()) {
                 $candidates = $response->json('candidates.0.content.parts.0.text');

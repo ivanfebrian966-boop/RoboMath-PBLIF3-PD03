@@ -88,6 +88,16 @@
                             </svg>
                             <span>Peringkat Siswa</span>
                         </a>
+
+                        <a href="{{ route('ai-studio.index') }}"
+                           style="{{ request()->routeIs('ai-studio*') ? 'background-color: #7C3AED; color: #FFFFFF;' : '' }}"
+                           class="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all {{ request()->routeIs('ai-studio*') ? 'bg-purple-600 text-white shadow-md' : 'text-slate-700 hover:bg-purple-50' }}">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span>AI Math Studio</span>
+                            <span class="ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-md {{ request()->routeIs('ai-studio*') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700' }}">Baru</span>
+                        </a>
                     </nav>
 
                 @elseif(auth()->user()->isAdmin())
@@ -102,6 +112,16 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                             </svg>
                             <span>Dasbor</span>
+                        </a>
+
+                        <a href="{{ route('ai-studio.index') }}"
+                           style="{{ request()->routeIs('ai-studio*') ? 'background-color: #7C3AED; color: #FFFFFF;' : '' }}"
+                           class="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all {{ request()->routeIs('ai-studio*') ? 'bg-purple-600 text-white shadow-md' : 'text-slate-700 hover:bg-purple-50' }}">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            <span>AI Math Studio</span>
+                            <span class="ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-md {{ request()->routeIs('ai-studio*') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700' }}">Baru</span>
                         </a>
 
                         <a href="{{ route('admin.quizzes.index') }}"

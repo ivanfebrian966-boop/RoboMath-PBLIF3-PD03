@@ -1,0 +1,86 @@
+[
+  {
+    "id": "G1_COUNT_001",
+    "grade": 1,
+    "material": "Let's count up to 10",
+    "question_text": "Pasangkan benda yang sama banyak dengan ditarik garis!",
+    "image_path": "images/g1_pg7_1.png",
+    "page_source": "Pg. 7",
+    "labels": {
+      "question_form": "Reproduction Level",
+      "question_context": "Non-contextual",
+      "answer_form": "Closed-ended",
+      "cognitive_level": "Remembering"
+    }
+  },
+  {
+    "id": "G2_ADD_001",
+    "grade": 2,
+    "material": "Penjumlahan dan Pengurangan",
+    "question_text": "Siti memiliki 12 apel. Ia memberikan 5 apel kepada Budi. Berapa sisa apel Siti?",
+    "image_path": "images/g2_pg23_2.png",
+    "page_source": "Pg. 23",
+    "labels": {
+      "question_form": "Connection Level",
+      "question_context": "Contextual",
+      "answer_form": "Closed-ended",
+      "cognitive_level": "Applying"
+    }
+  },
+  {
+    "id": "G3_NUM_001",
+    "grade": 3,
+    "material": "Whole numbers up to 1,000",
+    "question_text": "Isilah titik-titik di bawah ini berdasarkan pola angka pada gambar!",
+    "image_path": "images/g3_pg15_1a.png",
+    "page_source": "Pg. 15",
+    "labels": {
+      "question_form": "Reproduction Level",
+      "question_context": "Non-contextual",
+      "answer_form": "Closed-ended",
+      "cognitive_level": "Remembering"
+    }
+  },
+  {
+    "id": "G4_FRAC_001",
+    "grade": 4,
+    "material": "Pecahan",
+    "question_text": "Ibu memotong kue menjadi 8 bagian sama besar. Andi memakan 2 bagian. Tuliskan bentuk pecahan kue yang dimakan Andi dan sederhanakan!",
+    "image_path": "images/g4_pg45_3.png",
+    "page_source": "Pg. 45",
+    "labels": {
+      "question_form": "Connection Level",
+      "question_context": "Applicative/Authentic",
+      "answer_form": "Closed-ended",
+      "cognitive_level": "Understanding"
+    }
+  },
+  {
+    "id": "G5_GEO_001",
+    "grade": 5,
+    "material": "Bangun Ruang",
+    "question_text": "Sebuah kubus memiliki panjang rusuk 10 cm. Hitunglah volume dan luas permukaan kubus tersebut!",
+    "image_path": null,
+    "page_source": "Pg. 88",
+    "labels": {
+      "question_form": "Connection Level",
+      "question_context": "Non-contextual",
+      "answer_form": "Open-ended",
+      "cognitive_level": "Applying"
+    }
+  },
+  {
+    "id": "G6_STAT_001",
+    "grade": 6,
+    "material": "Pengolahan Data / Statistika",
+    "question_text": "Berdasarkan diagram batang penjualan buah di bawah ini, analisis buah apa yang paling sedikit terjual dan berikan saran agar penjualan buah tersebut meningkat!",
+    "image_path": "images/g6_pg112_4.png",
+    "page_source": "Pg. 112",
+    "labels": {
+      "question_form": "Reflection Level",
+      "question_context": "Applicative/Authentic",
+      "answer_form": "Open-ended",
+      "cognitive_level": "Analyzing"
+    }
+  }
+]

@@ -12,6 +12,7 @@ use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\MathAIStudioController;
 use App\Http\Controllers\ParentDashboardController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\StudentDashboardController;
@@ -131,4 +132,14 @@ Route::middleware(['auth', RoleMiddleware::class.':admin'])->prefix('admin')->na
     // Manajemen Pengguna
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/toggle', [UserManagementController::class, 'toggle'])->name('users.toggle');
+});
+
+// ============================================================
+// AI QUESTION STUDIO (Admin & Guru)
+// ============================================================
+Route::middleware(['auth', RoleMiddleware::class.':guru,admin'])->prefix('ai-studio')->name('ai-studio.')->group(function () {
+    Route::get('/', [MathAIStudioController::class, 'index'])->name('index');
+    Route::post('/analyze', [MathAIStudioController::class, 'analyze'])->name('analyze');
+    Route::post('/generate', [MathAIStudioController::class, 'generate'])->name('generate');
+    Route::post('/save', [MathAIStudioController::class, 'saveToQuiz'])->name('save');
 });
