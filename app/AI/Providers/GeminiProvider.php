@@ -35,6 +35,16 @@ class GeminiProvider implements AIProviderInterface
 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
 
+        $generationConfig = [
+            'temperature' => ($context === 'json' || $context === 'raw') ? 0.2 : 0.4,
+            'topP' => 0.8,
+            'topK' => 40,
+        ];
+
+        if ($context === 'json') {
+            $generationConfig['responseMimeType'] = 'application/json';
+        }
+
         $payload = [
             'system_instruction' => [
                 'parts' => [
@@ -49,18 +59,33 @@ class GeminiProvider implements AIProviderInterface
                     ],
                 ],
             ],
+            'generationConfig' => $generationConfig,
         ];
 
-        if ($context === 'json') {
-            $payload['generationConfig'] = [
-                'responseMimeType' => 'application/json',
-            ];
-        }
-
         try {
-            $response = Http::timeout(45)->post($url, $payload);
+            $attempts = 0;
+            $response = null;
 
-            if ($response->successful()) {
+            while ($attempts < 3) {
+                $attempts++;
+                $response = Http::timeout(45)->post($url, $payload);
+
+                if ($response->successful()) {
+                    break;
+                }
+
+                // If transient high demand (503) or rate-limit (429), retry after a short delay
+                if (in_array($response->status(), [429, 500, 502, 503, 504]) && $attempts < 3) {
+                    Log::warning("Gemini API Status {$response->status()} (High Demand), retrying attempt {$attempts}...");
+                    sleep(1);
+
+                    continue;
+                }
+
+                break;
+            }
+
+            if ($response && $response->successful()) {
                 $candidates = $response->json('candidates.0.content.parts.0.text');
                 $usage = $response->json('usageMetadata.totalTokenCount');
 
@@ -71,7 +96,7 @@ class GeminiProvider implements AIProviderInterface
                 );
             }
 
-            Log::error('Gemini API Error: '.$response->body());
+            Log::error('Gemini API Error: '.($response ? $response->body() : 'No response'));
         } catch (\Throwable $e) {
             Log::error('Gemini Provider Exception: '.$e->getMessage());
         }

@@ -24,7 +24,7 @@ class MockProvider implements AIProviderInterface
         } elseif (str_contains($lowerMessage, 'halo') || str_contains($lowerMessage, 'hai')) {
             $reply = "Halo $name! 👋😊 Aku **RoboBot**, teman belajarmu di RoboMath! Mau belajar topik matematika atau logika apa hari ini? 📚";
         } else {
-            $reply = "Hai $name! 🤖 Aku RoboBot. Ada soal matematika atau materi yang ingin kamu tanyakan dan kita pelajari bersama? ✨";
+            $reply = "Halo $name! 🤖 Maaf ya, koneksi ke otak AI RoboBot di server sedang mengalami antrean padat (high demand). Coba kirim ulang pertanyaanmu ya! ✨";
         }
 
         return new AIChatResponse(

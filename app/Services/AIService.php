@@ -2,23 +2,36 @@
 
 namespace App\Services;
 
+use App\AI\AIManager;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class AIService
 {
+    public function __construct(protected ?AIManager $aiManager = null)
+    {
+        $this->aiManager = $aiManager ?? app(AIManager::class);
+    }
+
     /**
-     * Chat with AI assistant - currently using mock responses for demo.
-     * Can be extended to use OpenAI/Gemini API.
+     * Chat with AI assistant using Gemini or mock responses as fallback.
      */
     public function chat(string $message, User $user, ?string $context = null): string
     {
         $provider = config('services.ai.provider', 'mock');
 
-        if ($provider === 'mock') {
-            return $this->mockResponse($message, $user, $context);
+        if ($provider !== 'mock') {
+            try {
+                $response = $this->aiManager->chat($message, $user, $context, $provider);
+
+                if (! empty($response->text)) {
+                    return $response->text;
+                }
+            } catch (\Throwable $e) {
+                Log::error("AIService Chat Exception [{$provider}]: ".$e->getMessage());
+            }
         }
 
-        // Future: OpenAI/Gemini integration
         return $this->mockResponse($message, $user, $context);
     }
 

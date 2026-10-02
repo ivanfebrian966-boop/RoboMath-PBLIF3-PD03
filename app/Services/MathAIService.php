@@ -32,12 +32,18 @@ class MathAIService
         $examples = json_encode(array_slice($this->getDataset(), 0, 3), JSON_PRETTY_PRINT);
 
         $prompt = <<<PROMPT
-Anda adalah Pakar Asesmen Pendidikan Matematika SD dan Taksonomi Pembelajaran.
-Analisis teks soal matematika berikut yang ditujukan untuk Siswa Kelas {$grade} SD:
+Anda adalah Pakar Asesmen Pendidikan Matematika SD dan Taksonomi Pembelajaran (Bloom & PISA).
+Tugas Anda adalah menganalisis teks butir soal matematika berikut untuk Siswa Kelas {$grade} SD:
 "{$questionText}"
 
-Gunakan acuan taksonomi dan format standar berikut (seperti pada contoh dataset ini):
+Gunakan acuan taksonomi dan format standar berikut:
 {$examples}
+
+Panduan Analisis Objektif & Anti-Halusinasi:
+1. Evaluasi apakah bahasa dan tingkat kesukaran soal benar-benar realistis dan sesuai untuk usia Siswa Kelas {$grade} SD.
+2. Periksa apakah konsep matematika dalam soal sudah tepat, tidak ada ambiguitas atau kontradiksi.
+3. Berikan analisis faktual dan rasional, jangan mengada-ada konsep yang tidak ada di dalam soal.
+4. Jika ada kekurangan atau peluang perbaikan pada soal, berikan saran konstruktif pada "improvement_suggestion".
 
 Berikan output HANYA dalam format JSON murni tanpa pembungkus markdown (tanpa ```json dan tanpa ```) dengan struktur berikut:
 {
@@ -87,10 +93,23 @@ PROMPT;
     public function generateQuestion(int $grade, string $material, string $cognitiveLevel, string $contextType = 'Contextual'): array
     {
         $prompt = <<<PROMPT
-Buatkan 1 butir soal matematika yang edukatif, ramah anak, dan berkualitas tinggi untuk Siswa SD Kelas {$grade}.
+Anda adalah Guru Matematika SD Berpengalaman dan Pakar Kurikulum Matematika Anak.
+Buatkan 1 butir soal matematika yang edukatif, ramah anak, dan bermutu tinggi untuk Siswa SD Kelas {$grade}.
 Topik/Materi: "{$material}"
 Tingkat Kognitif: "{$cognitiveLevel}"
 Tipe Konteks: "{$contextType}"
+
+ATURAN VERIFIKASI MATEMATIKA & ANTI-NGAWUR (WAJIB DIPATUHI):
+1. Verifikasi Hitungan (Self-Verification): Selesaikan soal secara mandiri terlebih dahulu. Pastikan perhitungan angka 100% akurat dan logis tanpa ada kesalahan aritmatika sekecil apa pun.
+2. Kesesuaian Usia Anak SD:
+   - Kelas 1-2: Gunakan bilangan bulat kecil (1-20 atau 1-100), penjumlahan/pengurangan sederhana, konteks benda nyata (buah, mainan, hewan). JANGAN gunakan bilangan negatif atau pecahan rumit.
+   - Kelas 3-4: Perkalian, pembagian dasar, pecahan sederhana, waktu, pengukuran.
+   - Kelas 5-6: Pecahan campuran, desimal, persentase, bangun datar/ruang, perbandingan.
+3. Kualitas Pilihan Jawaban:
+   - Sediakan tepat 4 opsi jawaban ("options") yang berbeda satu sama lain.
+   - HANYA ada 1 opsi yang BENAR. Tiga opsi lainnya adalah pengecoh (distraktor) yang masuk akal namun salah secara hitungan.
+4. Kunci Jawaban: Nilai "correct_answer" HARUS SAMA PERSIS karakter demi karakter dengan salah satu pilihan di dalam array "options".
+5. Penjelasan Runtut: "explanation" harus memaparkan langkah penyelesaian bertahap yang runut, akurat, dan mudah dipahami anak SD.
 
 Outputkan HANYA dalam format JSON murni tanpa pembungkus markdown (tanpa ```json dan tanpa ```) dengan struktur persis seperti ini:
 {
@@ -116,6 +135,14 @@ PROMPT;
             $decoded = json_decode($cleanJson, true);
 
             if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                // Sanity check: ensure correct_answer is in options
+                if (isset($decoded['options'], $decoded['correct_answer']) && is_array($decoded['options'])) {
+                    if (! in_array($decoded['correct_answer'], $decoded['options'], true)) {
+                        // If exact match failed, check loose or append
+                        $decoded['options'][0] = $decoded['correct_answer'];
+                    }
+                }
+
                 return $decoded;
             }
 
