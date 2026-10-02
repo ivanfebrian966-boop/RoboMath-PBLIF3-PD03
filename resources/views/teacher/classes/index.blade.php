@@ -6,7 +6,7 @@
 <div class="max-w-5xl mx-auto space-y-6">
 
     <!-- Header Banner -->
-    <div class="rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="rounded-3xl bg-[#059669] p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
             <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-black uppercase tracking-wider mb-2">
                 🏫 Ruang Kelas Guru

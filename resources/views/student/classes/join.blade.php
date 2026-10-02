@@ -6,7 +6,7 @@
 <div class="max-w-3xl mx-auto space-y-6">
 
     <!-- Header Banner -->
-    <div class="rounded-3xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 p-8 text-white shadow-xl">
+    <div class="rounded-3xl bg-[#00A88F] p-8 text-white shadow-lg border border-teal-300/30">
         <div class="flex flex-col md:flex-row items-center gap-6">
             <div class="text-5xl">🏫</div>
             <div>

@@ -4,7 +4,7 @@
 <div class="space-y-8">
     
     <!-- Parent Banner -->
-    <div class="bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 rounded-3xl p-8 text-white shadow-xl space-y-2">
+    <div class="bg-[#3478F6] rounded-3xl p-8 text-white shadow-xl space-y-2">
         <span class="bg-white/20 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase">Dashboard Orang Tua</span>
         <h1 class="text-3xl sm:text-4xl font-black">Pantau Progres Belajar Anak 👨‍👩‍👧‍👦</h1>
         <p class="text-sky-100 font-semibold text-base">Lihat aktivitas belajar, lencana yang diraih, dan skor latihan putra-putri Anda secara real-time.</p>

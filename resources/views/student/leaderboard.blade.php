@@ -6,7 +6,7 @@
 <div class="max-w-4xl mx-auto space-y-6">
 
     <!-- Header Banner -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 p-8 text-white shadow-xl">
+    <div class="relative overflow-hidden rounded-3xl bg-[#F59E0B] p-8 text-white shadow-lg border border-amber-300/30">
         <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div class="text-center md:text-left space-y-2">
                 <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-black uppercase tracking-wider">

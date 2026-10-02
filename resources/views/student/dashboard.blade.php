@@ -4,13 +4,13 @@
 <div class="space-y-8">
     
     <!-- Welcome Header Banner -->
-    <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+    <div class="bg-[#3B82F6] rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-blue-400/30">
         <div class="relative z-10 space-y-2 max-w-xl">
             <span class="bg-white/20 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
                 Kelas {{ $user->kelas }} SD
             </span>
             <h1 class="text-3xl sm:text-4xl font-black">Halo, {{ $user->name }}! 🎒✨</h1>
-            <p class="text-indigo-100 font-semibold text-base">
+            <p class="text-blue-100 font-semibold text-base">
                 Siap petualangan logika hari ini? Selesaikan materi dan dapatkan skor terbanyak!
             </p>
         </div>

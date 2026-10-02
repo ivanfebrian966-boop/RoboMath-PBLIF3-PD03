@@ -2,7 +2,7 @@
 <div x-data="chatbotWidget()" class="fixed bottom-6 right-6 z-50">
 
     <!-- Floating Chat Toggle Button with Mascot Image & Logo Gradients -->
-    <button @click="toggleChat()" class="bg-gradient-to-r from-orange-500 via-amber-500 to-indigo-600 hover:from-orange-600 hover:to-indigo-700 text-white font-extrabold p-3 sm:p-4 rounded-full shadow-2xl flex items-center gap-3 transition-all transform hover:scale-105 border-4 border-amber-200 group">
+    <button @click="toggleChat()" class="bg-[#FF9500] hover:bg-[#e08600] text-white font-extrabold p-3 sm:p-4 rounded-full shadow-2xl flex items-center gap-3 transition-all transform hover:scale-105 border-4 border-amber-200 group">
         <div class="w-10 h-10 rounded-full bg-white p-0.5 overflow-hidden shadow-md flex-shrink-0">
             <img src="{{ asset('images/maskot.png') }}" alt="RoboBot" class="w-full h-full object-cover rounded-full">
         </div>
@@ -21,7 +21,7 @@
          style="display: none;">
 
         <!-- Header -->
-        <div class="bg-gradient-to-r from-orange-500 via-amber-500 to-indigo-600 p-4 text-white flex items-center justify-between">
+        <div class="bg-[#FF3B30] p-4 text-white flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-11 h-11 rounded-full bg-white p-0.5 overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-white/40">
                     <img src="{{ asset('images/maskot.png') }}" alt="RoboBot AI" class="w-full h-full object-contain rounded-full bg-indigo-50">
@@ -81,7 +81,7 @@
                    class="flex-1 px-4 py-2.5 rounded-2xl border-2 border-amber-200 focus:border-orange-500 focus:outline-none text-sm font-semibold text-slate-800 bg-[#FFFDF9]"
                    :disabled="isLoading">
             <button type="submit" 
-                    class="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-extrabold px-4 py-2.5 rounded-2xl transition-all disabled:opacity-50 shadow-md"
+                    class="bg-[#FF9500] hover:bg-[#e08600] text-white font-extrabold px-4 py-2.5 rounded-2xl transition-all disabled:opacity-50 shadow-md"
                     :disabled="isLoading || !inputMessage.trim()">
                 🚀
             </button>

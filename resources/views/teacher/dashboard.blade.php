@@ -6,7 +6,7 @@
 <div class="space-y-8">
     
     <!-- Teacher Header -->
-    <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="bg-[#059669] rounded-3xl p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-400/30">
         <div class="space-y-2">
             <span class="bg-white/20 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Dasbor Monitoring Guru</span>
             <h1 class="text-3xl sm:text-4xl font-black">Monitoring Perkembangan Siswa</h1>
@@ -47,7 +47,7 @@
     </div>
 
     <!-- Quick Navigation to Kelas -->
-    <div class="bg-gradient-to-r from-teal-50 to-emerald-50 rounded-3xl p-6 border-2 border-teal-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="bg-teal-50 rounded-3xl p-6 border-2 border-teal-200 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-4">
             <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center text-xl font-black shadow-md flex-shrink-0">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>

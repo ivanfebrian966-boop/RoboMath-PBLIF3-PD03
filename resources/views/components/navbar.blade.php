@@ -24,7 +24,7 @@
 
                 <!-- User Profile Dropdown -->
                 <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-2xl border-2 border-amber-200/80 shadow-sm">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-[#FF9500] flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
                     <div class="hidden md:block text-left">
@@ -42,7 +42,7 @@
                 </div>
             @else
                 <a href="{{ route('login') }}" class="font-bold text-slate-700 hover:text-indigo-600 px-4 py-2">Masuk</a>
-                <a href="{{ route('register') }}" class="font-extrabold text-white bg-gradient-to-r from-orange-500 via-amber-500 to-indigo-600 hover:from-orange-600 hover:to-indigo-700 px-5 py-2.5 rounded-2xl shadow-md hover:shadow-lg transition-all">Daftar Gratis</a>
+                <a href="{{ route('register') }}" class="font-extrabold text-white bg-[#FF3B30] hover:bg-[#e02d23] px-5 py-2.5 rounded-2xl shadow-md hover:shadow-lg transition-all">Daftar Gratis</a>
             @endauth
         </div>
 

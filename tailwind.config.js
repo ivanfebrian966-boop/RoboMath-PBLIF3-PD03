@@ -8,7 +8,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Fredoka', 'Nunito', 'sans-serif'],
+                sans: ['"SF Pro Display"', '"SF Pro Text"', '"SF Pro"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                secondary: ['"SF Pro Display"', '"SF Pro Text"', '"SF Pro"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                heading: ['Poppins', 'sans-serif'],
             },
             colors: {
                 algored: '#FF4757',

@@ -4,7 +4,7 @@
 <div class="space-y-8">
     
     <!-- User Level & Score Hero Banner -->
-    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 rounded-3xl p-8 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div class="bg-[#F59E0B] rounded-3xl p-8 text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6 border border-amber-300/30">
         <div class="space-y-2 text-center sm:text-left">
             <span class="bg-white/20 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase">Koleksi Bintang Prestasi</span>
             <h1 class="text-3xl sm:text-4xl font-black">Lencana & Level Prestasi 🏆</h1>

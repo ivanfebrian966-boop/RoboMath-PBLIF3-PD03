@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="space-y-6">
-    <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl p-8 text-white shadow-xl space-y-2">
+    <div class="bg-[#FF9500] rounded-3xl p-8 text-white shadow-lg space-y-2 border border-orange-400/30">
         <span class="bg-white/20 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase">Latihan Interaktif AI</span>
         <h1 class="text-3xl sm:text-4xl font-black">Pilih Kuis Latihan Logika! 🎯</h1>
-        <p class="text-amber-100 font-semibold text-base">Uji pemahamanmu, kumpulkan poin, dan raih lencana bintang!</p>
+        <p class="text-orange-100 font-semibold text-base">Uji pemahamanmu, kumpulkan poin, dan raih lencana bintang!</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

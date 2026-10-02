@@ -65,8 +65,12 @@
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.2] max-w-2xl mx-auto">
                 Belajar Matematika SD<br>
                 Jadi Lebih 
-                <span class="bg-gradient-to-r from-orange-500 via-amber-500 to-teal-500 bg-clip-text text-transparent">
-                    Interaktif &amp; Seru
+                <span class="inline-block whitespace-nowrap">
+                    <span class="text-[#FF3B30] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">I</span><span class="text-[#FF9500] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">n</span><span class="text-[#F59E0B] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">t</span><span class="text-[#10B981] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">e</span><span class="text-[#00A88F] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">r</span><span class="text-[#0284C7] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">a</span><span class="text-[#3478F6] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">k</span><span class="text-[#7C3AED] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">t</span><span class="text-[#EC4899] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">i</span><span class="text-[#FF3B30] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">f</span>
+                </span>
+                <span class="text-[#F59E0B] inline-block mx-1 sm:mx-1.5 hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">&amp;</span>
+                <span class="inline-block whitespace-nowrap">
+                    <span class="text-[#FF9500] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">S</span><span class="text-[#10B981] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">e</span><span class="text-[#0284C7] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">r</span><span class="text-[#7C3AED] inline-block hover:scale-110 hover:-translate-y-1 transition-transform duration-200 cursor-default">u</span>
                 </span>
             </h1>
             <!-- Subtitle -->
@@ -89,8 +93,8 @@
         <!-- 4 Colorful Feature Cards Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <!-- Card 1: Penjumlahan SD (Golden Yellow) -->
-            <div class="bg-gradient-to-br from-[#FBBF24] to-[#F59E0B] text-slate-950 p-7 rounded-[32px] shadow-lg flex items-center justify-between gap-4 overflow-hidden relative group hover:-translate-y-1 transition duration-300">
+            <!-- Card 1: Penjumlahan SD (Golden Amber) -->
+            <div class="bg-[#F59E0B] text-slate-950 p-7 rounded-[32px] shadow-lg flex items-center justify-between gap-4 overflow-hidden relative group hover:-translate-y-1 transition duration-300">
                 <div class="space-y-2 max-w-[65%] z-10">
                     <h3 class="text-xl font-black">Penjumlahan SD</h3>
                     <p class="text-xs font-semibold text-slate-900/80 leading-relaxed">
@@ -103,13 +107,13 @@
                         <div class="bg-white/70 rounded-md p-1">+</div>
                         <div class="bg-white/70 rounded-md p-1">-</div>
                         <div class="bg-white/70 rounded-md p-1">×</div>
-                        <div class="bg-amber-300 rounded-md p-1">=</div>
+                        <div class="bg-amber-200 rounded-md p-1">=</div>
                     </div>
                 </div>
             </div>
 
             <!-- Card 2: Perkalian Cepat (Bright Blue) -->
-            <div class="bg-gradient-to-br from-[#3B82F6] to-[#2563EB] text-white p-7 rounded-[32px] shadow-lg flex items-center justify-between gap-4 overflow-hidden relative group hover:-translate-y-1 transition duration-300">
+            <div class="bg-[#2563EB] text-white p-7 rounded-[32px] shadow-lg flex items-center justify-between gap-4 overflow-hidden relative group hover:-translate-y-1 transition duration-300">
                 <div class="space-y-2 max-w-[65%] z-10">
                     <h3 class="text-xl font-black">Perkalian Cepat</h3>
                     <p class="text-xs font-semibold text-blue-100 leading-relaxed">
@@ -126,7 +130,7 @@
             </div>
 
             <!-- Card 3: Asisten AI 24/7 (Emerald Green) -->
-            <div class="bg-gradient-to-br from-[#10B981] to-[#059669] text-white p-7 rounded-[32px] shadow-lg flex items-center justify-between gap-4 overflow-hidden relative group hover:-translate-y-1 transition duration-300">
+            <div class="bg-[#059669] text-white p-7 rounded-[32px] shadow-lg flex items-center justify-between gap-4 overflow-hidden relative group hover:-translate-y-1 transition duration-300">
                 <div class="space-y-2 max-w-[65%] z-10">
                     <h3 class="text-xl font-black">Asisten AI 24/7</h3>
                     <p class="text-xs font-semibold text-emerald-100 leading-relaxed">
@@ -139,7 +143,7 @@
             </div>
 
             <!-- Card 4: Skor & Lencana (Coral Red) -->
-            <div class="bg-gradient-to-br from-[#EF4444] to-[#DC2626] text-white p-7 rounded-[32px] shadow-lg flex items-center justify-between gap-4 overflow-hidden relative group hover:-translate-y-1 transition duration-300">
+            <div class="bg-[#DC2626] text-white p-7 rounded-[32px] shadow-lg flex items-center justify-between gap-4 overflow-hidden relative group hover:-translate-y-1 transition duration-300">
                 <div class="space-y-2 max-w-[65%] z-10">
                     <h3 class="text-xl font-black">Skor &amp; Lencana</h3>
                     <p class="text-xs font-semibold text-rose-100 leading-relaxed">

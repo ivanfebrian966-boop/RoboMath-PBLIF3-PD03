@@ -6,7 +6,7 @@
 <div class="space-y-8">
 
     <!-- Hero Banner Admin (Sesuai dengan gaya banner aktor lain seperti Guru) -->
-    <div class="bg-gradient-to-r from-orange-500 via-amber-500 to-indigo-600 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="bg-[#FF9500] rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="space-y-2">
             <span class="bg-white/20 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">PANEL ADMINISTRATOR ROBOMATH</span>
             <h1 class="text-3xl sm:text-4xl font-black">Ringkasan Dasbor Admin</h1>
@@ -120,7 +120,7 @@
                 </div>
             </div>
             <div>
-                <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-black shadow transition">
+                <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-[#FF9500] hover:bg-[#e08600] text-white rounded-xl text-xs font-black shadow transition">
                     Kelola Pengguna &rarr;
                 </a>
             </div>
