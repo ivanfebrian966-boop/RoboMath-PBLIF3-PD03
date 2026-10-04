@@ -89,14 +89,14 @@
                             <span>Peringkat Siswa</span>
                         </a>
 
-                        <a href="{{ route('ai-studio.index') }}"
-                           style="{{ request()->routeIs('ai-studio*') ? 'background-color: #7C3AED; color: #FFFFFF;' : '' }}"
-                           class="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all {{ request()->routeIs('ai-studio*') ? 'bg-purple-600 text-white shadow-md' : 'text-slate-700 hover:bg-purple-50' }}">
+                        <a href="{{ route('admin.document-summarizer.index') }}"
+                           style="{{ request()->routeIs('admin.document-summarizer*') ? 'background-color: #7C3AED; color: #FFFFFF;' : '' }}"
+                           class="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all {{ request()->routeIs('admin.document-summarizer*') ? 'bg-purple-600 text-white shadow-md' : 'text-slate-700 hover:bg-purple-50' }}">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            <span>AI Math Studio</span>
-                            <span class="ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-md {{ request()->routeIs('ai-studio*') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700' }}">Baru</span>
+                            <span>Ringkas Dokumen AI</span>
+                            <span class="ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-md {{ request()->routeIs('admin.document-summarizer*') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700' }}">Baru</span>
                         </a>
                     </nav>
 
@@ -114,14 +114,14 @@
                             <span>Dasbor</span>
                         </a>
 
-                        <a href="{{ route('ai-studio.index') }}"
-                           style="{{ request()->routeIs('ai-studio*') ? 'background-color: #7C3AED; color: #FFFFFF;' : '' }}"
-                           class="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all {{ request()->routeIs('ai-studio*') ? 'bg-purple-600 text-white shadow-md' : 'text-slate-700 hover:bg-purple-50' }}">
+                        <a href="{{ route('admin.document-summarizer.index') }}"
+                           style="{{ request()->routeIs('admin.document-summarizer*') ? 'background-color: #7C3AED; color: #FFFFFF;' : '' }}"
+                           class="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all {{ request()->routeIs('admin.document-summarizer*') ? 'bg-purple-600 text-white shadow-md' : 'text-slate-700 hover:bg-purple-50' }}">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            <span>AI Math Studio</span>
-                            <span class="ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-md {{ request()->routeIs('ai-studio*') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700' }}">Baru</span>
+                            <span>Ringkas Dokumen AI</span>
+                            <span class="ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-md {{ request()->routeIs('admin.document-summarizer*') ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-700' }}">Baru</span>
                         </a>
 
                         <a href="{{ route('admin.quizzes.index') }}"

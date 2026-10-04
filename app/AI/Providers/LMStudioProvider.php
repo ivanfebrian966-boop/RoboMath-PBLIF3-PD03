@@ -24,9 +24,11 @@ class LMStudioProvider implements AIProviderInterface
 
     public function chat(string $message, ?User $user = null, ?string $context = null): AIChatResponse
     {
-        $systemInstruction = ($context === 'json' || $context === 'raw')
-            ? 'You are an expert educational assessment specialist and mathematics teacher. You MUST always output valid pure JSON strictly following the requested structure, with no markdown code blocks and no surrounding text.'
-            : RoboBotPrompt::systemPrompt($user, $context);
+        $systemInstruction = match ($context) {
+            'json' => 'You are an expert educational assessment specialist and mathematics teacher. You MUST always output valid pure JSON strictly following the requested structure, with no markdown code blocks and no surrounding text.',
+            'raw' => 'You are an expert AI document summarizer and education assistant for RoboMath. Follow all formatting and summarization guidelines provided in the prompt accurately in Indonesian.',
+            default => RoboBotPrompt::systemPrompt($user, $context),
+        };
 
         $payload = [
             'messages' => [
@@ -36,12 +38,11 @@ class LMStudioProvider implements AIProviderInterface
                 ],
                 [
                     'role' => 'user',
-                    'parts' => $message,
                     'content' => $message,
                 ],
             ],
-            'temperature' => ($context === 'json' || $context === 'raw') ? 0.2 : 0.4,
-            'max_tokens' => 1500,
+            'temperature' => $context === 'json' ? 0.2 : 0.4,
+            'max_tokens' => $context === 'raw' ? 4000 : 1500,
         ];
 
         if (! empty($this->model)) {
@@ -57,7 +58,9 @@ class LMStudioProvider implements AIProviderInterface
                 ? "{$this->baseUrl}/chat/completions"
                 : "{$this->baseUrl}/v1/chat/completions";
 
-            $response = Http::timeout(90)->post($endpoint, $payload);
+            // Use longer timeouts: connect 10s (model loading), request up to 3 min for long docs
+            $requestTimeout = $context === 'raw' ? 180 : 90;
+            $response = Http::connectTimeout(10)->timeout($requestTimeout)->post($endpoint, $payload);
 
             if ($response->successful()) {
                 $rawContent = $response->json('choices.0.message.content') ?? '';
@@ -75,9 +78,19 @@ class LMStudioProvider implements AIProviderInterface
                 );
             }
 
-            Log::error('LM Studio API Error ('.$response->status().'): '.$response->body());
+            Log::error("LM Studio API Error ({$response->status()}) on {$endpoint}: ".$response->body());
         } catch (\Throwable $e) {
-            Log::error('LM Studio Provider Exception: '.$e->getMessage());
+            Log::error('LM Studio Provider Exception ['.$this->baseUrl.']: '.$e->getMessage());
+        }
+
+        // Fallback: try Gemini if configured, otherwise use Mock
+        $geminiKey = config('services.gemini.api_key', env('GEMINI_API_KEY'));
+        if (! empty($geminiKey)) {
+            try {
+                return (new GeminiProvider)->chat($message, $user, $context);
+            } catch (\Throwable $e) {
+                Log::error('LM Studio fallback to Gemini also failed: '.$e->getMessage());
+            }
         }
 
         return (new MockProvider)->chat($message, $user, $context);

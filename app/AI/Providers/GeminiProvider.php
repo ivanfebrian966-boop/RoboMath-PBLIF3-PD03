@@ -29,14 +29,16 @@ class GeminiProvider implements AIProviderInterface
             return (new MockProvider)->chat($message, $user, $context);
         }
 
-        $systemInstruction = ($context === 'json' || $context === 'raw')
-            ? 'You are an expert AI assistant and educational assessment specialist. Always output valid JSON strictly as requested.'
-            : RoboBotPrompt::systemPrompt($user, $context);
+        $systemInstruction = match ($context) {
+            'json' => 'You are an expert AI assistant and educational assessment specialist. Always output valid JSON strictly as requested.',
+            'raw' => 'You are an expert AI document summarizer and education assistant for RoboMath. Follow all formatting and summarization guidelines provided in the prompt accurately in Indonesian.',
+            default => RoboBotPrompt::systemPrompt($user, $context),
+        };
 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
 
         $generationConfig = [
-            'temperature' => ($context === 'json' || $context === 'raw') ? 0.2 : 0.4,
+            'temperature' => $context === 'json' ? 0.2 : 0.4,
             'topP' => 0.8,
             'topK' => 40,
         ];

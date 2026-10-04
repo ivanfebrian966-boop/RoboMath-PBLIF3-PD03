@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AiRecommendationController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\DocumentSummarizerController;
 use App\Http\Controllers\Admin\LessonManagementController;
 use App\Http\Controllers\Admin\QuizManagementController;
 use App\Http\Controllers\Admin\ReportController;
@@ -12,7 +13,6 @@ use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\LessonController;
-use App\Http\Controllers\MathAIStudioController;
 use App\Http\Controllers\ParentDashboardController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\StudentDashboardController;
@@ -135,11 +135,14 @@ Route::middleware(['auth', RoleMiddleware::class.':admin'])->prefix('admin')->na
 });
 
 // ============================================================
-// AI QUESTION STUDIO (Admin & Guru)
+// RINGKASAN DOKUMEN AI (Admin & Guru)
 // ============================================================
-Route::middleware(['auth', RoleMiddleware::class.':guru,admin'])->prefix('ai-studio')->name('ai-studio.')->group(function () {
-    Route::get('/', [MathAIStudioController::class, 'index'])->name('index');
-    Route::post('/analyze', [MathAIStudioController::class, 'analyze'])->name('analyze');
-    Route::post('/generate', [MathAIStudioController::class, 'generate'])->name('generate');
-    Route::post('/save', [MathAIStudioController::class, 'saveToQuiz'])->name('save');
+Route::middleware(['auth', RoleMiddleware::class.':guru,admin'])->prefix('admin/document-summarizer')->name('admin.document-summarizer.')->group(function () {
+    Route::get('/', [DocumentSummarizerController::class, 'index'])->name('index');
+    Route::post('/summarize', [DocumentSummarizerController::class, 'summarize'])->name('summarize');
+    Route::get('/{summary}', [DocumentSummarizerController::class, 'show'])->name('show');
+    Route::delete('/{summary}', [DocumentSummarizerController::class, 'destroy'])->name('destroy');
+    Route::get('/{summary}/download', [DocumentSummarizerController::class, 'downloadText'])->name('download');
 });
+
+Route::redirect('/ai-studio', '/admin/document-summarizer');
