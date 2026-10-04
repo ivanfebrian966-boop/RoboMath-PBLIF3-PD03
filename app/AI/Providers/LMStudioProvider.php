@@ -65,7 +65,7 @@ class LMStudioProvider implements AIProviderInterface
             if ($response->successful()) {
                 $rawContent = $response->json('choices.0.message.content') ?? '';
 
-                // Clean DeepSeek/reasoning <think>...</think> tags if present
+                // Clean any reasoning <think>...</think> tags if present
                 $cleanText = preg_replace('/<think>[\s\S]*?<\/think>/i', '', $rawContent);
                 $cleanText = trim($cleanText);
 

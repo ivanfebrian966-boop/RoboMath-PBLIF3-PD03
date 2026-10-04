@@ -46,7 +46,7 @@ return [
 
     'lmstudio' => [
         'base_url' => env('LMSTUDIO_BASE_URL', 'http://127.0.0.1:1234/v1'),
-        'model' => env('LMSTUDIO_MODEL', null),
+        'model' => env('LMSTUDIO_MODEL', 'google/gemma-4-e4b'),
     ],
 
 ];

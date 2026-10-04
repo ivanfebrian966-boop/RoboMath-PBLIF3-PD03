@@ -6,6 +6,7 @@ use App\AI\AIManager;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
+use Smalot\PdfParser\Parser;
 use ZipArchive;
 
 class DocumentSummarizerService
@@ -117,12 +118,27 @@ class DocumentSummarizerService
     }
 
     /**
-     * Pure PHP text extraction from PDF stream objects.
+     * Extract clean text from PDF documents using Smalot Parser or stream decompression fallback.
      */
     protected function extractFromPdf(string $filePath): string
     {
         if (! file_exists($filePath)) {
             return '';
+        }
+
+        // Primary: use Smalot PDF Parser for full font mapping and decompression
+        if (class_exists(Parser::class)) {
+            try {
+                $parser = new Parser;
+                $pdf = $parser->parseFile($filePath);
+                $text = $pdf->getText();
+
+                if (! empty(trim($text))) {
+                    return trim($text);
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Smalot PDF Parser fallback triggered: '.$e->getMessage());
+            }
         }
 
         $content = file_get_contents($filePath);
@@ -132,7 +148,7 @@ class DocumentSummarizerService
 
         $extracted = '';
 
-        // Match all stream ... endstream blocks
+        // Fallback: Match all stream ... endstream blocks
         if (preg_match_all('/stream[\r\n]+(.*?)[\r\n]+endstream/s', $content, $matches)) {
             foreach ($matches[1] as $stream) {
                 // Try decompressing flate stream
@@ -172,29 +188,7 @@ class DocumentSummarizerService
             }
         }
 
-        $cleaned = trim(preg_replace('/\s+/', ' ', $extracted));
-
-        // If simple stream extraction got sufficient text, return it
-        if (mb_strlen($cleaned) >= 50) {
-            return $cleaned;
-        }
-
-        // Fallback: search for readable ASCII string chunks in PDF binary
-        if (preg_match_all('/[A-Za-z0-9\s.,;:!?\-\'\"()\/]{6,}/', $content, $chunkMatches)) {
-            $filteredChunks = array_filter($chunkMatches[0], function ($chunk) {
-                $trimmed = trim($chunk);
-
-                // Exclude PDF keywords
-                return ! in_array(strtolower($trimmed), ['obj', 'endobj', 'stream', 'endstream', 'xref', 'trailer', 'flatedecode']);
-            });
-
-            $chunkText = implode(' ', $filteredChunks);
-            if (mb_strlen(trim($chunkText)) >= 50) {
-                return trim($chunkText);
-            }
-        }
-
-        return $cleaned;
+        return trim(preg_replace('/\s+/', ' ', $extracted));
     }
 
     /**
