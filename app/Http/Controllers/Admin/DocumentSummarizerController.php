@@ -68,8 +68,9 @@ class DocumentSummarizerController extends Controller
             ],
             'direct_text' => 'nullable|string',
             'custom_title' => 'nullable|string|max:255',
-            'summary_style' => 'required|in:ringkasan_eksekutif,ringkasan_lengkap,anak_sd,peta_konsep,kuis_latihan',
-            'summary_length' => 'required|in:singkat,sedang,mendalam',
+            'custom_prompt' => 'nullable|string|max:2000',
+            'summary_style' => 'nullable|string|max:50',
+            'summary_length' => 'nullable|string|max:50',
             'focus_topic' => 'nullable|string|max:255',
             'save_history' => 'nullable',
         ]);
@@ -85,7 +86,7 @@ class DocumentSummarizerController extends Controller
         $fileType = 'text';
         $fileSize = 0;
         $originalFilename = 'Input Teks Langsung';
-        $title = $request->input('custom_title') ?: 'Ringkasan Teks Mandiri';
+        $title = $request->input('custom_title') ?: 'Latihan Soal Dokumen';
         $extractedText = '';
 
         if ($request->hasFile('document_file')) {
@@ -108,7 +109,7 @@ class DocumentSummarizerController extends Controller
         } else {
             $extractedText = trim($request->input('direct_text'));
             $fileSize = strlen($extractedText);
-            $title = $request->input('custom_title') ?: 'Catatan Materi '.now()->format('d M Y');
+            $title = $request->input('custom_title') ?: 'Latihan Soal Materi '.now()->format('d M Y');
         }
 
         $wordCountOriginal = str_word_count(strip_tags($extractedText));
@@ -120,12 +121,17 @@ class DocumentSummarizerController extends Controller
             ], 422);
         }
 
-        // Generate AI Summary
+        // Generate AI Question Summary
+        $customPrompt = $request->input('custom_prompt');
+        $style = $request->input('summary_style', 'kuis_latihan');
+        $length = $request->input('summary_length', ! empty($customPrompt) ? 'kustom' : '5_soal');
+
         $aiResult = $this->summarizerService->summarize(
             text: $extractedText,
             title: $title,
-            style: $request->input('summary_style', 'ringkasan_eksekutif'),
-            length: $request->input('summary_length', 'sedang'),
+            customPrompt: $customPrompt,
+            style: $style,
+            length: $length,
             focus: $request->input('focus_topic'),
             user: Auth::user()
         );
@@ -145,8 +151,8 @@ class DocumentSummarizerController extends Controller
                 'extracted_text' => mb_substr($extractedText, 0, 50000), // retain preview
                 'summary' => $aiResult['summary'],
                 'key_points' => $aiResult['key_points'],
-                'summary_style' => $request->input('summary_style'),
-                'summary_length' => $request->input('summary_length'),
+                'summary_style' => $style,
+                'summary_length' => $length,
                 'word_count_original' => $wordCountOriginal,
                 'word_count_summary' => $wordCountSummary,
                 'ai_provider' => $aiResult['provider'],

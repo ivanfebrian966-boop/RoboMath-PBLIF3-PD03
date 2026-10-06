@@ -207,7 +207,7 @@ class DocumentSummarizerService
     }
 
     /**
-     * Generate an AI summary for the given text.
+     * Generate an AI question set / summary for the given text.
      *
      * @return array{
      *     summary: string,
@@ -220,7 +220,8 @@ class DocumentSummarizerService
     public function summarize(
         string $text,
         string $title,
-        string $style = 'ringkasan_eksekutif',
+        ?string $customPrompt = null,
+        string $style = 'kuis_latihan',
         string $length = 'sedang',
         ?string $focus = null,
         ?User $user = null
@@ -229,7 +230,7 @@ class DocumentSummarizerService
 
         if (empty($text)) {
             return [
-                'summary' => 'Dokumen tidak mengandung teks yang cukup untuk diringkas. Pastikan dokumen memuat teks dan bukan hanya gambar pindaian murni.',
+                'summary' => 'Dokumen tidak mengandung teks yang cukup untuk dibuatkan soal. Pastikan dokumen memuat teks dan bukan hanya gambar pindaian murni.',
                 'key_points' => ['Tidak ada teks yang dapat dianalisis.'],
                 'provider' => 'system',
                 'tokens_used' => 0,
@@ -243,43 +244,84 @@ class DocumentSummarizerService
             $truncatedText .= "\n\n[... teks dokumen dipotong untuk batas analisis AI ...]";
         }
 
-        $styleInstruction = match ($style) {
-            'ringkasan_eksekutif' => 'Buatkan ringkasan intisari eksekutif yang padat, terstruktur rapi dengan poin-poin utama, ide pokok, dan kesimpulan strategis.',
-            'ringkasan_lengkap' => 'Buatkan rangkuman komprehensif, mengulas detail per bagian atau topik, penjelasan rinci dan alur bahasan lengkap dari dokumen.',
-            'anak_sd' => 'Buatkan ringkasan dengan gaya bahasa ramah, ceria, dan mudah dipahami oleh anak-anak usia Sekolah Dasar (SD). Gunakan analogi sederhana, emoji edukatif, dan kalimat yang hangat.',
-            'peta_konsep' => 'Buatkan peta konsep terstruktur, glosarium istilah-istilah kunci, definisi penting, dan bagaimana setiap konsep saling berhubungan.',
-            'kuis_latihan' => 'Buatkan 5 soal latihan/kuis pemahaman materi berdasarkan isi dokumen. Setiap soal harus memiliki 4 opsi jawaban (A, B, C, D), kunci jawaban benar, serta pembahasan ringkas.',
-            default => 'Buatkan ringkasan komprehensif dan terstruktur dengan poin-poin penting.',
-        };
+        $hasCustomPrompt = ! empty(trim((string) $customPrompt));
+        $isEssayRequest = $hasCustomPrompt && (bool) preg_match('/(essay|esai|uraian|isian|terbuka|jawaban\s*singkat)/i', (string) $customPrompt);
 
-        $lengthInstruction = match ($length) {
-            'singkat' => 'Panjang ringkasan: SINGKAT dan sangat padat (sekitar 100 - 200 kata, atau 4 - 6 poin inti).',
-            'mendalam' => 'Panjang ringkasan: MENDALAM dan detail (sekitar 400 - 700 kata, mencakup semua sub-pembahasan).',
-            default => 'Panjang ringkasan: SEDANG dan berimbang (sekitar 250 - 400 kata).',
-        };
+        // Detect requested question count if specified by user (e.g. "6 soal essay", "10 butir", etc.)
+        $requestedCount = null;
+        if ($hasCustomPrompt && preg_match('/(\d+)\s*(?:soal|butir|nomor|buah|pertanyaan)/i', (string) $customPrompt, $countMatches)) {
+            $requestedCount = (int) $countMatches[1];
+        }
 
-        $focusPrompt = ! empty($focus)
-            ? "PERHATIAN KHUSUS DARI PENGGUNA: Berikan penekanan utama pada aspek berikut: \"{$focus}\"."
-            : '';
+        if ($isEssayRequest) {
+            $countText = $requestedCount ? "TEPAT {$requestedCount}" : 'sejumlah yang diminta';
+            $instruction = "PERMINTAAN KHUSUS GURU/PENGGUNA (SOAL ESSAY / URAIAN MURNI):\n\"".trim((string) $customPrompt)."\"\n".
+                "- Target Jumlah: Buat {$countText} butir soal.\n".
+                "- WAJIB 100% SEMUA BUTIR SOAL MURNI BERBENTUK ESSAY / URAIAN DARI SOAL NOMOR 1 SAMPAI SOAL TERAKHIR.\n".
+                "- DILARANG KERAS MEMBUAT SOAL PILIHAN GANDA (DILARANG MENYERTAKAN OPSI A, B, C, D) PADA SOAL MANAPUN.\n".
+                '- Setiap butir soal harus berupa pertanyaan uraian pemahaman konsep / penalaran / soal cerita yang memerlukan jawaban deskriptif, dilengkapi kunci jawaban model dan pembahasan langkah penyelesaian.';
+            $formatGuide = <<<'FMT'
+FORMAT SETIAP BUTIR SOAL ESSAY / URAIAN (DILARANG MEMBUAT PILIHAN GANDA A, B, C, D):
+### 📝 Soal [Nomor]
+[Tuliskan pertanyaan essay/uraian yang jelas, kontekstual, dan ramah anak SD tanpa ada pilihan A, B, C, D]
+
+> **🔑 Kunci Jawaban:** [Model jawaban lengkap yang diharapkan]
+> **💡 Pembahasan & Langkah:** [Penjelasan langkah-langkah penyelesaian terinci]
+FMT;
+        } elseif ($hasCustomPrompt) {
+            $countText = $requestedCount ? "TEPAT {$requestedCount}" : 'sejumlah yang diminta';
+            $instruction = "PERMINTAAN KHUSUS GURU/PENGGUNA:\n\"".trim((string) $customPrompt)."\"\n".
+                "- Target Jumlah: Buat {$countText} butir soal.\n".
+                '- PENTING: Ikuti jenis soal persis sesuai permintaan di atas. Jika meminta essay/uraian, SELURUH soal harus murni essay tanpa opsi A, B, C, D.';
+            $formatGuide = <<<'FMT'
+PANDUAN FORMAT BUTIR SOAL:
+- Jika meminta Pilihan Ganda: Sertakan opsi (- A., - B., - C., - D.), kunci jawaban, dan pembahasan.
+- Jika meminta Essay/Uraian/Isian: Tuliskan pertanyaan uraian, kunci jawaban model, dan pembahasan (TANPA opsi A, B, C, D).
+FMT;
+        } else {
+            $instruction = 'Susun TEPAT 5 butir soal pilihan ganda (A, B, C, D) yang seru, edukatif, dan kontekstual merangkum materi dokumen.';
+            $formatGuide = <<<'FMT'
+FORMAT SETIAP BUTIR SOAL (Pilihan Ganda):
+### 📝 Soal [Nomor]
+[Tuliskan pertanyaan dengan jelas dan ramah anak]
+- A. [Pilihan A]
+- B. [Pilihan B]
+- C. [Pilihan C]
+- D. [Pilihan D]
+
+> **🔑 Kunci Jawaban:** [Pilihan benar]
+> **💡 Pembahasan Seru:** [Penjelasan cara menjawab dengan bahasa sederhana yang mudah dimengerti anak]
+FMT;
+        }
+
+        if (! empty($focus) && ! $hasCustomPrompt) {
+            $instruction .= "\nFokus Topik: Berikan penekanan utama pada materi: \"{$focus}\".";
+        }
 
         $prompt = <<<EOT
-Anda adalah Asisten Pakar Ringkasan Dokumen dan Spesialis Edukasi RoboMath.
-Tugas Anda adalah membaca, menganalisis, dan meringkas isi dokumen berjudul: "{$title}".
+Anda adalah Guru Matematika & Sahabat Belajar Anak SD di RoboMath.
+Tugas Anda: Meringkas dokumen berjudul "{$title}" LANGSUNG MENJADI PAKET SOAL LATIHAN ANAK SD YANG RAPI, CERIA, DAN MENARIK.
 
-PANDUAN RINGKASAN:
-- Gaya: {$styleInstruction}
-- {$lengthInstruction}
-- {$focusPrompt}
-- Bahasa: Bahasa Indonesia yang baku, jelas, informatif, dan mudah dipahami.
-- Format Output: Gunakan Markdown yang sangat menarik (heading ##, bullet points, teks tebal untuk istilah penting, quote > untuk kutipan atau intisari penting).
-- Di bagian akhir, sertakan bagian khusus bertajuk "### 📌 Poin Kunci Utama" yang berisi 3 hingga 5 butir ringkas yang paling esensial.
+ATURAN UTAMA (SANGAT PENTING):
+1. DILARANG KERAS menyertakan kalimat pembuka/sapaan formal/basa-basi robotik (JANGAN tulis "Sebagai Asisten...", "Saya telah menganalisis...", "Berikut ini adalah...", dll).
+2. LANGSUNG MULAI dari judul dokumen: "## 🌟 Paket Soal: {$title}".
+3. Gaya Bahasa: Ramah, santun, ceria, dan mudah dipahami oleh anak-anak Sekolah Dasar (SD). Gunakan analogi konkret dan situasi sehari-hari yang menyenangkan.
+4. {$instruction}
 
-ISI DOKUMEN YANG DIANALISIS:
+{$formatGuide}
+
+DI AKHIR TANGGAPAN:
+### 📌 Rangkuman Konsep Kunci
+- [Poin kesimpulan materi 1]
+- [Poin kesimpulan materi 2]
+- [Poin kesimpulan materi 3]
+
+ISI DOKUMEN MATERI:
 ---
 {$truncatedText}
 ---
 
-Silakan buat ringkasan terbaik Anda sekarang:
+Mulai paket soal sekarang (tanpa pembuka basa-basi):
 EOT;
 
         $providerName = 'gemini';
@@ -289,16 +331,22 @@ EOT;
         try {
             // Send request to AI Manager
             $response = $this->aiManager->chat($prompt, $user, 'raw');
-            $summaryText = $response->text;
+            $summaryText = $this->stripIntroPreamble($response->text);
+
+            // If user explicitly requested essay/uraian, sanitize any accidental multiple choice options
+            if ($isEssayRequest) {
+                $summaryText = $this->sanitizeEssayOutput($summaryText);
+            }
+
             $providerName = $response->provider;
             $tokensUsed = $response->tokensUsed;
         } catch (\Throwable $e) {
             Log::error('AI Document Summarizer Error: '.$e->getMessage());
         }
 
-        // If AI provider failed or returned generic mock fallback, provide enhanced structured summary
+        // If AI provider failed or returned generic mock fallback, provide enhanced structured questions
         if (empty($summaryText) || str_contains($summaryText, 'koneksi ke otak AI RoboBot di server sedang mengalami antrean padat')) {
-            $fallback = $this->generateLocalStructuredSummary($title, $truncatedText, $style);
+            $fallback = $this->generateLocalStructuredSummary($title, $truncatedText, $customPrompt);
             $summaryText = $fallback['summary'];
             $keyPoints = $fallback['key_points'];
             $providerName = 'robomath-local (offline smart fallback)';
@@ -318,6 +366,53 @@ EOT;
     }
 
     /**
+     * Sanitize and strip any accidental multiple-choice options in pure essay output.
+     */
+    protected function sanitizeEssayOutput(string $text): string
+    {
+        $lines = explode("\n", $text);
+        $cleanLines = [];
+
+        foreach ($lines as $line) {
+            $trimmedLine = trim($line);
+
+            // Check if line is an option like "- A. ...", "* A. ...", "A. ...", "A) ..."
+            if (preg_match('/^(?:[*-]\s*)?[A-D][\.\)]\s+.+$/i', $trimmedLine)) {
+                continue;
+            }
+
+            // Clean up key answer if it says "🔑 Kunci Jawaban: A. Penjelasan..." -> "🔑 Kunci Jawaban: Penjelasan..."
+            if (preg_match('/(>\s*\*\*🔑\s*Kunci\s+Jawaban:\*\*)\s*[A-D][\.\)]\s*(.*)/i', $line, $keyMatch)) {
+                $cleanLines[] = $keyMatch[1].' '.$keyMatch[2];
+
+                continue;
+            }
+
+            $cleanLines[] = $line;
+        }
+
+        return implode("\n", $cleanLines);
+    }
+
+    /**
+     * Strip robotic / conversational preamble before markdown headers or questions.
+     */
+    protected function stripIntroPreamble(string $text): string
+    {
+        $trimmed = trim($text);
+
+        // If text starts with conversational preamble like "Sebagai Asisten...", strip until first markdown heading ## or ### or Soal 1
+        if (preg_match('/^(?:Sebagai\s+Asisten|Tentu|Halo|Berikut\s+adalah|Saya\s+telah|Baiklah|Berikut\s+ini).*?(?=(##|###|📝|Soal\s+1))/is', $trimmed, $matches, PREG_OFFSET_CAPTURE)) {
+            $pos = $matches[1][1] ?? 0;
+            if ($pos > 0) {
+                $trimmed = trim(substr($trimmed, $pos));
+            }
+        }
+
+        return $trimmed;
+    }
+
+    /**
      * Extract key points from generated markdown text.
      *
      * @return list<string>
@@ -326,25 +421,41 @@ EOT;
     {
         $points = [];
 
-        // Look for bullet lines starting with - or *
-        if (preg_match_all('/^[*-]\s+(.+)$/m', $markdown, $matches)) {
+        // Look for bullet lines starting with - or * in Rangkuman Konsep section
+        if (preg_match('/###\s*📌\s*Rangkuman Konsep Kunci(.*?)(?=###|$)/s', $markdown, $sectionMatch)) {
+            if (preg_match_all('/^[*-]\s+(.+)$/m', $sectionMatch[1], $matches)) {
+                foreach ($matches[1] as $match) {
+                    $clean = trim(strip_tags($match));
+                    if (mb_strlen($clean) > 8 && mb_strlen($clean) < 300) {
+                        $points[] = $clean;
+                    }
+                }
+            }
+        }
+
+        // Fallback to any bullet lines
+        if (empty($points) && preg_match_all('/^[*-]\s+(.+)$/m', $markdown, $matches)) {
             foreach ($matches[1] as $match) {
                 $clean = trim(strip_tags($match));
+                // Skip options like A., B., C., D.
+                if (preg_match('/^[A-D]\.\s/i', $clean)) {
+                    continue;
+                }
                 if (mb_strlen($clean) > 8 && mb_strlen($clean) < 300) {
                     $points[] = $clean;
                 }
-                if (count($points) >= 6) {
+                if (count($points) >= 5) {
                     break;
                 }
             }
         }
 
         if (empty($points)) {
-            // Extract top sentences
+            // Extract sentences as fallback
             $sentences = preg_split('/(?<=[.?!])\s+/', strip_tags($markdown));
             foreach ($sentences as $sentence) {
                 $s = trim($sentence);
-                if (mb_strlen($s) > 20 && mb_strlen($s) < 250) {
+                if (mb_strlen($s) > 20 && mb_strlen($s) < 250 && ! preg_match('/^[A-D]\./i', $s)) {
                     $points[] = $s;
                 }
                 if (count($points) >= 4) {
@@ -357,44 +468,91 @@ EOT;
     }
 
     /**
-     * Generate local structured summary when remote LLM is unavailable or offline.
+     * Generate local structured questions when remote LLM is unavailable or offline.
      *
      * @return array{summary: string, key_points: list<string>}
      */
-    protected function generateLocalStructuredSummary(string $title, string $text, string $style): array
+    protected function generateLocalStructuredSummary(string $title, string $text, ?string $customPrompt = null): array
     {
-        $paragraphs = array_values(array_filter(
-            array_map('trim', preg_split("/\n+/", $text)),
-            fn ($p) => mb_strlen($p) > 25
-        ));
-
-        $previewText = ! empty($paragraphs) ? implode("\n\n", array_slice($paragraphs, 0, 3)) : mb_substr($text, 0, 400);
-
         // Extract key terms
         $words = str_word_count(strtolower(strip_tags($text)), 1);
-        $stopWords = ['yang', 'untuk', 'pada', 'ke', 'para', 'namun', 'menurut', 'antara', 'dia', 'mereka', 'anda', 'kita', 'aku', 'kami', 'dan', 'atau', 'ini', 'itu', 'adalah', 'dengan', 'dari', 'dalam', 'bisa', 'dapat', 'harus'];
+        $stopWords = ['yang', 'untuk', 'pada', 'ke', 'para', 'namun', 'menurut', 'antara', 'dia', 'mereka', 'anda', 'kita', 'aku', 'kami', 'dan', 'atau', 'ini', 'itu', 'adalah', 'dengan', 'dari', 'dalam', 'bisa', 'dapat', 'harus', 'serta', 'sebagai'];
         $filteredWords = array_diff($words, $stopWords);
         $wordFreq = array_count_values(array_filter($filteredWords, fn ($w) => strlen($w) > 4));
         arsort($wordFreq);
-        $topKeywords = array_slice(array_keys($wordFreq), 0, 5);
-        $keywordsStr = ! empty($topKeywords) ? implode(', ', array_map('ucfirst', $topKeywords)) : 'Matematika, Logika, Konseptual';
+        $topKeywords = array_values(array_slice(array_keys($wordFreq), 0, 10));
 
-        $points = [
-            'Dokumen menyajikan bahasan utama seputar '.(! empty($topKeywords) ? ucfirst($topKeywords[0]) : 'topik materi').' dengan pendekatan sistematis.',
-            'Fokus utama mencakup pemahaman konsep dasar, terminologi esensial, serta contoh penerapan konkret.',
-            'Terdapat poin krusial mengenai struktur langkah penyelesaian masalah dan penguatan logika berpikir.',
-            "Rangkuman mengidentifikasi kata kunci utama: {$keywordsStr} sebagai fondasi materi.",
+        $keywords = [
+            $topKeywords[0] ?? 'Konsep Dasar',
+            $topKeywords[1] ?? 'Operasi Hitung',
+            $topKeywords[2] ?? 'Penerapan Soal',
+            $topKeywords[3] ?? 'Analisis Data',
+            $topKeywords[4] ?? 'Logika Penyelesaian',
+            $topKeywords[5] ?? 'Penalaran Konsep',
+            $topKeywords[6] ?? 'Studi Kasus',
+            $topKeywords[7] ?? 'Langkah Kerja',
+            $topKeywords[8] ?? 'Evaluasi Hasil',
+            $topKeywords[9] ?? 'Pemecahan Masalah',
         ];
 
-        $summary = "## 📄 Ringkasan Dokumen: {$title}\n\n";
-        $summary .= "> **Intisari:** Dokumen ini memuat materi penting dengan fokus pembahasan pada kata kunci: **{$keywordsStr}**.\n\n";
-        $summary .= "### 📖 Ulasan Isi Dokumen\n\n";
-        $summary .= $previewText."\n\n";
-        $summary .= "### 🎯 Catatan Analisis & Pemahaman\n\n";
-        $summary .= "- Dokumen menyajikan konsep yang relevan dan dapat dijadikan referensi bahan ajar ataupun materi pendukung siswa.\n";
-        $summary .= "- Struktur materi tersusun secara berurutan dan mengarahkan pembaca pada pemahaman materi yang terpadu.\n";
-        $summary .= "- Disarankan untuk memadukan intisari dokumen ini dengan latihan soal kontekstual agar retensi belajar lebih optimal.\n\n";
-        $summary .= "### 📌 Poin Kunci Utama\n\n";
+        $isEssay = ! empty($customPrompt) && (bool) preg_match('/(essay|esai|uraian|isian|terbuka)/i', $customPrompt);
+
+        // Detect count
+        $targetCount = 5;
+        if (! empty($customPrompt) && preg_match('/(\d+)\s*(?:soal|butir|nomor|buah|pertanyaan)/i', $customPrompt, $countMatches)) {
+            $targetCount = max(1, min(10, (int) $countMatches[1]));
+        }
+
+        if ($isEssay) {
+            $summary = "## 🌟 Paket Soal Essay & Uraian: {$title}\n\n";
+            $summary .= "> 💡 **Petunjuk:** Bacalah setiap pertanyaan dengan teliti dan tuliskan penjelasan atau langkah penyelesaianmu secara lengkap ya!\n\n";
+
+            $essayTemplates = [
+                fn ($i, $kw) => "### 📝 Soal {$i}\nJelaskan dengan bahasamu sendiri apa yang dimaksud dengan materi **{$kw}** berdasarkan dokumen di atas, serta berikan 1 contoh konkret dalam kehidupan sehari-hari!\n\n> **🔑 Kunci Jawaban:** Siswa mampu menguraikan definisi {$kw} dengan benar dan menyertakan contoh penerapan nyata yang tepat.\n> **💡 Pembahasan & Langkah:** {$kw} merupakan konsep utama yang menjelaskan prinsip dasar materi sehingga siswa diharapkan memahami maknanya secara menyeluruh.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nTuliskan langkah-langkah yang harus dilakukan saat menyelesaikan persoalan terkait **{$kw}** secara runtut dan sistematis!\n\n> **🔑 Kunci Jawaban:** Siswa menyebutkan tahapan: (1) Memahami informasi soal, (2) Memilih operasi/rumus yang sesuai, (3) Melakukan perhitungan, dan (4) Memeriksa kembali hasil.\n> **💡 Pembahasan & Langkah:** Mengikuti prosedur penyelesaian teratur meminimalisir kesalahan perhitungan pada topik {$kw}.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nBagaimana caramu menerapkan konsep **{$kw}** ketika menghadapi permasalahan nyata di lingkungan sekolah atau rumah?\n\n> **🔑 Kunci Jawaban:** Siswa memberikan ilustrasi pemecahan masalah kontekstual yang relevan dengan prinsip {$kw}.\n> **💡 Pembahasan & Langkah:** {$kw} melatih nalar kritis siswa dalam menghubungkan materi teori dengan situasi nyata.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nMengapa pemahaman terhadap **{$kw}** sangat penting bagi siswa sebelum mempelajari topik matematika tingkat lanjut?\n\n> **🔑 Kunci Jawaban:** Karena {$kw} menjadi prasyarat esensial untuk memahami hubungan antar-konsep dan pemodelan matematis berikutnya.\n> **💡 Pembahasan & Langkah:** Penguasaan {$kw} membangun pondasi penalaran yang kokoh bagi siswa.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nJika kamu diminta menjelaskan **{$kw}** kepada teman sebangkumu, analogi atau cerita sederhana apa yang akan kamu gunakan?\n\n> **🔑 Kunci Jawaban:** Siswa mampu membuat analogi yang mudah dimengerti dan sesuai dengan esensi materi {$kw}.\n> **💡 Pembahasan & Langkah:** Kemampuan menjelaskan ulang konsep menunjukkan pemahaman mendalam siswa terhadap materi.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nAnalisis apa saja kemungkinan kesalahan yang sering dilakukan saat mempelajari materi **{$kw}**, dan bagaimana cara menghindarinya?\n\n> **🔑 Kunci Jawaban:** Siswa memetakan potensi kekeliruan perhitungan atau miskonsepsi pada {$kw} serta memberikan solusi pencegahannya.\n> **💡 Pembahasan & Langkah:** Mengetahui letak kesalahan umum membantu siswa lebih teliti dalam pengerjaan tugas.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nBuatlah sebuah soal cerita buatanmu sendiri yang bertemakan kegiatan sehari-hari berdasarkan konsep **{$kw}** beserta cara penyelesaiannya!\n\n> **🔑 Kunci Jawaban:** Soal cerita memuat narasi yang logis, data bilangan yang relevan, dan kunci langkah penyelesaian yang benar.\n> **💡 Pembahasan & Langkah:** Melatih kreativitas dan kemampuan menyusun model matematis mandiri.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nUraikan hubungan keterkaitan antara topik **{$kw}** dengan materi pelajaran yang pernah kamu pelajari sebelumnya!\n\n> **🔑 Kunci Jawaban:** Siswa menemukan relasi antar topik materi secara logis dan runtut.\n> **💡 Pembahasan & Langkah:** Memperkuat peta konsep belajar yang komprehensif.\n\n",
+            ];
+
+            for ($idx = 0; $idx < $targetCount; $idx++) {
+                $num = $idx + 1;
+                $kw = ucfirst($keywords[$idx % count($keywords)]);
+                $templateFn = $essayTemplates[$idx % count($essayTemplates)];
+                $summary .= $templateFn($num, $kw);
+            }
+        } else {
+            $summary = "## 🎯 Paket Soal Pilihan Ganda: {$title}\n\n";
+            $summary .= "> **Intisari Pembelajaran:** Soal dirancang berdasarkan topik esensial dokumen: **{$keywords[0]}**, **{$keywords[1]}**, dan **{$keywords[2]}**.\n\n";
+
+            $mcTemplates = [
+                fn ($i, $kw) => "### 📝 Soal {$i}\nBerdasarkan materi pada dokumen, apa definisi atau gagasan utama yang paling tepat mengenai **{$kw}**?\n- A. Landasan konsep utama yang mendasari seluruh pembahasan materi\n- B. Langkah opsional yang tidak mempengaruhi hasil akhir\n- C. Istilah pelengkap tanpa makna konseptual\n- D. Rumus turunan yang hanya dipakai pada kondisi khusus\n\n> **🔑 Kunci Jawaban:** A. Landasan konsep utama yang mendasari seluruh pembahasan materi\n> **💡 Pembahasan:** {$kw} adalah elemen fundamental yang dijelaskan secara rinci dalam dokumen sebagai fondasi pemahaman materi.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nDalam kaitannya dengan **{$kw}**, langkah pemecahan masalah yang paling sistematis adalah...\n- A. Mengabaikan data awal dan langsung menebak solusi\n- B. Mengidentifikasi informasi penting, menentukan operasi yang sesuai, lalu mengevaluasi hasil\n- C. Menyelesaikan secara acak tanpa memperhatikan urutan operasi\n- D. Menggunakan rumus yang tidak relevan dengan persoalan\n\n> **🔑 Kunci Jawaban:** B. Mengidentifikasi informasi penting, menentukan operasi yang sesuai, lalu mengevaluasi hasil\n> **💡 Pembahasan:** Penerapan {$kw} menuntut pendekatan terstruktur mulai dari pemahaman data hingga verifikasi hasil akhir.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nManakah dari pernyataan berikut yang paling tepat mencerminkan implementasi **{$kw}** dalam kehidupan sehari-hari?\n- A. Membantu memecahkan masalah kontekstual dengan pemikiran logis dan terukur\n- B. Hanya berguna dalam ujian tertulis tanpa relevansi praktis\n- C. Menghambat proses pengambilan keputusan yang cepat\n- D. Mengganti semua prinsip dasar matematika yang telah ada\n\n> **🔑 Kunci Jawaban:** A. Membantu memecahkan masalah kontekstual dengan pemikiran logis dan terukur\n> **💡 Pembahasan:** Materi {$kw} dirancang untuk melatih kemampuan nalar siswa dalam menyelesaikan studi kasus konkret.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nMengapa penguasaan terhadap aspek **{$kw}** penting sebelum melangkah ke topik yang lebih kompleks?\n- A. Agar siswa dapat membaca, menafsirkan, dan menarik kesimpulan yang akurat dari informasi yang diberikan\n- B. Karena aspek ini merupakan satu-satunya materi yang diujikan\n- C. Untuk memperpanjang waktu belajar tanpa tujuan khusus\n- D. Karena materi ini tidak membutuhkan pemahaman konsep sebelumnya\n\n> **🔑 Kunci Jawaban:** A. Agar siswa dapat membaca, menafsirkan, dan menarik kesimpulan yang akurat dari informasi yang diberikan\n> **💡 Pembahasan:** Pemahaman {$kw} menjadi jembatan antara konsep teoretis dan penalaran analitis siswa.\n\n",
+                fn ($i, $kw) => "### 📝 Soal {$i}\nStrategi terbaik dalam mengembangkan **{$kw}** saat menghadapi soal cerita adalah...\n- A. Membaca soal secara cermat, menuliskan hal yang diketahui dan ditanyakan, serta menyusun model penyelesaian\n- B. Memilih opsi jawaban terpanjang tanpa membaca pertanyaan\n- C. Mengabaikan instruksi dan langsung menjawab sembarangan\n- D. Menyerah sebelum mencoba menganalisis informasi\n\n> **🔑 Kunci Jawaban:** A. Membaca soal secara cermat, menuliskan hal yang diketahui dan ditanyakan, serta menyusun model penyelesaian\n> **💡 Pembahasan:** Logika penyelesaian terstruktur membantu siswa merumuskan strategi pengerjaan yang efektif dan meminimalkan kesalahan.\n\n",
+            ];
+
+            for ($idx = 0; $idx < $targetCount; $idx++) {
+                $num = $idx + 1;
+                $kw = ucfirst($keywords[$idx % count($keywords)]);
+                $templateFn = $mcTemplates[$idx % count($mcTemplates)];
+                $summary .= $templateFn($num, $kw);
+            }
+        }
+
+        $summary .= "### 📌 Rangkuman Konsep Kunci\n";
+        $points = [
+            "Penguasaan konsep utama ({$keywords[0]}) sebagai dasar penalaran materi dokumen.",
+            "Penerapan operasi dan metode ({$keywords[1]}) secara sistematis dan runtut.",
+            "Integrasi materi ({$keywords[2]}) dalam pemecahan masalah kontekstual sehari-hari.",
+            "Analisis dan evaluasi informasi ({$keywords[3]}) untuk menarik kesimpulan yang tepat.",
+            "Pengembangan logika berpikir ({$keywords[4]}) dalam menyelesaikan soal-soal latihan.",
+        ];
+
         foreach ($points as $p) {
             $summary .= '- '.$p."\n";
         }

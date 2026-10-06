@@ -39,8 +39,8 @@ class DocumentSummarizerTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.document-summarizer.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Ringkasan Dokumen Berbasis AI');
-        $response->assertSee('Mulai Ringkas Dokumen dengan AI');
+        $response->assertSee('Ringkas Dokumen Jadi Soal AI');
+        $response->assertSee('Mulai Buat Soal dari Dokumen dengan AI');
     }
 
     public function test_admin_can_summarize_direct_text_content(): void
@@ -52,8 +52,6 @@ class DocumentSummarizerTest extends TestCase
         $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
             'direct_text' => 'Pecahan adalah bagian dari keseluruhan. Pembilang menunjukkan bagian yang diambil sedangkan penyebut menunjukkan jumlah seluruh bagian sama besar. Contohnya adalah setengah atau satu per dua.',
             'custom_title' => 'Konsep Dasar Pecahan',
-            'summary_style' => 'ringkasan_eksekutif',
-            'summary_length' => 'sedang',
             'save_history' => true,
         ]);
 
@@ -66,8 +64,79 @@ class DocumentSummarizerTest extends TestCase
         $this->assertDatabaseHas('document_summaries', [
             'title' => 'Konsep Dasar Pecahan',
             'user_id' => $admin->id,
-            'summary_style' => 'ringkasan_eksekutif',
+            'summary_style' => 'kuis_latihan',
         ]);
+    }
+
+    public function test_admin_can_summarize_with_custom_prompt(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+        ]);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
+            'direct_text' => 'Pecahan adalah bagian dari keseluruhan. Pembilang menunjukkan bagian yang diambil sedangkan penyebut menunjukkan jumlah seluruh bagian sama besar. Contohnya adalah setengah atau satu per dua.',
+            'custom_title' => 'Soal HOTS Pecahan',
+            'custom_prompt' => 'Buatkan 5 soal cerita HOTS pecahan kelas 4 SD',
+            'save_history' => true,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'title' => 'Soal HOTS Pecahan',
+        ]);
+
+        $this->assertDatabaseHas('document_summaries', [
+            'title' => 'Soal HOTS Pecahan',
+            'user_id' => $admin->id,
+        ]);
+    }
+
+    public function test_admin_can_generate_essay_questions_with_custom_prompt(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+        ]);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
+            'direct_text' => 'Pecahan adalah bagian dari keseluruhan. Pembilang menunjukkan bagian yang diambil sedangkan penyebut menunjukkan jumlah seluruh bagian sama besar. Contohnya adalah setengah atau satu per dua.',
+            'custom_title' => 'Soal Uraian Pecahan',
+            'custom_prompt' => 'Buatkan 5 butir soal essay uraian konsep pecahan',
+            'save_history' => true,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'title' => 'Soal Uraian Pecahan',
+        ]);
+
+        $this->assertDatabaseHas('document_summaries', [
+            'title' => 'Soal Uraian Pecahan',
+            'user_id' => $admin->id,
+        ]);
+    }
+
+    public function test_admin_can_generate_six_pure_essay_questions_without_multiple_choice(): void
+    {
+        $admin = User::factory()->create([
+            'role' => 'admin',
+        ]);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
+            'direct_text' => 'Pecahan adalah bagian dari keseluruhan. Pembilang menunjukkan bagian yang diambil sedangkan penyebut menunjukkan jumlah seluruh bagian sama besar. Contohnya adalah setengah atau satu per dua.',
+            'custom_title' => '6 Soal Essay Pecahan',
+            'custom_prompt' => 'buatkan 6 soal essay',
+            'save_history' => true,
+        ]);
+
+        $response->assertStatus(200);
+        $summary = $response->json('summary_markdown');
+
+        $this->assertStringContainsString('Soal 6', $summary);
+        $this->assertStringNotContainsString('- A.', $summary);
+        $this->assertStringNotContainsString('- B.', $summary);
     }
 
     public function test_admin_can_summarize_uploaded_text_file(): void
@@ -83,8 +152,6 @@ class DocumentSummarizerTest extends TestCase
 
         $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
             'document_file' => $file,
-            'summary_style' => 'anak_sd',
-            'summary_length' => 'singkat',
             'save_history' => true,
         ]);
 

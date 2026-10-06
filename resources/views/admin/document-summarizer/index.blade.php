@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Ringkasan Dokumen AI - RoboMath')
+@section('title', 'Ringkasan Dokumen Jadi Soal AI - RoboMath')
 
 @section('content')
 <div class="space-y-6 sm:space-y-8">
@@ -21,7 +21,7 @@
                         <svg class="w-3.5 h-3.5 text-amber-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
-                        AI Document Summarizer
+                        AI Document Question Generator
                     </span>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-400/90 text-emerald-950 backdrop-blur-sm shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-emerald-100 animate-ping"></span>
@@ -30,10 +30,10 @@
                     </span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
-                    Ringkasan Dokumen Berbasis AI
+                    Ringkas Dokumen Jadi Soal AI
                 </h1>
                 <p class="text-purple-100 text-xs sm:text-sm font-medium leading-relaxed">
-                    Unggah dokumen materi, silabus kurikulum, lembar kerja (PDF, DOCX, TXT), atau tempel teks langsung untuk diekstraksi dan diringkas secara otomatis dengan pemahaman mendalam AI.
+                    Unggah modul, silabus, lembar kerja (PDF, DOCX, TXT), atau masukkan teks materi. AI akan langsung meringkasnya menjadi butir-butir soal latihan dan kuis lengkap beserta kunci jawaban dan pembahasan.
                 </p>
             </div>
 
@@ -41,15 +41,15 @@
             <div class="flex items-center gap-3 sm:gap-4 flex-wrap">
                 <div class="flex-1 sm:flex-initial rounded-2xl p-4 border border-white/30 text-center min-w-[120px] sm:min-w-[140px] shadow-sm" style="background-color: rgba(255, 255, 255, 0.15) !important;">
                     <div class="text-2xl sm:text-3xl font-black text-white" id="stat-total-summaries">{{ $totalSummaries }}</div>
-                    <div class="text-[11px] font-bold text-purple-100 uppercase tracking-wider mt-0.5">Dokumen Diringkas</div>
+                    <div class="text-[11px] font-bold text-purple-100 uppercase tracking-wider mt-0.5">Dokumen Diproses</div>
                 </div>
                 <div class="flex-1 sm:flex-initial rounded-2xl p-4 border border-white/30 text-center min-w-[120px] sm:min-w-[140px] shadow-sm" style="background-color: rgba(255, 255, 255, 0.15) !important;">
                     <div class="text-2xl sm:text-3xl font-black text-amber-300">{{ number_format($totalWordsAnalyzed) }}</div>
                     <div class="text-[11px] font-bold text-purple-100 uppercase tracking-wider mt-0.5">Total Kata Dianalisis</div>
                 </div>
                 <div class="flex-1 sm:flex-initial rounded-2xl p-4 border border-white/30 text-center min-w-[120px] sm:min-w-[140px] shadow-sm" style="background-color: rgba(255, 255, 255, 0.15) !important;">
-                    <div class="text-2xl sm:text-3xl font-black text-emerald-300">{{ round($avgCompression) }}%</div>
-                    <div class="text-[11px] font-bold text-purple-100 uppercase tracking-wider mt-0.5">Efisiensi Baca</div>
+                    <div class="text-2xl sm:text-3xl font-black text-emerald-300">5 Soal</div>
+                    <div class="text-[11px] font-bold text-purple-100 uppercase tracking-wider mt-0.5">Default per Dokumen</div>
                 </div>
             </div>
         </div>
@@ -64,7 +64,7 @@
         <div class="lg:col-span-7 space-y-6">
             <div class="bg-white rounded-3xl p-5 sm:p-7 border-2 border-amber-200/80 shadow-sm space-y-6">
                 
-                <!-- Section Header -->
+                <!-- Section 1 Header -->
                 <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-black">
@@ -95,11 +95,15 @@
                       data-no-spa class="space-y-6">
                     @csrf
 
+                    <!-- Hidden fields for format compatibility -->
+                    <input type="hidden" name="summary_style" value="kuis_latihan">
+                    <input type="hidden" name="summary_length" id="summary_length" value="5_soal">
+
                     <!-- 1. MODE FILE UPLOAD -->
                     <div id="mode-file-container" class="space-y-3">
                         <!-- Hidden Persistent File Input -->
                         <input type="file" id="document_file" name="document_file" accept=".pdf,.docx,.doc,.txt,.md,.csv,.json"
-                               style="display: none !important;">
+                                style="display: none !important;">
 
                         <!-- Dropzone Area (Visible when no file selected) -->
                         <div id="dropzone" onclick="document.getElementById('document_file').click()"
@@ -141,7 +145,7 @@
                                             <span class="font-black text-slate-800 text-sm sm:text-base truncate" id="file-name-label">document.pdf</span>
                                             <span class="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                                Dokumen Siap Diringkas
+                                                Dokumen Siap Dibuat Soal
                                             </span>
                                         </div>
                                         <div class="flex items-center gap-2 text-xs text-slate-500 font-medium mt-0.5">
@@ -169,7 +173,7 @@
                         </label>
                         <div class="relative">
                             <textarea id="direct_text" name="direct_text" rows="7"
-                                      placeholder="Salin atau ketik teks materi pembelajaran matematika di sini (minimal 20 karakter)..."
+                                      placeholder="Salin atau ketik teks materi pembelajaran di sini (minimal 20 karakter)..."
                                       class="w-full rounded-2xl border-2 border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 p-4 text-sm font-medium text-slate-800 placeholder-slate-400 resize-y transition-all"
                                       oninput="updateTextCounter(this)"></textarea>
                             <div class="absolute bottom-3 right-3 text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500" id="text-char-count">
@@ -178,134 +182,69 @@
                         </div>
                     </div>
 
-                    <!-- Judul Kustom (Opsional) -->
+                    <!-- Judul Dokumen (Opsional) -->
                     <div class="space-y-1.5">
                         <label for="custom_title" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">
-                            Judul Dokumen (Opsional)
+                            Judul Dokumen / Topik (Opsional)
                         </label>
-                        <input type="text" id="custom_title" name="custom_title" placeholder="Contoh: Modul Pecahan Kelas 4 Semester 1"
+                        <input type="text" id="custom_title" name="custom_title" placeholder="Contoh: Modul Pecahan Senilai Kelas 4 SD"
                                class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 text-sm font-bold text-slate-800 transition-all">
                     </div>
 
                     <!-- ======================================================== -->
-                    <!-- 2. PENGATURAN GAYA RINGKASAN -->
+                    <!-- 2. CHAT PROMPT / INSTRUKSI KUSTOM (OPSIONAL) -->
                     <!-- ======================================================== -->
                     <div class="border-t border-slate-100 pt-5 space-y-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black">
-                                2
-                            </div>
-                            <div>
-                                <h3 class="text-base font-black text-slate-800">Format & Gaya Ringkasan AI</h3>
-                                <p class="text-xs text-slate-500 font-medium">Sesuaikan bagaimana AI menyajikan intisari dokumen.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black">
+                                    2
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-black text-slate-800 flex items-center gap-2">
+                                        <span>Chat Prompt & Instruksi Soal</span>
+                                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase tracking-wider">Opsional</span>
+                                    </h3>
+                                    <p class="text-xs text-slate-500 font-medium">Beri instruksi spesifik kepada AI atau kosongkan untuk otomatis 5 butir soal.</p>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Style Radio Grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="style-selector-group">
-                            
-                            <!-- Style 1: Eksekutif / Poin Inti -->
-                            <label class="style-card relative flex items-start gap-3 p-3.5 rounded-2xl border-2 border-purple-500 bg-purple-50/50 cursor-pointer hover:border-purple-500 transition-all">
-                                <input type="radio" name="summary_style" value="ringkasan_eksekutif" checked class="mt-1 text-purple-600 focus:ring-purple-500" onchange="highlightStyleCard(this)">
-                                <div>
-                                    <div class="font-black text-sm text-slate-800 flex items-center gap-1.5">
-                                        <span>⚡ Intisari & Poin Kunci</span>
-                                    </div>
-                                    <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-                                        Ringkasan padat berupa poin-poin gagasan pokok, solusi, dan intisari esensial.
-                                    </p>
-                                </div>
-                            </label>
-
-                            <!-- Style 2: Lengkap Komprehensif -->
-                            <label class="style-card relative flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-200 bg-white cursor-pointer hover:border-purple-300 transition-all">
-                                <input type="radio" name="summary_style" value="ringkasan_lengkap" class="mt-1 text-purple-600 focus:ring-purple-500" onchange="highlightStyleCard(this)">
-                                <div>
-                                    <div class="font-black text-sm text-slate-800 flex items-center gap-1.5">
-                                        <span>📑 Rangkuman Komprehensif</span>
-                                    </div>
-                                    <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-                                        Ulasan mendalam terstruktur per bab/topik dengan penjelasan konsep rinci.
-                                    </p>
-                                </div>
-                            </label>
-
-                            <!-- Style 3: Ramah Anak SD -->
-                            <label class="style-card relative flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-200 bg-white cursor-pointer hover:border-purple-300 transition-all">
-                                <input type="radio" name="summary_style" value="anak_sd" class="mt-1 text-purple-600 focus:ring-purple-500" onchange="highlightStyleCard(this)">
-                                <div>
-                                    <div class="font-black text-sm text-slate-800 flex items-center gap-1.5">
-                                        <span>🧒 Bahasa Ramah Anak SD</span>
-                                    </div>
-                                    <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-                                        Bahasa sederhana, ceria, dengan analogi ramah anak yang mudah dipahami siswa.
-                                    </p>
-                                </div>
-                            </label>
-
-                            <!-- Style 4: Peta Konsep & Glosarium -->
-                            <label class="style-card relative flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-200 bg-white cursor-pointer hover:border-purple-300 transition-all">
-                                <input type="radio" name="summary_style" value="peta_konsep" class="mt-1 text-purple-600 focus:ring-purple-500" onchange="highlightStyleCard(this)">
-                                <div>
-                                    <div class="font-black text-sm text-slate-800 flex items-center gap-1.5">
-                                        <span>🧭 Peta Konsep & Istilah</span>
-                                    </div>
-                                    <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-                                        Daftar istilah kata kunci, definisi pokok, serta hubungan antar ide materi.
-                                    </p>
-                                </div>
-                            </label>
-
-                            <!-- Style 5: Kuis Latihan Evaluasi -->
-                            <label class="style-card sm:col-span-2 relative flex items-start gap-3 p-3.5 rounded-2xl border-2 border-slate-200 bg-white cursor-pointer hover:border-purple-300 transition-all">
-                                <input type="radio" name="summary_style" value="kuis_latihan" class="mt-1 text-purple-600 focus:ring-purple-500" onchange="highlightStyleCard(this)">
-                                <div>
-                                    <div class="font-black text-sm text-slate-800 flex items-center gap-1.5">
-                                        <span>🎯 Soal & Kuis Latihan dari Dokumen</span>
-                                        <span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Rekomendasi Guru</span>
-                                    </div>
-                                    <p class="text-[11px] text-slate-500 font-medium mt-0.5 leading-relaxed">
-                                        AI otomatis merancang 5 butir soal pilihan ganda, kunci jawaban, dan pembahasan berdasarkan isi dokumen.
-                                    </p>
-                                </div>
-                            </label>
-
-                        </div>
-
-                        <!-- Panjang Ringkasan & Fokus -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                                    Panjang Ringkasan
-                                </label>
-                                <div class="grid grid-cols-3 gap-2">
-                                    <label class="cursor-pointer text-center">
-                                        <input type="radio" name="summary_length" value="singkat" class="peer sr-only">
-                                        <div class="py-2.5 px-2 rounded-xl border-2 border-slate-200 peer-checked:border-purple-600 peer-checked:bg-purple-50 peer-checked:text-purple-700 text-slate-600 text-xs font-bold transition-all">
-                                            Singkat
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer text-center">
-                                        <input type="radio" name="summary_length" value="sedang" checked class="peer sr-only">
-                                        <div class="py-2.5 px-2 rounded-xl border-2 border-slate-200 peer-checked:border-purple-600 peer-checked:bg-purple-50 peer-checked:text-purple-700 text-slate-600 text-xs font-bold transition-all">
-                                            Sedang
-                                        </div>
-                                    </label>
-                                    <label class="cursor-pointer text-center">
-                                        <input type="radio" name="summary_length" value="mendalam" class="peer sr-only">
-                                        <div class="py-2.5 px-2 rounded-xl border-2 border-slate-200 peer-checked:border-purple-600 peer-checked:bg-purple-50 peer-checked:text-purple-700 text-slate-600 text-xs font-bold transition-all">
-                                            Mendalam
-                                        </div>
-                                    </label>
-                                </div>
+                        <!-- Chat Prompt Box -->
+                        <div class="space-y-2">
+                            <div class="relative">
+                                <textarea id="custom_prompt" name="custom_prompt" rows="3"
+                                          placeholder="Contoh: 'Buatkan 10 soal cerita tingkat HOTS tentang pecahan untuk kelas 4 SD', 'Buatkan 5 soal pilihan ganda dan 2 soal essay singkat', atau kosongkan saja..."
+                                          class="w-full rounded-2xl border-2 border-purple-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 p-4 text-xs sm:text-sm font-semibold text-slate-800 placeholder-slate-400 resize-y transition-all"></textarea>
                             </div>
 
-                            <div>
-                                <label for="focus_topic" class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
-                                    Fokus Tambahan (Opsional)
-                                </label>
-                                <input type="text" id="focus_topic" name="focus_topic" placeholder="Misal: Fokus pada rumus luas..."
-                                       class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 text-xs font-bold text-slate-800 transition-all">
+                            <!-- Quick Suggestion Chips -->
+                            <div class="flex items-center gap-1.5 flex-wrap pt-1">
+                                <span class="text-[11px] font-bold text-slate-400 mr-1">Rekomendasi Prompt:</span>
+                                <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal essay/uraian beserta pedoman kunci jawaban dan langkah penyelesaiannya.')"
+                                        class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-all cursor-pointer">
+                                    ✍️ 5 Soal Essay / Uraian
+                                </button>
+                                <button type="button" onclick="setPromptTemplate('Buatkan 5 soal HOTS (Higher Order Thinking Skills) dengan analisis penalaran mendalam dan studi kasus cerita.')"
+                                        class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition-all cursor-pointer">
+                                    🧠 5 Soal HOTS
+                                </button>
+                                <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal cerita kontekstual anak SD dengan nama tokoh ramah dan situasi sehari-hari.')"
+                                        class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 transition-all cursor-pointer">
+                                    📖 5 Soal Cerita
+                                </button>
+                                <button type="button" onclick="setPromptTemplate('Buatkan 10 butir soal kuis evaluasi komprehensif mencakup semua bab materi pada dokumen.')"
+                                        class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 transition-all cursor-pointer">
+                                    🎯 10 Soal Evaluasi
+                                </button>
+                            </div>
+
+                            <!-- Informative Helper Banner -->
+                            <div class="flex items-start gap-2.5 p-3 rounded-2xl bg-purple-50/70 border border-purple-200/80 text-purple-900 text-xs mt-2">
+                                <span class="text-base flex-shrink-0">💡</span>
+                                <div class="leading-relaxed">
+                                    <strong class="font-bold">Info Mode Default:</strong> Jika prompt di atas dikosongkan, AI akan otomatis meringkas dokumen menjadi <strong>5 butir soal pilihan ganda standar</strong> dengan 4 pilihan (A, B, C, D), kunci jawaban benar, dan pembahasan edukatif.
+                                </div>
                             </div>
                         </div>
 
@@ -314,7 +253,7 @@
                             <input type="checkbox" id="save_history" name="save_history" value="1" checked
                                    class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300">
                             <label for="save_history" class="text-xs font-bold text-slate-700 select-none cursor-pointer">
-                                Simpan hasil ringkasan ke riwayat dokumen
+                                Simpan paket soal ke riwayat dokumen
                             </label>
                         </div>
 
@@ -327,7 +266,7 @@
                             <svg class="w-5 h-5 text-amber-300 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                             </svg>
-                            <span>Mulai Ringkas Dokumen dengan AI</span>
+                            <span>Mulai Buat Soal dari Dokumen dengan AI</span>
                         </button>
                     </div>
 
@@ -336,25 +275,25 @@
             </div>
         </div>
 
-        <!-- RIGHT COLUMN: HASIL RINGKASAN AI (5 COLS) -->
+        <!-- RIGHT COLUMN: HASIL SOAL AI (5 COLS) -->
         <div class="lg:col-span-5 space-y-6">
 
-            <!-- STATE 1: KOTAK PLACEHOLDER KOSONG (Belum Ada Ringkasan) -->
+            <!-- STATE 1: KOTAK PLACEHOLDER KOSONG (Belum Ada Soal) -->
             <div id="result-placeholder" class="bg-white rounded-3xl p-8 border-2 border-dashed border-amber-200/90 text-center flex flex-col items-center justify-center min-h-[460px] shadow-sm">
                 <div class="w-20 h-20 rounded-3xl bg-amber-50 border-2 border-amber-200/80 flex items-center justify-center text-amber-600 mb-4 shadow-inner">
                     <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                 </div>
                 <h3 class="text-lg font-black text-slate-800">Menunggu Dokumen Anda</h3>
                 <p class="text-xs text-slate-500 font-medium max-w-sm mt-1 leading-relaxed">
-                    Pilih dokumen di sebelah kiri lalu klik tombol <strong>Mulai Ringkas</strong>. Hasil ringkasan pintar AI akan langsung ditampilkan di sini.
+                    Pilih dokumen atau masukkan teks di sebelah kiri lalu klik <strong>Mulai Buat Soal</strong>. AI akan langsung menyajikan butir soal, kunci jawaban, dan pembahasan di sini.
                 </p>
                 <div class="mt-6 flex flex-wrap justify-center gap-2">
-                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">PDF Reader</span>
-                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">Word DOCX</span>
-                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">Ekstraksi Teks</span>
-                    <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-[11px] font-bold">Gemini AI</span>
+                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">5 Soal Otomatis</span>
+                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">Pilihan Ganda (A-D)</span>
+                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">Kunci & Pembahasan</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-[11px] font-bold">RoboMath AI</span>
                 </div>
             </div>
 
@@ -366,7 +305,7 @@
                 </div>
                 <div class="space-y-1">
                     <h3 class="text-lg font-black text-slate-800" id="loading-stage-text">Membaca berkas dokumen...</h3>
-                    <p class="text-xs text-slate-500 font-medium">Model AI sedang membaca dan menyusun intisari materi secara optimal.</p>
+                    <p class="text-xs text-slate-500 font-medium">Model AI sedang membaca materi dan merancang butir soal berkualitas.</p>
                     <p class="text-[11px] text-amber-600 font-bold mt-1">⏳ AI lokal mungkin membutuhkan 1–3 menit. Harap ditunggu!</p>
                 </div>
                 <div class="w-full max-w-xs bg-slate-100 h-2 rounded-full overflow-hidden">
@@ -393,21 +332,21 @@
                         </div>
                     </div>
 
-                    <!-- Compression Metric Badge -->
+                    <!-- Question Count Metric Badge -->
                     <div class="text-right flex-shrink-0">
-                        <div class="text-xl sm:text-2xl font-black text-emerald-600" id="res-compression">78%</div>
-                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pemadatan Kata</div>
+                        <div class="text-xl sm:text-2xl font-black text-purple-600" id="res-compression">🎯 Paket Soal</div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hasil Pembuatan AI</div>
                     </div>
                 </div>
 
                 <!-- Word Count Comparison Strip -->
                 <div class="grid grid-cols-2 gap-3 bg-amber-50/60 p-3 rounded-2xl border border-amber-200/70 text-xs">
                     <div>
-                        <div class="text-[10px] font-bold text-amber-900/60 uppercase">Kata Dokumen Asli</div>
+                        <div class="text-[10px] font-bold text-amber-900/60 uppercase">Kata Dokumen Sumber</div>
                         <div class="font-black text-slate-800 text-sm" id="res-words-original">1,240 Kata</div>
                     </div>
                     <div>
-                        <div class="text-[10px] font-bold text-amber-900/60 uppercase">Hasil Ringkasan</div>
+                        <div class="text-[10px] font-bold text-amber-900/60 uppercase">Panjang Butir Soal</div>
                         <div class="font-black text-purple-700 text-sm" id="res-words-summary">280 Kata</div>
                     </div>
                 </div>
@@ -417,7 +356,7 @@
                     <button type="button" onclick="copySummaryText()"
                             class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                        <span>Salin Teks</span>
+                        <span>Salin Semua Soal</span>
                     </button>
 
                     <button type="button" onclick="downloadCurrentSummary()"
@@ -427,7 +366,7 @@
                     </button>
 
                     <button type="button" onclick="printSummary()"
-                            class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer" title="Cetak Ringkasan">
+                            class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer" title="Cetak Soal">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                     </button>
                 </div>
@@ -442,7 +381,7 @@
                 <!-- Highlight Key Points Strip -->
                 <div id="res-key-points-box" class="hidden bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 space-y-2.5">
                     <div class="text-xs font-black text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>📌 Poin Kunci Dokumen</span>
+                        <span>📌 Rangkuman Konsep Soal</span>
                     </div>
                     <ul class="text-xs font-medium text-slate-700 space-y-2 list-none" id="res-key-points-list">
                         <!-- Bullet points appended dynamically -->
@@ -464,24 +403,15 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
             <div>
                 <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
-                    <span>Riwayat Ringkasan Dokumen</span>
+                    <span>Riwayat Paket Soal Dokumen</span>
                     <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ $summaries->total() }}</span>
                 </h2>
-                <p class="text-xs text-slate-500 font-medium">Daftar arsip dokumen yang pernah diunggah dan dianalisis oleh AI.</p>
+                <p class="text-xs text-slate-500 font-medium">Daftar arsip paket soal yang pernah dibuat dari dokumen materi.</p>
             </div>
 
             <form method="GET" action="{{ route('admin.document-summarizer.index') }}" class="flex items-center gap-2 flex-wrap">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama dokumen..."
                        class="px-3 py-2 rounded-xl border-2 border-slate-200 text-xs font-bold text-slate-800 placeholder-slate-400 focus:border-purple-500 transition-all">
-                
-                <select name="style" onchange="this.form.submit()" class="px-3 py-2 rounded-xl border-2 border-slate-200 text-xs font-bold text-slate-700 focus:border-purple-500 transition-all">
-                    <option value="">Semua Format</option>
-                    <option value="ringkasan_eksekutif" {{ request('style') == 'ringkasan_eksekutif' ? 'selected' : '' }}>Intisari</option>
-                    <option value="ringkasan_lengkap" {{ request('style') == 'ringkasan_lengkap' ? 'selected' : '' }}>Komprehensif</option>
-                    <option value="anak_sd" {{ request('style') == 'anak_sd' ? 'selected' : '' }}>Ramah Anak SD</option>
-                    <option value="peta_konsep" {{ request('style') == 'peta_konsep' ? 'selected' : '' }}>Peta Konsep</option>
-                    <option value="kuis_latihan" {{ request('style') == 'kuis_latihan' ? 'selected' : '' }}>Kuis Latihan</option>
-                </select>
 
                 @if(request('q') || request('style'))
                     <a href="{{ route('admin.document-summarizer.index') }}" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200">
@@ -494,8 +424,8 @@
         @if($summaries->isEmpty())
             <div class="py-12 text-center text-slate-400 space-y-2">
                 <div class="text-4xl">📂</div>
-                <div class="text-sm font-bold text-slate-600">Belum ada riwayat dokumen yang diringkas.</div>
-                <p class="text-xs text-slate-400">Gunakan formulir di atas untuk meringkas dokumen pertama Anda.</p>
+                <div class="text-sm font-bold text-slate-600">Belum ada riwayat paket soal dari dokumen.</div>
+                <p class="text-xs text-slate-400">Gunakan formulir di atas untuk membuat paket soal pertama Anda.</p>
             </div>
         @else
             <!-- Table View -->
@@ -504,9 +434,8 @@
                     <thead>
                         <tr class="border-b border-slate-100 text-slate-400 font-extrabold uppercase tracking-wider">
                             <th class="py-3 px-4">Nama Dokumen</th>
-                            <th class="py-3 px-3">Gaya Ringkasan</th>
-                            <th class="py-3 px-3">Kata Asli / Ringkas</th>
-                            <th class="py-3 px-3">Efisiensi</th>
+                            <th class="py-3 px-3">Jenis Pembuatan</th>
+                            <th class="py-3 px-3">Kata Dokumen / Soal</th>
                             <th class="py-3 px-3">Tanggal</th>
                             <th class="py-3 px-4 text-right">Aksi</th>
                         </tr>
@@ -520,28 +449,23 @@
                                             {{ $item->file_type }}
                                         </span>
                                         <div class="min-w-0">
-                                            <div class="font-extrabold text-slate-800 text-sm truncate max-w-[220px]" title="{{ $item->title }}">
+                                            <div class="font-extrabold text-slate-800 text-sm truncate max-w-[240px]" title="{{ $item->title }}">
                                                 {{ $item->title }}
                                             </div>
-                                            <div class="text-[11px] text-slate-400 truncate max-w-[220px]" title="{{ $item->original_filename }}">
+                                            <div class="text-[11px] text-slate-400 truncate max-w-[240px]" title="{{ $item->original_filename }}">
                                                 {{ $item->original_filename }} ({{ $item->formatted_file_size }})
                                             </div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-3">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">
-                                        {{ $item->style_label }}
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200/60">
+                                        🎯 Soal & Kuis Latihan
                                     </span>
                                 </td>
                                 <td class="py-3.5 px-3 whitespace-nowrap">
-                                    <div class="font-bold text-slate-800">{{ number_format($item->word_count_original) }} <span class="text-slate-400 font-normal">kata</span></div>
-                                    <div class="text-[11px] text-purple-600 font-bold">↳ {{ number_format($item->word_count_summary) }} kata ringkas</div>
-                                </td>
-                                <td class="py-3.5 px-3 whitespace-nowrap">
-                                    <span class="inline-flex items-center gap-1 font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md text-xs">
-                                        ↓ {{ $item->compression_ratio }}%
-                                    </span>
+                                    <div class="font-bold text-slate-800">{{ number_format($item->word_count_original) }} <span class="text-slate-400 font-normal">kata sumber</span></div>
+                                    <div class="text-[11px] text-purple-600 font-bold">↳ {{ number_format($item->word_count_summary) }} kata soal</div>
                                 </td>
                                 <td class="py-3.5 px-3 whitespace-nowrap text-slate-500">
                                     <div>{{ $item->created_at->translatedFormat('d M Y') }}</div>
@@ -551,7 +475,7 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <!-- Lihat Modal -->
                                         <button type="button" onclick="viewSummaryModal({{ $item->id }})"
-                                                class="px-2.5 py-1.5 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 font-bold text-xs transition-all" title="Baca Ringkasan">
+                                                class="px-2.5 py-1.5 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 font-bold text-xs transition-all" title="Baca Soal">
                                             Lihat
                                         </button>
 
@@ -563,7 +487,7 @@
 
                                         <!-- Hapus -->
                                         <form action="{{ route('admin.document-summarizer.destroy', $item->id) }}" method="POST"
-                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus ringkasan dokumen ini?');" class="inline m-0">
+                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus arsip soal ini?');" class="inline m-0">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="p-1.5 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all" title="Hapus Riwayat">
@@ -764,16 +688,12 @@
         if (counterElem) counterElem.textContent = `${words} kata`;
     };
 
-    // Style Selector Highlight
-    window.highlightStyleCard = function(radio) {
-        document.querySelectorAll('.style-card').forEach(card => {
-            card.classList.remove('border-purple-500', 'bg-purple-50/50');
-            card.classList.add('border-slate-200', 'bg-white');
-        });
-        const parent = radio.closest('.style-card');
-        if (parent) {
-            parent.classList.remove('border-slate-200', 'bg-white');
-            parent.classList.add('border-purple-500', 'bg-purple-50/50');
+    // Set Prompt Template
+    window.setPromptTemplate = function(text) {
+        const promptInput = document.getElementById('custom_prompt');
+        if (promptInput) {
+            promptInput.value = text;
+            promptInput.focus();
         }
     };
 
@@ -785,47 +705,222 @@
         return bytes + ' B';
     }
 
-    // Markdown Parser with Fallback
+    // Kid-Friendly Quiz & Markdown Parser
     function parseMarkdownToHtml(markdownText) {
         if (!markdownText) return '';
-        
+
+        // Clean initial conversational intro if present
+        let cleaned = markdownText.replace(/^(?:Sebagai\s+Asisten|Tentu|Halo|Berikut\s+adalah|Saya\s+telah|Baiklah|Berikut\s+ini).*?(?=(##|###|📝|Soal\s+1))/is, '');
+        cleaned = cleaned.trim();
+
+        try {
+            // Check if text contains structured questions (e.g. ### Soal 1 or ### 📝 Soal 1)
+            const questionRegex = /###\s*(?:📝|🌟)?\s*Soal\s*(\d+)[\s\S]*?(?=(?:###\s*(?:📝|🌟)?\s*Soal\s*\d+|###\s*📌|$))/gi;
+            const matches = [...cleaned.matchAll(questionRegex)];
+
+            if (matches.length > 0) {
+                let finalHtml = '';
+
+                // Extract any main title (## ...) before first question
+                const headerMatch = cleaned.match(/^##\s*(.+)$/m);
+                if (headerMatch) {
+                    const cleanTitle = headerMatch[1].replace(/[*#]/g, '').trim();
+                    finalHtml += `
+                        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-purple-100 via-indigo-50 to-purple-50 border-2 border-purple-200/80 mb-6 shadow-sm">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-2xl">🎯</span>
+                                <div>
+                                    <h2 class="text-base sm:text-lg font-black text-purple-950">${cleanTitle}</h2>
+                                    <p class="text-xs font-semibold text-purple-700/80 mt-0.5">Paket latihan soal dan kuis edukatif untuk siswa SD.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Process each question
+                matches.forEach((m, idx) => {
+                    const block = m[0];
+                    const numMatch = block.match(/###\s*(?:📝|🌟)?\s*Soal\s*(\d+)/i);
+                    const qNum = numMatch ? numMatch[1] : (idx + 1);
+
+                    // Extract options A, B, C, D strictly from dedicated lines (e.g. "- A. ...", "A. ...")
+                    const options = [];
+                    const lines = block.split('\n');
+                    lines.forEach(line => {
+                        const trimmed = line.trim();
+                        // Only match lines explicitly formatted as option items (not blockquotes or headers)
+                        if (!trimmed.startsWith('>') && !trimmed.startsWith('###') && !trimmed.includes('Kunci Jawaban') && !trimmed.includes('Pembahasan')) {
+                            const optLineMatch = trimmed.match(/^(?:[-*]\s*)?([A-D])[\.\)]\s+(.+)$/i);
+                            if (optLineMatch) {
+                                const letter = optLineMatch[1].toUpperCase();
+                                const optText = optLineMatch[2].replace(/[*_]/g, '').trim();
+                                if (optText && !options.some(o => o.letter === letter)) {
+                                    options.push({ letter, text: optText });
+                                }
+                            }
+                        }
+                    });
+
+                    // A question is ONLY Multiple Choice if it has at least 2 valid option items (e.g. A and B)
+                    const isMultipleChoice = options.length >= 2;
+
+                    // Extract question body: lines before options or blockquotes
+                    const bodyLines = [];
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (/^###\s*(?:📝|🌟)?\s*Soal/i.test(trimmed)) {
+                            continue;
+                        }
+                        if (trimmed.startsWith('>') || /^(?:[-*]\s*)?[A-D][\.\)]\s+/i.test(trimmed) || /^(?:🔑|💡|\*\*🔑|\*\*💡)/i.test(trimmed)) {
+                            break;
+                        }
+                        if (trimmed) {
+                            bodyLines.push(trimmed);
+                        }
+                    }
+                    const questionBody = bodyLines.join(' ').replace(/[*_#]/g, '').trim();
+
+                    // Extract Answer Key & Explanation
+                    let keyAnswer = '';
+                    let explanation = '';
+                    const keyMatch = block.match(/(?:🔑\s*Kunci\s*Jawaban|Kunci\s*Jawaban)\s*:\s*\*?\*?\s*([^\n]+)/i);
+                    if (keyMatch) {
+                        keyAnswer = keyMatch[1].replace(/[*_>]/g, '').trim();
+                    }
+
+                    const expMatch = block.match(/(?:💡\s*Pembahasan(?:\s*Seru|\s*&\s*Langkah)?|Pembahasan(?:\s*&\s*Langkah)?)\s*:\s*\*?\*?\s*([^\n\r#]+)/i);
+                    if (expMatch) {
+                        explanation = expMatch[1].replace(/[*_>]/g, '').trim();
+                    }
+
+                    // Badge colors per letter
+                    const badgeStyles = {
+                        'A': 'bg-blue-100 text-blue-800 border-blue-200',
+                        'B': 'bg-purple-100 text-purple-800 border-purple-200',
+                        'C': 'bg-amber-100 text-amber-800 border-amber-200',
+                        'D': 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                    };
+
+                    let optionsHtml = '';
+                    if (isMultipleChoice) {
+                        optionsHtml = `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+                                ${options.map(opt => `
+                                    <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 hover:bg-purple-50/60 border-2 border-slate-200 hover:border-purple-300 transition-all text-xs sm:text-sm font-bold text-slate-700 group cursor-default">
+                                        <span class="w-6 h-6 rounded-xl ${badgeStyles[opt.letter] || 'bg-purple-100 text-purple-800'} border flex items-center justify-center font-black text-xs flex-shrink-0 shadow-xs">
+                                            ${opt.letter}
+                                        </span>
+                                        <span class="leading-relaxed mt-0.5 group-hover:text-purple-950">${opt.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                    }
+
+                    let answerBoxHtml = '';
+                    if (keyAnswer || explanation) {
+                        answerBoxHtml = `
+                            <div class="mt-3.5 p-4 rounded-2xl bg-emerald-50/90 border-2 border-emerald-200 text-emerald-950 space-y-1.5 shadow-xs">
+                                ${keyAnswer ? `
+                                    <div class="flex items-center gap-1.5 text-xs font-black text-emerald-900 uppercase tracking-wider">
+                                        <span>🔑 Kunci Jawaban:</span>
+                                        <span class="text-emerald-950 bg-emerald-100 px-2 py-0.5 rounded-lg border border-emerald-300">${keyAnswer}</span>
+                                    </div>
+                                ` : ''}
+                                ${explanation ? `
+                                    <div class="text-xs font-semibold text-emerald-900/90 leading-relaxed flex items-start gap-2 pt-0.5">
+                                        <span class="text-base leading-none flex-shrink-0">💡</span>
+                                        <div><strong class="font-extrabold text-emerald-950">Pembahasan:</strong> ${explanation}</div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }
+
+                    finalHtml += `
+                        <div class="quiz-question-card bg-white rounded-3xl p-5 sm:p-6 border-2 border-purple-200/90 shadow-sm hover:shadow-md transition-all space-y-3.5 mb-5 relative">
+                            <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 text-white shadow-xs">
+                                    🌟 Soal #${qNum}
+                                </span>
+                                <span class="text-[10px] font-black uppercase tracking-wider ${isMultipleChoice ? 'text-purple-700 bg-purple-50 border-purple-200/70' : 'text-rose-700 bg-rose-50 border-rose-200/70'} px-2.5 py-0.5 rounded-full border">
+                                    ${isMultipleChoice ? 'Pilihan Ganda' : '✍️ Soal Essay / Uraian'}
+                                </span>
+                            </div>
+
+                            <div class="text-sm sm:text-base font-extrabold text-slate-800 leading-relaxed pt-1">
+                                ${questionBody || 'Pertanyaan materi latihan'}
+                            </div>
+
+                            ${optionsHtml}
+                            ${answerBoxHtml}
+                        </div>
+                    `;
+                });
+
+                // Check for concept summary section at the end
+                const conceptMatch = cleaned.match(/###\s*📌\s*Rangkuman Konsep Kunci([\s\S]*)$/i);
+                if (conceptMatch) {
+                    const bulletLines = conceptMatch[1].split('\n')
+                        .map(l => l.replace(/^[-*]\s*/, '').replace(/[*_#]/g, '').trim())
+                        .filter(l => l.length > 5);
+
+                    if (bulletLines.length > 0) {
+                        finalHtml += `
+                            <div class="mt-6 p-5 sm:p-6 rounded-3xl bg-amber-50/90 border-2 border-amber-200/90 shadow-sm space-y-3">
+                                <div class="text-xs sm:text-sm font-black text-amber-950 uppercase tracking-wider flex items-center gap-2">
+                                    <span class="text-lg">📌</span>
+                                    <span>Rangkuman Konsep Kunci</span>
+                                </div>
+                                <ul class="space-y-2 text-xs sm:text-sm font-bold text-amber-900/90 list-none pl-0">
+                                    ${bulletLines.map(line => `
+                                        <li class="flex items-start gap-2">
+                                            <span class="text-amber-600 font-black text-base leading-none">•</span>
+                                            <span class="leading-relaxed">${line}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    }
+                }
+
+                if (typeof DOMPurify !== 'undefined') {
+                    finalHtml = DOMPurify.sanitize(finalHtml);
+                }
+
+                return finalHtml;
+            }
+        } catch (err) {
+            console.warn('Custom quiz parser error, using standard parser fallback:', err);
+        }
+
+        // Standard Fallback with Marked.js
         if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
             try {
-                let parsedHtml = marked.parse(markdownText);
+                let parsedHtml = marked.parse(cleaned);
                 if (typeof DOMPurify !== 'undefined') {
                     parsedHtml = DOMPurify.sanitize(parsedHtml);
                 }
                 return parsedHtml;
             } catch (e) {
-                console.warn('Marked.parse error, using fallback:', e);
+                console.warn('Marked.parse fallback error:', e);
             }
         }
 
-        // Built-in Lightweight Markdown Parser Fallback
-        let html = markdownText
+        // Basic Regex Fallback
+        let html = cleaned
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-
-        // Headings
-        html = html.replace(/^### (.*$)/gim, '<h3 class="text-base font-bold text-slate-900 mt-4 mb-2">$1</h3>');
-        html = html.replace(/^## (.*$)/gim, '<h2 class="text-lg font-black text-purple-900 mt-5 mb-2 pb-1 border-b border-purple-100">$1</h2>');
-        html = html.replace(/^# (.*$)/gim, '<h1 class="text-xl font-black text-slate-900 mt-6 mb-3">$1</h1>');
-
-        // Blockquotes
-        html = html.replace(/^\> (.*$)/gim, '<blockquote class="border-l-4 border-purple-500 bg-purple-50/60 p-3 my-3 rounded-r-xl text-slate-700 italic">$1</blockquote>');
-
-        // Bold & Italic
-        html = html.replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-slate-900">$1</strong>');
-        html = html.replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>');
-
-        // Lists
-        html = html.replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc text-slate-700 my-1">$1</li>');
-        html = html.replace(/^\* (.*$)/gim, '<li class="ml-4 list-disc text-slate-700 my-1">$1</li>');
-
-        // Line breaks & paragraphs
-        html = html.replace(/\n\n+/g, '</p><p class="my-2 leading-relaxed">');
-        html = html.replace(/\n/g, '<br>');
+            .replace(/>/g, '&gt;')
+            .replace(/^### (.*$)/gim, '<h3 class="text-base font-bold text-slate-900 mt-4 mb-2">$1</h3>')
+            .replace(/^## (.*$)/gim, '<h2 class="text-lg font-black text-purple-900 mt-5 mb-2 pb-1 border-b border-purple-100">$1</h2>')
+            .replace(/^\> (.*$)/gim, '<blockquote class="border-l-4 border-purple-500 bg-purple-50/60 p-3 my-3 rounded-r-xl text-slate-700 italic">$1</blockquote>')
+            .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-slate-900">$1</strong>')
+            .replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc text-slate-700 my-1">$1</li>')
+            .replace(/\n\n+/g, '</p><p class="my-2 leading-relaxed">')
+            .replace(/\n/g, '<br>');
 
         return `<p class="my-2 leading-relaxed">${html}</p>`;
     }
@@ -965,8 +1060,8 @@
 
                 Swal.fire({
                     icon: 'success',
-                    title: 'Dokumen Berhasil Diringkas!',
-                    text: `Ringkasan cerdas berhasil dibuat (pemadatan ${data.compression_ratio}%).`,
+                    title: 'Paket Soal Berhasil Dibuat!',
+                    text: `AI telah berhasil merangkum materi dan merancang butir-butir soal latihan.`,
                     timer: 2500,
                     showConfirmButton: false
                 });
@@ -976,7 +1071,7 @@
                 const isTimeout = error.name === 'AbortError';
                 Swal.fire({
                     icon: 'error',
-                    title: isTimeout ? 'Waktu Habis (Timeout)' : 'Gagal Meringkas Dokumen',
+                    title: isTimeout ? 'Waktu Habis (Timeout)' : 'Gagal Membuat Soal',
                     text: isTimeout
                         ? 'Model AI lokal terlalu lama merespons. Pastikan LM Studio aktif dan model sudah dimuat, lalu coba lagi.'
                         : (error.message || 'Terjadi gangguan koneksi pada server AI.'),
@@ -1006,11 +1101,11 @@
 
             const messages = [
                 'Membaca berkas dokumen...',
-                'Mengekstrak teks dari dokumen...',
-                'Mengirim konten ke model AI...',
-                'AI sedang menganalisis materi... (1-3 menit untuk AI lokal)',
-                'Menyusun intisari & poin-poin kunci...',
-                'Hampir selesai, AI merampungkan format ringkasan...'
+                'Mengekstrak materi dokumen...',
+                'Mengirim materi ke model AI...',
+                'AI sedang menganalisis materi dan merancang butir soal... (1-3 menit untuk AI lokal)',
+                'Menyusun opsi jawaban, kunci, dan pembahasan...',
+                'Hampir selesai, memformat paket soal...'
             ];
             let step = 0;
             const textElem = document.getElementById('loading-stage-text');
