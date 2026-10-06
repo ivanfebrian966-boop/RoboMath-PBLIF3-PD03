@@ -169,20 +169,6 @@
                         </a>
                     </nav>
 
-                @elseif(auth()->user()->isOrangtua())
-                    <div class="text-xs font-black text-amber-900/60 uppercase tracking-wider px-3 flex items-center justify-between flex-shrink-0">
-                        <span>Menu Orang Tua</span>
-                        <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-                    </div>
-                    <nav class="space-y-1.5 overflow-y-auto pr-1 flex-1">
-                        <a href="{{ route('orangtua.dashboard') }}"
-                           class="flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all {{ request()->routeIs('orangtua.dashboard') ? 'bg-[#4F46E5] text-white shadow-md' : 'text-slate-700 hover:bg-amber-50' }}">
-                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
-                            <span>Progres Anak</span>
-                        </a>
-                    </nav>
                 @endif
             @endauth
         </div>

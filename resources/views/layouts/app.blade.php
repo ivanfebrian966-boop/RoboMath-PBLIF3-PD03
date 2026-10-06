@@ -41,15 +41,7 @@
         @include('components.chatbot-widget')
     @endif
 
-    <footer class="bg-white/80 backdrop-blur-md border-t border-amber-200/70 py-5 text-center text-sm text-slate-500 mt-auto">
-        <div class="flex flex-col items-center gap-1.5">
-            <img src="{{ asset('images/logo.png') }}" alt="RoboMath" class="h-7 w-auto hover:scale-105 transition-transform duration-200">
-            <div class="flex items-center gap-1 text-[10px] font-black text-amber-900/60 uppercase tracking-widest">
-                <span class="text-red-500">R</span><span class="text-orange-500">o</span><span class="text-amber-500">b</span><span class="text-blue-500">o</span><span class="text-emerald-500">M</span><span class="text-teal-500">a</span><span class="text-cyan-500">t</span><span class="text-indigo-500">h</span>
-            </div>
-            <p class="text-xs">© {{ date('Y') }} <strong>RoboMath</strong> — Aplikasi Web Berbasis AI untuk Pengembangan Pembelajaran Matematika Anak Sekolah Dasar</p>
-        </div>
-    </footer>
+
 
     @stack('scripts')
 </body>
