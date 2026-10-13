@@ -478,7 +478,7 @@
 
                     <!-- CTA Button: Big, Crisp, Easy to Click -->
                     <div>
-                        <a href="{{ route('register') }}"
+                        <a href="{{ route('login') }}"
                            class="inline-flex items-center gap-2.5 bg-[#FF3B30] hover:bg-[#E03126] text-white text-xs sm:text-sm font-black px-7 py-3.5 rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                             <span>Mulai Sekarang</span>
                             <span>→</span>
@@ -513,11 +513,6 @@
                             <li>
                                 <a href="{{ route('login') }}" class="text-sm font-bold text-slate-700 hover:text-[#FF3B30] transition-colors duration-150 block">
                                     Masuk
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{{ route('register') }}" class="text-sm font-bold text-slate-700 hover:text-[#FF3B30] transition-colors duration-150 block">
-                                    Daftar
                                 </a>
                             </li>
                         </ul>
