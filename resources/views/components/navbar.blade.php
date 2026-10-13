@@ -41,8 +41,7 @@
                     </form>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="font-bold text-slate-700 hover:text-indigo-600 px-4 py-2">Masuk</a>
-                <a href="{{ route('register') }}" class="font-extrabold text-white bg-[#FF3B30] hover:bg-[#e02d23] px-5 py-2.5 rounded-2xl shadow-md hover:shadow-lg transition-all">Daftar Gratis</a>
+                <a href="{{ route('login') }}" class="font-extrabold text-white bg-gradient-to-r from-[#FF5722] to-[#FFA000] hover:from-[#E64A19] hover:to-[#FF8F00] px-6 py-2 rounded-2xl shadow-md hover:shadow-orange-500/25 transition-all">Masuk</a>
             @endauth
         </div>
 
