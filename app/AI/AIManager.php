@@ -5,6 +5,7 @@ namespace App\AI;
 use App\AI\Contracts\AIProviderInterface;
 use App\AI\DTOs\AIChatResponse;
 use App\AI\Providers\GeminiProvider;
+use App\AI\Providers\HuggingFaceProvider;
 use App\AI\Providers\LMStudioProvider;
 use App\AI\Providers\MockProvider;
 use App\Models\User;
@@ -21,6 +22,7 @@ class AIManager
 
         return match (strtolower($driver)) {
             'gemini' => new GeminiProvider,
+            'huggingface', 'hf' => new HuggingFaceProvider,
             'lmstudio', 'local' => new LMStudioProvider,
             'mock' => new MockProvider,
             default => throw new InvalidArgumentException("Unsupported AI driver: [{$driver}]"),
