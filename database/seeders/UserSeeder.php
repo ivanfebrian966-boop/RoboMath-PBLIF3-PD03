@@ -30,16 +30,6 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Orang Tua
-        $parent = User::updateOrCreate(
-            ['email' => 'orangtua@robomath.id'],
-            [
-                'name' => 'Bapak Hendra (Orang Tua)',
-                'password' => Hash::make('password'),
-                'role' => 'orangtua',
-            ]
-        );
-
         // Siswa 1
         $siswa1 = User::updateOrCreate(
             ['email' => 'siswa@robomath.id'],
@@ -80,13 +70,5 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'guru',
         ]);
-        User::updateOrCreate(['email' => 'orangtua@algokids.id'], [
-            'name' => 'Bapak Hendra (Orang Tua)',
-            'password' => Hash::make('password'),
-            'role' => 'orangtua',
-        ]);
-
-        // Relasi Orang tua - Siswa
-        $parent->students()->syncWithoutDetaching([$siswa1->id, $siswa2->id]);
     }
 }

@@ -29,7 +29,6 @@ class LoginController extends Controller
             return match ($user->role) {
                 'admin' => redirect()->route('admin.dashboard'),
                 'guru' => redirect()->route('guru.dashboard'),
-                'orangtua' => redirect()->route('orangtua.dashboard'),
                 default => redirect()->route('siswa.dashboard'),
             };
         }

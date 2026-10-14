@@ -8,10 +8,11 @@ use App\Models\Progress;
 use App\Models\QuizAttempt;
 use App\Models\Topic;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class StudentDashboardController extends Controller
 {
-    public function dashboard()
+    public function dashboard(): View
     {
         $user = Auth::user();
 
@@ -21,8 +22,12 @@ class StudentDashboardController extends Controller
         $totalAttempts = QuizAttempt::where('user_id', $user->id)->count();
         $correctAttempts = QuizAttempt::where('user_id', $user->id)->where('is_correct', true)->count();
         $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100) : 0;
-        $badges = $user->badges()->latest('earned_at')->take(5)->get();
-        $totalBadges = $user->badges()->count();
+
+        // Koleksi Badge (Dashboard + Koleksi Badge)
+        $earnedBadges = $user->badges()->latest('earned_at')->get();
+        $allBadges = Badge::all();
+        $earnedIds = $earnedBadges->pluck('id')->toArray();
+        $totalBadges = $earnedBadges->count();
 
         // Progress per topic
         $topics = Topic::where('kelas_level', $user->kelas)
@@ -68,11 +73,12 @@ class StudentDashboardController extends Controller
 
         return view('student.dashboard', compact(
             'user', 'totalTopics', 'completedLessons', 'totalLessons',
-            'accuracy', 'badges', 'totalBadges', 'topics', 'recentAttempts', 'weakTopics'
+            'accuracy', 'earnedBadges', 'allBadges', 'earnedIds', 'totalBadges',
+            'topics', 'recentAttempts', 'weakTopics'
         ));
     }
 
-    public function achievements()
+    public function achievements(): View
     {
         $user = Auth::user();
         $earnedBadges = $user->badges()->get();

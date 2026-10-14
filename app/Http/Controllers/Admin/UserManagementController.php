@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class UserManagementController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $roleFilter = $request->query('role', 'all');
         $statusFilter = $request->query('status', 'all');
@@ -42,7 +46,63 @@ class UserManagementController extends Controller
         return view('admin.users.index', compact('users', 'roleFilter', 'statusFilter', 'search', 'totalSiswa', 'totalGuru', 'totalInactive'));
     }
 
-    public function toggle(User $user)
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:6'],
+            'role' => ['required', 'in:siswa,guru,admin'],
+            'kelas' => ['nullable', 'required_if:role,siswa', 'integer', 'min:1', 'max:6'],
+        ]);
+
+        $validated['is_active'] = true;
+        $validated['level'] = 1;
+        $validated['total_score'] = 0;
+
+        $user = User::create($validated);
+
+        return back()->with('success', "Akun \"{$user->name}\" berhasil ditambahkan. ✅");
+    }
+
+    public function update(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'password' => ['nullable', 'string', 'min:6'],
+            'role' => ['required', 'in:siswa,guru,admin'],
+            'kelas' => ['nullable', 'required_if:role,siswa', 'integer', 'min:1', 'max:6'],
+            'is_active' => ['nullable'],
+        ]);
+
+        if (empty($validated['password'])) {
+            unset($validated['password']);
+        }
+
+        $validated['is_active'] = $request->boolean('is_active');
+        if ($validated['role'] !== 'siswa') {
+            $validated['kelas'] = null;
+        }
+
+        $user->update($validated);
+
+        return back()->with('success', "Data akun \"{$user->name}\" berhasil diperbarui. ✅");
+    }
+
+    public function destroy(User $user): RedirectResponse
+    {
+        if ($user->id === Auth::id()) {
+            return back()->withErrors(['error' => 'Anda tidak dapat menghapus akun Anda sendiri.']);
+        }
+
+        $name = $user->name;
+        $user->delete();
+
+        return back()->with('success', "Akun \"{$name}\" berhasil dihapus. 🗑️");
+    }
+
+    public function toggle(User $user): RedirectResponse
     {
         if ($user->role === 'admin') {
             return back()->withErrors(['error' => 'Akun admin tidak dapat dinonaktifkan.']);

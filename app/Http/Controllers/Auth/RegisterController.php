@@ -22,7 +22,7 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:guru,orangtua,siswa'],
+            'role' => ['required', 'in:guru,siswa'],
             'kelas' => ['required_if:role,siswa', 'nullable', 'integer', 'min:1', 'max:6'],
         ]);
 
@@ -38,7 +38,6 @@ class RegisterController extends Controller
 
         return match ($user->role) {
             'guru' => redirect()->route('guru.dashboard'),
-            'orangtua' => redirect()->route('orangtua.dashboard'),
             default => redirect()->route('siswa.dashboard'),
         };
     }

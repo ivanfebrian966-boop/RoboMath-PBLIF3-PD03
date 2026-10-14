@@ -1,9 +1,21 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Pengguna - RoboMath')
+@section('title', 'Kelola Pengguna - RoboMath')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="{ createModal: false, editModal: false, editUser: { id: '', name: '', email: '', role: 'siswa', kelas: 1, is_active: true } }">
+
+    <!-- Header & Action Row -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-black text-slate-800">Kelola Pengguna</h1>
+            <p class="text-xs sm:text-sm text-slate-500 font-semibold mt-0.5">Kelola akun pengguna (tambah, edit data, reset sandi, ubah status, dan hapus akun).</p>
+        </div>
+        <button type="button" @click="createModal = true" class="inline-flex items-center gap-2 bg-[#FF9500] hover:bg-[#e08600] text-white font-black px-5 py-2.5 rounded-2xl text-xs shadow-md shadow-orange-500/20 transition transform active:scale-95 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            <span>Tambah Pengguna Baru</span>
+        </button>
+    </div>
 
     <!-- KPI Summary Row -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -36,7 +48,6 @@
                 <option value="all" {{ $roleFilter === 'all' ? 'selected' : '' }}>Semua Peran</option>
                 <option value="siswa" {{ $roleFilter === 'siswa' ? 'selected' : '' }}>Siswa</option>
                 <option value="guru" {{ $roleFilter === 'guru' ? 'selected' : '' }}>Guru</option>
-                <option value="orangtua" {{ $roleFilter === 'orangtua' ? 'selected' : '' }}>Orang Tua</option>
             </select>
 
             <select name="status" onchange="this.form.submit()" class="bg-white border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none shadow-sm">
@@ -69,7 +80,7 @@
                         <th class="px-6 py-4">Peran (Role)</th>
                         <th class="px-6 py-4">Detail</th>
                         <th class="px-6 py-4">Status Akun</th>
-                        <th class="px-6 py-4 text-right">Aksi</th>
+                        <th class="px-6 py-4 text-right">Aksi (Kelola)</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-amber-100 text-slate-700">
@@ -88,7 +99,7 @@
                             @if($u->role === 'siswa')
                                 Kelas {{ $u->kelas ?? '-' }} SD • <span class="font-bold text-amber-700">{{ number_format($u->total_score) }} Poin</span>
                             @else
-                                -
+                                Pendidik Pengampu
                             @endif
                         </td>
                         <td class="px-6 py-4">
@@ -98,12 +109,38 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <form action="{{ route('admin.users.toggle', $u) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ $u->is_active ? 'Nonaktifkan' : 'Aktifkan' }} akun ini?')">
-                                @csrf
-                                <button type="submit" class="px-3.5 py-1.5 rounded-xl font-black text-xs transition {{ $u->is_active ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm' }}">
-                                    {{ $u->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                            <div class="inline-flex items-center gap-2">
+                                {{-- Tombol Edit --}}
+                                <button type="button"
+                                        @click="editUser = {
+                                            id: '{{ $u->id }}',
+                                            name: '{{ addslashes($u->name) }}',
+                                            email: '{{ addslashes($u->email) }}',
+                                            role: '{{ $u->role }}',
+                                            kelas: '{{ $u->kelas ?? 1 }}',
+                                            is_active: {{ $u->is_active ? 'true' : 'false' }}
+                                        }; editModal = true;"
+                                        class="px-3 py-1.5 rounded-xl font-black text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition">
+                                    Edit
                                 </button>
-                            </form>
+
+                                {{-- Tombol Toggle Status --}}
+                                <form action="{{ route('admin.users.toggle', $u) }}" method="POST" class="inline-block" onsubmit="return confirm('{{ $u->is_active ? 'Nonaktifkan' : 'Aktifkan' }} akun {{ addslashes($u->name) }}?')">
+                                    @csrf
+                                    <button type="submit" class="px-3 py-1.5 rounded-xl font-black text-xs transition {{ $u->is_active ? 'bg-slate-100 hover:bg-slate-200 text-slate-700' : 'bg-emerald-600 hover:bg-emerald-700 text-white' }}">
+                                        {{ $u->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                    </button>
+                                </form>
+
+                                {{-- Tombol Hapus --}}
+                                <form action="{{ route('admin.users.destroy', $u) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus akun {{ addslashes($u->name) }} secara permanen?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-3 py-1.5 rounded-xl font-black text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
@@ -115,6 +152,124 @@
             {{ $users->links() }}
         </div>
         @endif
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL TAMBAH PENGGUNA BARU -->
+    <!-- ========================================================= -->
+    <div x-show="createModal"
+         x-cloak
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+         style="display: none;">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 border-2 border-amber-200 shadow-2xl relative space-y-5"
+             @click.away="createModal = false">
+            <div class="flex items-center justify-between pb-3 border-b border-amber-100">
+                <h3 class="text-xl font-black text-slate-800">Tambah Akun Pengguna</h3>
+                <button type="button" @click="createModal = false" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+            </div>
+
+            <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-4" x-data="{ role: 'siswa' }">
+                @csrf
+                <div>
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Nama Lengkap</label>
+                    <input type="text" name="name" required placeholder="Contoh: Budi Santoso" class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Email</label>
+                    <input type="email" name="email" required placeholder="nama@robomath.id" class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Kata Sandi (Password)</label>
+                    <input type="password" name="password" required placeholder="Minimal 6 karakter" class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Peran (Role)</label>
+                    <select name="role" x-model="role" required class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                        <option value="siswa">Siswa</option>
+                        <option value="guru">Guru</option>
+                    </select>
+                </div>
+
+                <div x-show="role === 'siswa'">
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Kelas SD</label>
+                    <select name="kelas" class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                        @for($i = 1; $i <= 6; $i++)
+                            <option value="{{ $i }}">Kelas {{ $i }} SD</option>
+                        @endfor
+                    </select>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3">
+                    <button type="button" @click="createModal = false" class="px-5 py-2.5 rounded-2xl text-xs font-black text-slate-600 bg-slate-100 hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-2xl text-xs font-black text-white bg-[#FF9500] hover:bg-[#e08600] shadow-md transition">Simpan Pengguna</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODAL EDIT PENGGUNA -->
+    <!-- ========================================================= -->
+    <div x-show="editModal"
+         x-cloak
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+         style="display: none;">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 border-2 border-amber-200 shadow-2xl relative space-y-5"
+             @click.away="editModal = false">
+            <div class="flex items-center justify-between pb-3 border-b border-amber-100">
+                <h3 class="text-xl font-black text-slate-800">Edit Akun Pengguna</h3>
+                <button type="button" @click="editModal = false" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+            </div>
+
+            <form :action="'{{ url('admin/users') }}/' + editUser.id" method="POST" class="space-y-4">
+                @csrf
+                @method('PUT')
+                <div>
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Nama Lengkap</label>
+                    <input type="text" name="name" x-model="editUser.name" required class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Email</label>
+                    <input type="email" name="email" x-model="editUser.email" required class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Kata Sandi Baru (Kosongkan jika tidak diubah)</label>
+                    <input type="password" name="password" placeholder="Minimal 6 karakter" class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Peran (Role)</label>
+                    <select name="role" x-model="editUser.role" required class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                        <option value="siswa">Siswa</option>
+                        <option value="guru">Guru</option>
+                    </select>
+                </div>
+
+                <div x-show="editUser.role === 'siswa'">
+                    <label class="block text-xs font-black text-slate-600 uppercase mb-1">Kelas SD</label>
+                    <select name="kelas" x-model="editUser.kelas" class="w-full bg-slate-50 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                        @for($i = 1; $i <= 6; $i++)
+                            <option value="{{ $i }}">Kelas {{ $i }} SD</option>
+                        @endfor
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2 pt-2">
+                    <input type="checkbox" name="is_active" id="edit_is_active" value="1" :checked="editUser.is_active" class="rounded text-amber-500 focus:ring-amber-400">
+                    <label for="edit_is_active" class="text-xs font-bold text-slate-700">Akun Aktif</label>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3">
+                    <button type="button" @click="editModal = false" class="px-5 py-2.5 rounded-2xl text-xs font-black text-slate-600 bg-slate-100 hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-2xl text-xs font-black text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition">Perbarui Akun</button>
+                </div>
+            </form>
+        </div>
     </div>
 
 </div>

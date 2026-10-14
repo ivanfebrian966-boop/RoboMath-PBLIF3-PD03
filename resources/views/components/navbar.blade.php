@@ -22,15 +22,17 @@
                     </div>
                 @endif
 
-                <!-- User Profile Dropdown -->
+                <!-- User Profile Link -->
                 <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-2xl border-2 border-amber-200/80 shadow-sm">
-                    <div class="w-10 h-10 rounded-xl bg-[#FF9500] flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </div>
-                    <div class="hidden md:block text-left">
-                        <div class="font-extrabold text-slate-800 text-sm leading-none">{{ auth()->user()->name }}</div>
-                        <div class="text-xs font-bold text-amber-600 uppercase mt-0.5">{{ auth()->user()->role }}</div>
-                    </div>
+                    <a href="{{ route('profil.show') }}" class="flex items-center gap-3 hover:opacity-80 transition" title="Lihat Profil">
+                        <div class="w-10 h-10 rounded-xl bg-[#FF9500] flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </div>
+                        <div class="hidden md:block text-left">
+                            <div class="font-extrabold text-slate-800 text-sm leading-none">{{ auth()->user()->name }}</div>
+                            <div class="text-xs font-bold text-amber-600 uppercase mt-0.5">{{ auth()->user()->role }}</div>
+                        </div>
+                    </a>
                     <form action="{{ route('logout') }}" method="POST" class="ml-2">
                         @csrf
                         <button type="submit" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all" title="Keluar">

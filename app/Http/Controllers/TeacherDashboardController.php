@@ -44,9 +44,12 @@ class TeacherDashboardController extends Controller
         // Top performing students
         $topStudents = $students->sortByDesc('total_score')->take(10)->values();
 
+        // Recent student activities
+        $recentActivities = QuizAttempt::with(['user', 'quiz.topic'])->latest()->take(6)->get();
+
         return view('teacher.dashboard', compact(
             'user', 'totalStudents', 'avgScore', 'overallAccuracy',
-            'classStats', 'topStudents', 'students'
+            'classStats', 'topStudents', 'students', 'recentActivities'
         ));
     }
 

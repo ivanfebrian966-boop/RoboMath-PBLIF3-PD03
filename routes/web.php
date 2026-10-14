@@ -13,7 +13,6 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\LessonController;
-use App\Http\Controllers\ParentDashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\StudentDashboardController;
@@ -101,13 +100,6 @@ Route::middleware(['auth', RoleMiddleware::class.':guru,admin'])->prefix('guru')
 });
 
 // ============================================================
-// ORANGTUA Routes
-// ============================================================
-Route::middleware(['auth', RoleMiddleware::class.':orangtua'])->prefix('orangtua')->name('orangtua.')->group(function () {
-    Route::get('/dashboard', [ParentDashboardController::class, 'dashboard'])->name('dashboard');
-});
-
-// ============================================================
 // ADMIN Routes
 // ============================================================
 Route::middleware(['auth', RoleMiddleware::class.':admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -140,6 +132,9 @@ Route::middleware(['auth', RoleMiddleware::class.':admin'])->prefix('admin')->na
 
     // Manajemen Pengguna
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+    Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
     Route::post('/users/{user}/toggle', [UserManagementController::class, 'toggle'])->name('users.toggle');
 
     // Manajemen Sekolah

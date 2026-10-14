@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Dashboard Siswa - RoboMath')
+
 @section('content')
 <div class="space-y-8">
     
@@ -11,15 +13,48 @@
             </span>
             <h1 class="text-3xl sm:text-4xl font-black">Halo, {{ $user->name }}! 🎒✨</h1>
             <p class="text-blue-100 font-semibold text-base">
-                Siap petualangan logika hari ini? Selesaikan materi dan dapatkan skor terbanyak!
+                Siap petualangan matematika hari ini? Selesaikan soal kuis, kumpulkan lencana, dan raih skor tertinggi!
             </p>
         </div>
-        <div class="absolute right-4 bottom-0 opacity-20 sm:opacity-40 text-9xl pointer-events-none select-none">
+        <div class="absolute right-4 bottom-0 opacity-20 sm:opacity-30 text-9xl pointer-events-none select-none">
             🚀
         </div>
     </div>
 
-    <!-- Stats Grid -->
+    <!-- Quick Menu Navigasi Utama Siswa -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <a href="{{ route('siswa.quiz') }}" class="group bg-white p-5 rounded-3xl border-2 border-blue-200 hover:border-blue-500 shadow-sm transition transform hover:-translate-y-1 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl group-hover:scale-110 transition flex-shrink-0">
+                🧩
+            </div>
+            <div>
+                <h4 class="font-black text-slate-800 text-sm">Latihan Soal AI</h4>
+                <p class="text-xs text-slate-500 font-medium">Uji kemampuan & terima pembahasan</p>
+            </div>
+        </a>
+
+        <a href="{{ route('siswa.leaderboard') }}" class="group bg-white p-5 rounded-3xl border-2 border-amber-200 hover:border-amber-500 shadow-sm transition transform hover:-translate-y-1 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-2xl group-hover:scale-110 transition flex-shrink-0">
+                📊
+            </div>
+            <div>
+                <h4 class="font-black text-slate-800 text-sm">Progress & Leaderboard</h4>
+                <p class="text-xs text-slate-500 font-medium">Grafik progres & peringkat juara</p>
+            </div>
+        </a>
+
+        <a href="{{ route('profil.show') }}" class="group bg-white p-5 rounded-3xl border-2 border-emerald-200 hover:border-emerald-500 shadow-sm transition transform hover:-translate-y-1 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl group-hover:scale-110 transition flex-shrink-0">
+                👤
+            </div>
+            <div>
+                <h4 class="font-black text-slate-800 text-sm">Profil Akun Saya</h4>
+                <p class="text-xs text-slate-500 font-medium">Ubah nama, email, dan sandi</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- Ringkasan Progres & Skor -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <!-- Poin -->
         <div class="bg-white p-5 rounded-3xl border-2 border-amber-200 shadow-sm space-y-1">
@@ -27,7 +62,7 @@
                 <span>Total Poin</span>
                 <span class="text-2xl">🏆</span>
             </div>
-            <div class="text-3xl font-black text-amber-600">{{ $user->total_score }}</div>
+            <div class="text-3xl font-black text-amber-600">{{ number_format($user->total_score) }}</div>
             <div class="text-xs text-slate-500 font-semibold">Level {{ $user->level }} ({{ $user->level_name }})</div>
         </div>
 
@@ -38,13 +73,13 @@
                 <span class="text-2xl">🎯</span>
             </div>
             <div class="text-3xl font-black text-emerald-600">{{ $accuracy }}%</div>
-            <div class="text-xs text-slate-500 font-semibold">Dari seluruh latihan</div>
+            <div class="text-xs text-slate-500 font-semibold">{{ $totalAttempts }} soal dikerjakan</div>
         </div>
 
         <!-- Materi Selesai -->
         <div class="bg-white p-5 rounded-3xl border-2 border-indigo-200 shadow-sm space-y-1">
             <div class="flex items-center justify-between text-slate-400 font-extrabold text-xs uppercase">
-                <span>Materi Selesai</span>
+                <span>Materi Tuntas</span>
                 <span class="text-2xl">📚</span>
             </div>
             <div class="text-3xl font-black text-indigo-600">{{ $completedLessons }} / {{ $totalLessons }}</div>
@@ -54,17 +89,17 @@
         <!-- Lencana -->
         <div class="bg-white p-5 rounded-3xl border-2 border-rose-200 shadow-sm space-y-1">
             <div class="flex items-center justify-between text-slate-400 font-extrabold text-xs uppercase">
-                <span>Lencana Diraih</span>
+                <span>Lencana Koleksi</span>
                 <span class="text-2xl">🎖️</span>
             </div>
-            <div class="text-3xl font-black text-rose-600">{{ $totalBadges }}</div>
-            <div class="text-xs text-slate-500 font-semibold">Bintang Prestasi</div>
+            <div class="text-3xl font-black text-rose-600">{{ $totalBadges }} / {{ $allBadges->count() }}</div>
+            <div class="text-xs text-slate-500 font-semibold">Bintang prestasi</div>
         </div>
     </div>
 
     <!-- AI Recommendation Callout if there are weak topics -->
     @if($weakTopics->count() > 0)
-        <div class="bg-amber-50 border-2 border-amber-300 p-6 rounded-3xl space-y-3">
+        <div class="bg-amber-50 border-2 border-amber-300 p-6 rounded-3xl space-y-3 shadow-sm">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-2xl bg-amber-400 p-0.5 shadow-sm overflow-hidden flex-shrink-0">
                     <img src="{{ asset('images/maskot.png') }}" alt="RoboBot AI" class="w-full h-full object-contain rounded-xl">
@@ -85,16 +120,51 @@
         </div>
     @endif
 
-    <!-- Topics Grid -->
+    <!-- KOLEKSI BADGE (GABUNGAN DASHBOARD + KOLEKSI BADGE) -->
+    <div class="bg-white rounded-3xl border-2 border-rose-200 p-6 sm:p-8 space-y-6 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-rose-100 pb-4">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+                    <span>🎖️</span> Koleksi Lencana & Prestasi Kamu
+                </h2>
+                <p class="text-xs text-slate-500 font-semibold mt-0.5">Kumpulkan semua lencana prestasi dengan rajin berlatih matematika.</p>
+            </div>
+            <span class="text-xs font-black px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 self-start sm:self-auto">
+                {{ $totalBadges }} dari {{ $allBadges->count() }} Terbuka
+            </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            @foreach($allBadges as $b)
+                @php $isEarned = in_array($b->id, $earnedIds); @endphp
+                <div class="p-4 rounded-2xl border-2 text-center transition-all relative group {{ $isEarned ? 'bg-amber-50/70 border-amber-300 shadow-sm' : 'bg-slate-50/60 border-slate-200/80 opacity-60 grayscale' }}">
+                    <div class="text-4xl mb-2 group-hover:scale-110 transition transform">
+                        {{ $b->icon ?? '⭐' }}
+                    </div>
+                    <div class="font-black text-xs text-slate-800 leading-tight">{{ $b->name }}</div>
+                    <div class="text-[10px] text-slate-500 mt-1 line-clamp-2">{{ $b->description }}</div>
+                    <div class="mt-2">
+                        @if($isEarned)
+                            <span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-800">Diraih ✨</span>
+                        @else
+                            <span class="inline-block px-2 py-0.5 rounded-full text-[9px] font-black bg-slate-200 text-slate-600">Terkunci 🔒</span>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <!-- Modul Pembelajaran Matematika SD -->
     <div class="space-y-4">
         <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-black text-slate-900">Modul Pembelajaran Logika 📖</h2>
-            <a href="{{ route('siswa.topics') }}" class="font-extrabold text-indigo-600 hover:underline text-sm">Lihat Semua ➡️</a>
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900">Modul Belajar Matematika SD 📖</h2>
+            <a href="{{ route('siswa.topics') }}" class="font-extrabold text-indigo-600 hover:underline text-sm">Lihat Semua Modul &rarr;</a>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($topics as $topic)
-                <div class="bg-white rounded-3xl border-2 border-slate-200 p-6 space-y-4 fun-card shadow-sm flex flex-col justify-between" style="border-top-color: {{ $topic->color }}; border-top-width: 6px;">
+                <div class="bg-white rounded-3xl border-2 border-slate-200 p-6 space-y-4 shadow-sm flex flex-col justify-between hover:shadow-md transition" style="border-top-color: {{ $topic->color }}; border-top-width: 6px;">
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
                             <span class="text-4xl">{{ $topic->icon }}</span>
@@ -118,9 +188,14 @@
                             <div class="bg-indigo-600 h-full rounded-full transition-all duration-500" style="width: {{ $topic->progress_percent }}%"></div>
                         </div>
 
-                        <a href="{{ route('siswa.topics.show', $topic) }}" class="block w-full text-center bg-slate-100 hover:bg-indigo-600 hover:text-white font-extrabold text-sm py-3 rounded-2xl transition-all mt-2">
-                            Mulai Belajar 🚀
-                        </a>
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <a href="{{ route('siswa.topics.show', $topic) }}" class="text-center bg-slate-100 hover:bg-slate-200 font-extrabold text-xs py-2.5 rounded-xl transition">
+                                Baca Materi 📖
+                            </a>
+                            <a href="{{ route('siswa.quiz.play', $topic) }}" class="text-center bg-[#FF9500] hover:bg-[#e08600] text-white font-extrabold text-xs py-2.5 rounded-xl transition shadow-sm">
+                                Main Kuis 🚀
+                            </a>
+                        </div>
                     </div>
                 </div>
             @endforeach

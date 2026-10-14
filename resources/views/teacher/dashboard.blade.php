@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dasbor Guru - RoboMath')
+@section('title', 'Dashboard Guru - RoboMath')
 
 @section('content')
 <div class="space-y-8">
@@ -9,13 +9,13 @@
     <div class="bg-[#059669] rounded-3xl p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-400/30">
         <div class="space-y-2">
             <span class="bg-white/20 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Dasbor Monitoring Guru</span>
-            <h1 class="text-3xl sm:text-4xl font-black">Monitoring Perkembangan Siswa</h1>
-            <p class="text-emerald-100 font-semibold text-sm max-w-xl">Pantau hasil latihan, akurasi jawaban, dan topik materi yang memerlukan bimbingan tambahan.</p>
+            <h1 class="text-3xl sm:text-4xl font-black">Dashboard Guru & Siswa</h1>
+            <p class="text-emerald-100 font-semibold text-sm max-w-xl">Ringkasan kelas, daftar siswa aktif, serta pantauan aktivitas latihan matematika waktu nyata.</p>
         </div>
         <div class="flex flex-wrap gap-3">
             <a href="{{ route('guru.laporan.download') }}" class="inline-flex items-center gap-2 bg-white text-emerald-800 font-black px-5 py-3 rounded-2xl text-xs shadow-md hover:bg-emerald-50 transition transform active:scale-95">
                 <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                Unduh Laporan Excel 
+                Unduh Laporan Excel (.xlsx)
             </a>
             <a href="{{ route('guru.classes.create') }}" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-black px-5 py-3 rounded-2xl text-xs shadow-md transition transform active:scale-95">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
@@ -24,48 +24,88 @@
         </div>
     </div>
 
-    <!-- Overview Stats -->
+    <!-- Overview Stats & Ringkasan Kelas -->
     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-sm space-y-1">
-            <span class="text-slate-400 font-extrabold text-xs uppercase">Total Siswa</span>
+            <span class="text-slate-400 font-extrabold text-xs uppercase">Total Siswa Terdaftar</span>
             <div class="text-3xl font-black text-slate-800">{{ $totalStudents }} Siswa</div>
+            <p class="text-xs text-slate-400">Di seluruh kelas SD</p>
         </div>
         <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-sm space-y-1">
             <span class="text-slate-400 font-extrabold text-xs uppercase">Rata-Rata Skor</span>
             <div class="text-3xl font-black text-amber-600">{{ round($avgScore) }} Poin</div>
+            <p class="text-xs text-slate-400">Hasil pengerjaan kuis</p>
         </div>
         <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-sm space-y-1">
             <span class="text-slate-400 font-extrabold text-xs uppercase">Akurasi Keseluruhan</span>
             <div class="text-3xl font-black text-emerald-600">{{ $overallAccuracy }}%</div>
+            <p class="text-xs text-slate-400">Tingkat ketepatan jawaban</p>
         </div>
         <div class="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-sm space-y-1 flex flex-col justify-between">
-            <span class="text-slate-400 font-extrabold text-xs uppercase">Papan Peringkat</span>
+            <span class="text-slate-400 font-extrabold text-xs uppercase">Progress & Leaderboard</span>
             <a href="{{ route('guru.leaderboard') }}" class="inline-flex items-center gap-1.5 font-black text-indigo-600 hover:text-indigo-800 text-sm">
-                Lihat Top 50 Siswa &rarr;
+                Buka Progress Siswa &rarr;
             </a>
         </div>
     </div>
 
-    <!-- Quick Navigation to Kelas -->
-    <div class="bg-teal-50 rounded-3xl p-6 border-2 border-teal-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center text-xl font-black shadow-md flex-shrink-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-            </div>
-            <div>
-                <h3 class="font-black text-slate-800 text-base">Kelola Ruang Kelas & Kode Unik Siswa</h3>
-                <p class="text-xs text-slate-500 font-semibold">Buat kode kelas untuk membagikan topik modul khusus kepada rombongan belajar.</p>
-            </div>
+    <!-- Ringkasan Kelas SD Cards -->
+    <div class="bg-white rounded-3xl border-2 border-slate-200 p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+            <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
+                <span>🏫</span> Ringkasan Tingkat Kelas SD
+            </h3>
+            <a href="{{ route('guru.classes.index') }}" class="text-xs font-bold text-emerald-700 hover:underline">Kelola Ruang Kelas & Kode Gabung &rarr;</a>
         </div>
-        <a href="{{ route('guru.classes.index') }}" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-black text-xs rounded-xl shadow transition">
-            Buka Manajemen Kelas &rarr;
-        </a>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            @foreach($classStats as $cs)
+            <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 text-center space-y-1">
+                <span class="text-xs font-black text-emerald-900">Kelas {{ $cs['kelas'] }} SD</span>
+                <div class="text-2xl font-black text-slate-800">{{ $cs['count'] }}</div>
+                <div class="text-[11px] text-emerald-700 font-bold">Akurasi: {{ $cs['accuracy'] }}%</div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+    <!-- Aktivitas Pengerjaan Kuis Siswa Terkini -->
+    <div class="bg-white rounded-3xl border-2 border-slate-200 p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+            <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
+                <span>⚡</span> Aktivitas Latihan Siswa Terkini
+            </h3>
+            <span class="text-xs font-bold text-slate-400">Pembaruan aktivitas real-time</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @forelse($recentActivities as $act)
+            <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-between">
+                <div>
+                    <div class="font-black text-slate-800 text-xs">{{ $act->user->name ?? 'Siswa' }}</div>
+                    <div class="text-[11px] text-slate-500">Topik: {{ $act->quiz->topic->title ?? 'Matematika' }}</div>
+                    <div class="text-[10px] text-slate-400">{{ $act->created_at->diffForHumans() }}</div>
+                </div>
+                <div class="text-right">
+                    @if($act->is_correct)
+                        <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">
+                            +{{ $act->points_earned }} Benar ✨
+                        </span>
+                    @else
+                        <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-100 text-rose-800">
+                            Perlu Latihan ❌
+                        </span>
+                    @endif
+                </div>
+            </div>
+            @empty
+            <p class="text-xs text-slate-400 col-span-3">Belum ada aktivitas pengerjaan kuis hari ini.</p>
+            @endforelse
+        </div>
     </div>
 
     <!-- Students Table -->
     <div class="bg-white rounded-3xl border-2 border-slate-200 p-6 shadow-sm space-y-4">
         <div class="flex items-center justify-between">
-            <h2 class="text-xl font-black text-slate-800">Daftar Perkembangan Siswa</h2>
+            <h2 class="text-xl font-black text-slate-800">Daftar Siswa & Perkembangan</h2>
             <span class="text-xs font-bold text-slate-400">{{ $students->count() }} Siswa</span>
         </div>
 

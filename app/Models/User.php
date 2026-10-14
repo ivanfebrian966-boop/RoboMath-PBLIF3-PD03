@@ -50,11 +50,6 @@ class User extends Authenticatable
         return $this->role === 'guru';
     }
 
-    public function isOrangtua(): bool
-    {
-        return $this->role === 'orangtua';
-    }
-
     public function isSiswa(): bool
     {
         return $this->role === 'siswa';
@@ -80,22 +75,6 @@ class User extends Authenticatable
     public function badges(): BelongsToMany
     {
         return $this->belongsToMany(Badge::class, 'user_badges')->withPivot('earned_at')->withTimestamps();
-    }
-
-    /**
-     * Students linked to this parent
-     */
-    public function students(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'parent_student', 'parent_id', 'student_id')->withTimestamps();
-    }
-
-    /**
-     * Parents linked to this student
-     */
-    public function parents(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'parent_student', 'student_id', 'parent_id')->withTimestamps();
     }
 
     /**

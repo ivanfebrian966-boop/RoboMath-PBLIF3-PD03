@@ -17,17 +17,41 @@ class RoboMathProgressBar {
             return;
         }
 
+        if (!document.getElementById('robomath-progress-bar-style')) {
+            const style = document.createElement('style');
+            style.id = 'robomath-progress-bar-style';
+            style.textContent = `
+                @keyframes robomathBarSlide {
+                    0%   { background-position: 0 0; }
+                    100% { background-position: 280px 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
         const bar = document.createElement('div');
         bar.id = 'robomath-progress-bar';
         bar.style.cssText = `
             position: fixed;
             top: 0;
             left: 0;
-            height: 3px;
+            height: 3.5px;
             width: 0%;
             z-index: 99999;
-            background: linear-gradient(90deg, #F97316 0%, #EAB308 50%, #6366F1 100%);
-            box-shadow: 0 0 10px rgba(249, 115, 22, 0.7);
+            background: repeating-linear-gradient(
+                90deg,
+                #FF3B30 0px, #FF3B30 35px,
+                #FF9500 35px, #FF9500 70px,
+                #FFCC00 70px, #FFCC00 105px,
+                #10B981 105px, #10B981 140px,
+                #00A88F 140px, #00A88F 175px,
+                #3478F6 175px, #3478F6 210px,
+                #7C3AED 210px, #7C3AED 245px,
+                #EC4899 245px, #EC4899 280px
+            );
+            background-size: 280px 100%;
+            animation: robomathBarSlide 1.2s linear infinite;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
             pointer-events: none;
             transition: width 0.25s ease-out, opacity 0.3s ease-out;
             opacity: 0;
