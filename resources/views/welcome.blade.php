@@ -597,4 +597,68 @@
     </footer>
 
 </div>
+
+<style>
+/* After Effects / Playful Cursor Particle Trail Effect */
+.cursor-particle {
+    position: fixed;
+    pointer-events: none;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: particleFade 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    z-index: 99999;
+}
+@keyframes particleFade {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, -24px))) scale(0.2);
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cursor-particle { display: none !important; }
+}
+</style>
+
+<script>
+    // After Effects / Playful Cursor Particle Trail Effect
+    (function() {
+        const colors = ['#FF3B30', '#FF9500', '#FFCC00', '#10B981', '#00A88F', '#3478F6', '#7C3AED', '#EC4899'];
+        let lastX = 0, lastY = 0, lastTime = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
+            if (now - lastTime > 35 && dist > 8) {
+                lastTime = now;
+                lastX = e.clientX;
+                lastY = e.clientY;
+                createParticle(e.clientX, e.clientY);
+            }
+        });
+
+        function createParticle(x, y) {
+            const p = document.createElement('div');
+            p.className = 'cursor-particle';
+            const size = Math.floor(Math.random() * 6) + 5; // 5px - 10px
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const dx = (Math.random() - 0.5) * 36;
+            const dy = - (Math.random() * 24 + 12);
+
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.background = color;
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.style.setProperty('--dx', dx + 'px');
+            p.style.setProperty('--dy', dy + 'px');
+
+            document.body.appendChild(p);
+            setTimeout(() => { p.remove(); }, 650);
+        }
+    })();
+</script>
 @endsection

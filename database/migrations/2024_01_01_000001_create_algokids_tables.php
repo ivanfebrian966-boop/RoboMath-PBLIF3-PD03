@@ -101,15 +101,6 @@ return new class extends Migration
             $table->unique(['user_id', 'badge_id']);
         });
 
-        Schema::create('chat_messages', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->text('message');
-            $table->text('response')->nullable();
-            $table->string('context')->nullable(); // topic/lesson context
-            $table->timestamps();
-        });
-
         Schema::create('parent_student', function (Blueprint $table) {
             $table->id();
             $table->foreignId('parent_id')->constrained('users')->cascadeOnDelete();
@@ -136,7 +127,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('teacher_class');
         Schema::dropIfExists('parent_student');
-        Schema::dropIfExists('chat_messages');
         Schema::dropIfExists('user_badges');
         Schema::dropIfExists('badges');
         Schema::dropIfExists('progress');
