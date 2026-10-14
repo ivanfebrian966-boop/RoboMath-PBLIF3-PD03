@@ -6,12 +6,13 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'avatar', 'kelas', 'total_score', 'level', 'is_active'])]
+#[Fillable(['name', 'email', 'password', 'role', 'avatar', 'kelas', 'total_score', 'level', 'is_active', 'streak_saat_ini', 'streak_terbaik', 'school_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -32,6 +33,8 @@ class User extends Authenticatable
             'total_score' => 'integer',
             'level' => 'integer',
             'is_active' => 'boolean',
+            'streak_saat_ini' => 'integer',
+            'streak_terbaik' => 'integer',
         ];
     }
 
@@ -79,11 +82,6 @@ class User extends Authenticatable
         return $this->belongsToMany(Badge::class, 'user_badges')->withPivot('earned_at')->withTimestamps();
     }
 
-    public function chatMessages(): HasMany
-    {
-        return $this->hasMany(ChatMessage::class);
-    }
-
     /**
      * Students linked to this parent
      */
@@ -118,12 +116,46 @@ class User extends Authenticatable
         return $this->hasMany(ClassRoom::class, 'teacher_id');
     }
 
+    public function sekolah(): BelongsTo
+    {
+        return $this->belongsTo(Sekolah::class, 'school_id');
+    }
+
+    public function sesiBelajar(): HasMany
+    {
+        return $this->hasMany(SesiBelajar::class);
+    }
+
+    public function misiPengguna(): HasMany
+    {
+        return $this->hasMany(MisiPengguna::class);
+    }
+
+    public function pengumpulanTugas(): HasMany
+    {
+        return $this->hasMany(PengumpulanTugas::class, 'student_id');
+    }
+
     // === Gamification Helpers ===
 
     public function addScore(int $points): void
     {
         $this->increment('total_score', $points);
         $this->updateLevel();
+        $this->updateStreak();
+    }
+
+    public function updateStreak(): void
+    {
+        $this->increment('streak_saat_ini');
+        if ($this->streak_saat_ini > $this->streak_terbaik) {
+            $this->update(['streak_terbaik' => $this->streak_saat_ini]);
+        }
+    }
+
+    public function resetStreak(): void
+    {
+        $this->update(['streak_saat_ini' => 0]);
     }
 
     public function updateLevel(): void

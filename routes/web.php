@@ -6,17 +6,19 @@ use App\Http\Controllers\Admin\DocumentSummarizerController;
 use App\Http\Controllers\Admin\LessonManagementController;
 use App\Http\Controllers\Admin\QuizManagementController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SekolahController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ParentDashboardController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\StudentDashboardController;
 use App\Http\Controllers\TeacherDashboardController;
+use App\Http\Controllers\TugasController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -67,9 +69,9 @@ Route::middleware(['auth', RoleMiddleware::class.':siswa'])->prefix('siswa')->na
     Route::get('/kelas/join', [ClassRoomController::class, 'joinForm'])->name('kelas.join');
     Route::post('/kelas/join', [ClassRoomController::class, 'join'])->name('kelas.join.store');
 
-    // Chatbot
-    Route::post('/chat/send', [ChatbotController::class, 'send'])->name('chat.send');
-    Route::get('/chat/history', [ChatbotController::class, 'history'])->name('chat.history');
+    // Tugas (siswa)
+    Route::get('/tugas', [TugasController::class, 'tugasSiswa'])->name('tugas.index');
+    Route::post('/tugas/{tugas}/kumpulkan', [TugasController::class, 'kumpulkanTugas'])->name('tugas.kumpulkan');
 });
 
 // ============================================================
@@ -89,6 +91,13 @@ Route::middleware(['auth', RoleMiddleware::class.':guru,admin'])->prefix('guru')
     Route::post('/kelas', [ClassRoomController::class, 'store'])->name('classes.store');
     Route::get('/kelas/{classRoom}', [ClassRoomController::class, 'show'])->name('classes.show');
     Route::delete('/kelas/{classRoom}', [ClassRoomController::class, 'destroy'])->name('classes.destroy');
+
+    // Tugas (guru)
+    Route::get('/tugas', [TugasController::class, 'index'])->name('tugas.index');
+    Route::get('/tugas/buat', [TugasController::class, 'create'])->name('tugas.create');
+    Route::post('/tugas', [TugasController::class, 'store'])->name('tugas.store');
+    Route::get('/tugas/{tugas}', [TugasController::class, 'show'])->name('tugas.show');
+    Route::delete('/tugas/{tugas}', [TugasController::class, 'destroy'])->name('tugas.destroy');
 });
 
 // ============================================================
@@ -132,6 +141,9 @@ Route::middleware(['auth', RoleMiddleware::class.':admin'])->prefix('admin')->na
     // Manajemen Pengguna
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/toggle', [UserManagementController::class, 'toggle'])->name('users.toggle');
+
+    // Manajemen Sekolah
+    Route::resource('/sekolah', SekolahController::class)->except(['show']);
 });
 
 // ============================================================
@@ -146,3 +158,12 @@ Route::middleware(['auth', RoleMiddleware::class.':guru,admin'])->prefix('admin/
 });
 
 Route::redirect('/ai-studio', '/admin/document-summarizer');
+
+// ============================================================
+// PROFIL — tersedia untuk semua peran yang sudah login
+// ============================================================
+Route::middleware('auth')->prefix('profil')->name('profil.')->group(function () {
+    Route::get('/', [ProfileController::class, 'show'])->name('show');
+    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+    Route::put('/', [ProfileController::class, 'update'])->name('update');
+});

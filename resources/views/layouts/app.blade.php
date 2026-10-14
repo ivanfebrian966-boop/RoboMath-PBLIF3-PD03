@@ -36,10 +36,6 @@
         </main>
     </div>
 
-    <!-- AI Chatbot Assistant Floating Widget (for Siswa) -->
-    @if(auth()->check() && auth()->user()->isSiswa())
-        @include('components.chatbot-widget')
-    @endif
 
 
 
