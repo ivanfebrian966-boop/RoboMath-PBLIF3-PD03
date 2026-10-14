@@ -12,44 +12,104 @@ use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        $topics = Topic::where('kelas_level', $user->kelas)
-            ->where('is_active', true)
-            ->withCount('quizzes')
+
+        $topics = Topic::where('is_active', true)
+            ->when($user->kelas, fn ($q) => $q->where('kelas_level', $user->kelas))
+            ->with(['quizzes' => function ($q) {
+                $q->where('is_active', true)->orderBy('id');
+            }])
+            ->withCount(['quizzes' => function ($q) {
+                $q->where('is_active', true);
+            }])
             ->orderBy('order')
             ->get();
 
-        return view('student.quiz.index', compact('topics'));
+        // Get all user attempts for these quizzes
+        $allQuizIds = $topics->flatMap->quizzes->pluck('id');
+        $userAttempts = QuizAttempt::where('user_id', $user->id)
+            ->whereIn('quiz_id', $allQuizIds)
+            ->get()
+            ->groupBy('quiz_id');
+
+        $totalQuizzes = $allQuizIds->count();
+        $completedQuizzesCount = 0;
+        $totalEarnedPoints = 0;
+
+        foreach ($topics as $topic) {
+            $topicCompletedCount = 0;
+            foreach ($topic->quizzes as $quiz) {
+                $attempts = $userAttempts->get($quiz->id, collect());
+                $quiz->user_attempts_count = $attempts->count();
+                $quiz->user_is_correct = $attempts->contains('is_correct', true);
+                $quiz->user_points_earned = $quiz->user_is_correct
+                    ? ($attempts->where('is_correct', true)->max('points_earned') ?: $quiz->points)
+                    : 0;
+
+                if ($quiz->user_is_correct) {
+                    $topicCompletedCount++;
+                    $completedQuizzesCount++;
+                    $totalEarnedPoints += $quiz->user_points_earned;
+                }
+            }
+            $topic->completed_count = $topicCompletedCount;
+            $topic->progress_percent = $topic->quizzes_count > 0
+                ? round(($topicCompletedCount / $topic->quizzes_count) * 100)
+                : 0;
+        }
+
+        $overallProgressPercent = $totalQuizzes > 0
+            ? round(($completedQuizzesCount / $totalQuizzes) * 100)
+            : 0;
+
+        return view('student.quiz.index', compact(
+            'topics',
+            'totalQuizzes',
+            'completedQuizzesCount',
+            'totalEarnedPoints',
+            'overallProgressPercent'
+        ));
     }
 
-    public function play(Topic $topic)
+    public function play(Topic $topic, Request $request)
     {
         $user = Auth::user();
 
-        // Get quizzes for this topic, excluding already correctly answered
-        $answeredCorrectly = QuizAttempt::where('user_id', $user->id)
-            ->where('is_correct', true)
-            ->pluck('quiz_id');
-
         $quizzes = Quiz::where('topic_id', $topic->id)
             ->where('is_active', true)
-            ->whereNotIn('id', $answeredCorrectly)
-            ->inRandomOrder()
-            ->take(10)
+            ->orderBy('id')
             ->get();
 
         if ($quizzes->isEmpty()) {
-            // All quizzes answered - allow retry
-            $quizzes = Quiz::where('topic_id', $topic->id)
-                ->where('is_active', true)
-                ->inRandomOrder()
-                ->take(10)
-                ->get();
+            return redirect()->route('siswa.quiz')->with('error', 'Belum ada soal pada topik ini.');
         }
 
-        return view('student.quiz.play', compact('topic', 'quizzes'));
+        $startIndex = 0;
+        if ($request->filled('quiz_id')) {
+            $foundIndex = $quizzes->search(fn ($q) => $q->id == $request->quiz_id);
+            if ($foundIndex !== false) {
+                $startIndex = $foundIndex;
+            }
+        }
+
+        // Get status of user's previous attempts for each quiz in this topic
+        $attempts = QuizAttempt::where('user_id', $user->id)
+            ->whereIn('quiz_id', $quizzes->pluck('id'))
+            ->get()
+            ->groupBy('quiz_id');
+
+        $quizStatuses = [];
+        foreach ($quizzes as $quiz) {
+            $quizAttempts = $attempts->get($quiz->id, collect());
+            $quizStatuses[$quiz->id] = [
+                'is_correct' => $quizAttempts->contains('is_correct', true),
+                'attempts_count' => $quizAttempts->count(),
+            ];
+        }
+
+        return view('student.quiz.play', compact('topic', 'quizzes', 'startIndex', 'quizStatuses'));
     }
 
     public function submit(Request $request)
@@ -64,7 +124,13 @@ class QuizController extends Controller
 
         $quiz = Quiz::findOrFail($request->quiz_id);
         $isCorrect = strtolower(trim($request->answer)) === strtolower(trim($quiz->correct_answer));
-        $pointsEarned = $isCorrect ? $quiz->points : 0;
+
+        $previouslyCorrect = QuizAttempt::where('user_id', $user->id)
+            ->where('quiz_id', $quiz->id)
+            ->where('is_correct', true)
+            ->exists();
+
+        $pointsEarned = ($isCorrect && ! $previouslyCorrect) ? $quiz->points : 0;
 
         $attempt = QuizAttempt::create([
             'user_id' => $user->id,
@@ -75,7 +141,7 @@ class QuizController extends Controller
             'points_earned' => $pointsEarned,
         ]);
 
-        if ($isCorrect) {
+        if ($pointsEarned > 0) {
             $user->addScore($pointsEarned);
         }
 
@@ -111,6 +177,7 @@ class QuizController extends Controller
         return response()->json([
             'correct' => $isCorrect,
             'points' => $pointsEarned,
+            'already_earned' => $previouslyCorrect,
             'explanation' => $quiz->explanation,
             'correct_answer' => $quiz->correct_answer,
             'total_score' => $user->fresh()->total_score,

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DocumentSummary;
+use App\Models\Quiz;
+use App\Models\Topic;
 use App\Services\DocumentSummarizerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -255,6 +257,145 @@ class DocumentSummarizerController extends Controller
         }
 
         return back()->with('success', 'Riwayat ringkasan berhasil dihapus.');
+    }
+
+    /**
+     * Parse AI-generated quiz markdown and publish questions to student quiz bank.
+     */
+    public function publishToStudents(Request $request): JsonResponse
+    {
+        $request->validate([
+            'topic_id' => ['required', 'exists:topics,id'],
+            'markdown' => ['required', 'string', 'min:20'],
+            'difficulty' => ['nullable', 'in:mudah,sedang,sulit'],
+            'points' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+
+        $topic = Topic::findOrFail($request->topic_id);
+        $markdown = $request->input('markdown');
+        $difficulty = $request->input('difficulty', 'sedang');
+        $defaultPoints = (int) $request->input('points', 10);
+
+        $quizzes = $this->parseQuizzesFromMarkdown($markdown, $difficulty, $defaultPoints);
+
+        if (empty($quizzes)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'AI tidak menghasilkan soal pilihan ganda yang dapat dibaca. Pastikan format output AI menyertakan pilihan jawaban A, B, C, D dan kunci jawaban.',
+            ], 422);
+        }
+
+        $created = 0;
+        foreach ($quizzes as $q) {
+            Quiz::create([
+                'topic_id' => $topic->id,
+                'lesson_id' => null,
+                'type' => 'pilihan_ganda',
+                'question' => $q['question'],
+                'options' => $q['options'],
+                'correct_answer' => $q['correct_answer'],
+                'explanation' => $q['explanation'],
+                'difficulty' => $q['difficulty'],
+                'points' => $q['points'],
+                'is_active' => true,
+            ]);
+            $created++;
+        }
+
+        return response()->json([
+            'success' => true,
+            'count' => $created,
+            'topic' => $topic->title,
+            'message' => "{$created} soal berhasil dikirim ke bank soal topik \"{$topic->title}\" dan langsung dapat dimainkan siswa!",
+        ]);
+    }
+
+    /**
+     * Parse structured quiz question blocks from AI markdown output.
+     *
+     * @return array<int, array{question: string, options: array<string,string>, correct_answer: string, explanation: string, difficulty: string, points: int}>
+     */
+    protected function parseQuizzesFromMarkdown(string $markdown, string $difficulty, int $defaultPoints): array
+    {
+        $quizzes = [];
+
+        // Match each ### Soal N block
+        $pattern = '/###\s*(?:📝|🌟)?\s*Soal\s*(\d+)([\s\S]*?)(?=###\s*(?:📝|🌟)?\s*Soal\s*\d+|###\s*📌|$)/i';
+        preg_match_all($pattern, $markdown, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $block = $match[2];
+
+            // Extract question body (lines before options / blockquotes)
+            $lines = explode("\n", $block);
+            $bodyLines = [];
+            $optionLines = [];
+            $inOptions = false;
+
+            foreach ($lines as $line) {
+                $trimmed = trim($line);
+                if (empty($trimmed) || preg_match('/^###/i', $trimmed)) {
+                    continue;
+                }
+                if (preg_match('/^(?:[-*]\s*)?([A-D])[\.)\s]\s+(.+)$/i', $trimmed)) {
+                    $inOptions = true;
+                }
+                if ($inOptions) {
+                    $optionLines[] = $trimmed;
+                } elseif (! preg_match('/^(?:🔑|💡|\*\*🔑|\*\*💡|Kunci|Pembahasan)/i', $trimmed)) {
+                    $bodyLines[] = preg_replace('/^#+\s*/', '', $trimmed);
+                }
+            }
+
+            $questionText = trim(preg_replace('/[*_#]/', '', implode(' ', $bodyLines)));
+            if (strlen($questionText) < 5) {
+                continue;
+            }
+
+            // Extract options A–D
+            $options = [];
+            foreach ($optionLines as $optLine) {
+                if (preg_match('/^(?:[-*]\s*)?([A-D])[\.)\s]\s+(.+)$/i', $optLine, $m)) {
+                    $letter = strtoupper($m[1]);
+                    $text = trim(preg_replace('/[*_]/', '', $m[2]));
+                    if ($text && ! isset($options[$letter])) {
+                        $options[$letter] = $text;
+                    }
+                }
+            }
+
+            // Need at least 2 options to be valid MCQ
+            if (count($options) < 2) {
+                continue;
+            }
+
+            // Extract answer key
+            $correctAnswer = '';
+            if (preg_match('/(?:🔑\s*Kunci\s*Jawaban|Kunci\s*Jawaban)\s*:\s*\*?\*?\s*([A-D](?:\s*[-–]\s*\S+)?)/i', $block, $km)) {
+                $correctAnswer = strtoupper(trim(preg_replace('/[*_>\s]/', '', substr($km[1], 0, 1))));
+            }
+            if (! $correctAnswer || ! isset($options[$correctAnswer])) {
+                // fallback: pick first available option
+                $correctAnswer = array_key_first($options);
+            }
+
+            // Extract explanation
+            $explanation = '';
+            if (preg_match('/(?:💡\s*Pembahasan(?:\s*Seru|\s*&\s*Langkah)?|Pembahasan(?:\s*&\s*Langkah)?)\s*:\s*\*?\*?\s*([^\n\r#]+)/i', $block, $em)) {
+                $explanation = trim(preg_replace('/[*_>]/', '', $em[1]));
+            }
+
+            $quizzes[] = [
+                'question' => $questionText,
+                'options' => $options,
+                'correct_answer' => $correctAnswer,
+                'explanation' => $explanation,
+                'difficulty' => $difficulty,
+                'points' => $defaultPoints,
+            ];
+        }
+
+        return $quizzes;
     }
 
     /**

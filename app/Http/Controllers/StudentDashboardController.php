@@ -73,7 +73,8 @@ class StudentDashboardController extends Controller
 
         return view('student.dashboard', compact(
             'user', 'totalTopics', 'completedLessons', 'totalLessons',
-            'accuracy', 'earnedBadges', 'allBadges', 'earnedIds', 'totalBadges',
+            'totalAttempts', 'correctAttempts', 'accuracy',
+            'earnedBadges', 'allBadges', 'earnedIds', 'totalBadges',
             'topics', 'recentAttempts', 'weakTopics'
         ));
     }

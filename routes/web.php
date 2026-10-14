@@ -147,6 +147,7 @@ Route::middleware(['auth', RoleMiddleware::class.':admin'])->prefix('admin')->na
 Route::middleware(['auth', RoleMiddleware::class.':guru,admin'])->prefix('admin/document-summarizer')->name('admin.document-summarizer.')->group(function () {
     Route::get('/', [DocumentSummarizerController::class, 'index'])->name('index');
     Route::post('/summarize', [DocumentSummarizerController::class, 'summarize'])->name('summarize');
+    Route::post('/publish-to-students', [DocumentSummarizerController::class, 'publishToStudents'])->name('publish-to-students');
     Route::get('/{summary}', [DocumentSummarizerController::class, 'show'])->name('show');
     Route::delete('/{summary}', [DocumentSummarizerController::class, 'destroy'])->name('destroy');
     Route::get('/{summary}/download', [DocumentSummarizerController::class, 'downloadText'])->name('download');

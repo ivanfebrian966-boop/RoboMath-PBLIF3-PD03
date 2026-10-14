@@ -351,24 +351,36 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons: Copy, Download, Print -->
-                <div class="flex items-center gap-2 flex-wrap">
-                    <button type="button" onclick="copySummaryText()"
-                            class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                        <span>Salin Semua Soal</span>
+                <!-- Action Buttons: Copy, Download, Print, Publish -->
+                <div class="flex flex-col gap-3">
+                    <!-- Primary CTA: Kirim ke Siswa -->
+                    <button type="button" onclick="openPublishModal()"
+                            id="btn-publish-to-students"
+                            class="w-full flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl text-sm font-black bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all duration-200 ring-2 ring-emerald-400/30 hover:ring-emerald-400/60">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        <span>Kirim Soal ke Siswa Sekarang 🚀</span>
                     </button>
+                    <p class="text-[11px] text-center text-emerald-700 font-semibold -mt-1">Soal langsung masuk ke bank soal & bisa dimainkan siswa</p>
 
-                    <button type="button" onclick="downloadCurrentSummary()"
-                            class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-all cursor-pointer">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                        <span>Unduh .MD</span>
-                    </button>
+                    <!-- Secondary Buttons Row -->
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button type="button" onclick="copySummaryText()"
+                                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            <span>Salin Semua Soal</span>
+                        </button>
 
-                    <button type="button" onclick="printSummary()"
-                            class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer" title="Cetak Soal">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                    </button>
+                        <button type="button" onclick="downloadCurrentSummary()"
+                                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-all cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            <span>Unduh .MD</span>
+                        </button>
+
+                        <button type="button" onclick="printSummary()"
+                                class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer" title="Cetak Soal">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Markdown Content Render Container -->
@@ -560,6 +572,88 @@
     </div>
 </div>
 
+<!-- ============================================================ -->
+<!-- MODAL: PUBLISH SOAL KE SISWA -->
+<!-- ============================================================ -->
+<div id="publish-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 space-y-6 relative border-2 border-emerald-200">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-emerald-100 flex items-center justify-center text-2xl flex-shrink-0">
+                    🚀
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-slate-900">Kirim Soal ke Siswa</h3>
+                    <p class="text-xs text-slate-500 font-medium">Pilih topik tujuan dan konfigurasi soal</p>
+                </div>
+            </div>
+            <button type="button" onclick="closePublishModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-black text-lg transition-all">&times;</button>
+        </div>
+
+        <!-- Preview: jumlah soal yang terdeteksi -->
+        <div id="publish-preview" class="hidden p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-sm font-bold text-emerald-800 flex items-center gap-2">
+            <span class="text-lg">✅</span>
+            <span id="publish-preview-text"></span>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="space-y-4">
+            <!-- Pilih Topik -->
+            <div>
+                <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase tracking-wider">Topik Tujuan <span class="text-rose-500">*</span></label>
+                <select id="publish-topic-id" class="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 font-bold text-slate-800 text-sm outline-none transition-all">
+                    <option value="">-- Pilih Topik --</option>
+                    @foreach(\App\Models\Topic::where('is_active', true)->orderBy('kelas_level')->orderBy('order')->get() as $t)
+                        <option value="{{ $t->id }}">{{ $t->icon }} {{ $t->title }} (Kelas {{ $t->kelas_level }})</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Tingkat Kesulitan -->
+            <div>
+                <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase tracking-wider">Tingkat Kesulitan</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl border-2 border-slate-200 text-xs font-extrabold cursor-pointer transition-all has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-800">
+                        <input type="radio" name="publish-difficulty" value="mudah" class="sr-only" checked> 🌱 Mudah
+                    </label>
+                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl border-2 border-slate-200 text-xs font-extrabold cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 has-[:checked]:text-amber-800">
+                        <input type="radio" name="publish-difficulty" value="sedang" class="sr-only"> ⚡ Sedang
+                    </label>
+                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl border-2 border-slate-200 text-xs font-extrabold cursor-pointer transition-all has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-800">
+                        <input type="radio" name="publish-difficulty" value="sulit" class="sr-only"> 🔥 Sulit
+                    </label>
+                </div>
+            </div>
+
+            <!-- Poin per Soal -->
+            <div>
+                <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase tracking-wider">Poin per Soal</label>
+                <div class="flex items-center gap-3">
+                    <input type="range" id="publish-points" min="5" max="50" step="5" value="10"
+                           oninput="document.getElementById('publish-points-label').textContent = this.value"
+                           class="flex-1 accent-emerald-500">
+                    <span class="w-14 text-center font-black text-emerald-700 text-sm bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-xl">
+                        <span id="publish-points-label">10</span> Poin
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="flex items-center gap-3 pt-2">
+            <button type="button" onclick="closePublishModal()" class="flex-1 px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-sm transition-all">
+                Batal
+            </button>
+            <button type="button" onclick="submitPublishToStudents()" id="btn-publish-confirm"
+                    class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-black text-sm shadow-md transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                <span>Kirim ke Siswa!</span>
+            </button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 <script>
@@ -569,16 +663,21 @@
     function initSummarizerPage() {
         console.log('🤖 initSummarizerPage() executed');
 
-    // State variables
-    let currentInputMode = 'file';
-    let currentActiveSummaryMarkdown = '';
-    let currentActiveSummaryTitle = '';
-    let modalMarkdownCache = '';
+    // State variables — stored on window so they survive re-init on SPA navigation
+    if (typeof window._summarizerState === 'undefined') {
+        window._summarizerState = {
+            inputMode: 'file',
+            activeSummaryMarkdown: '',
+            activeSummaryTitle: '',
+            modalMarkdownCache: '',
+        };
+    }
+    const state = window._summarizerState;
 
     // Switch Input Mode between Upload File and Paste Text
     window.setInputMode = function(mode) {
         console.log('🔄 Switched input mode to:', mode);
-        currentInputMode = mode;
+        state.inputMode = mode;
         const fileContainer = document.getElementById('mode-file-container');
         const textContainer = document.getElementById('mode-text-container');
         const btnFile = document.getElementById('btn-mode-file');
@@ -992,7 +1091,7 @@
             const fileInput = document.getElementById('document_file');
             const textInput = document.getElementById('direct_text');
 
-            if (currentInputMode === 'file' && (!fileInput || !fileInput.files || !fileInput.files[0])) {
+            if (state.inputMode === 'file' && (!fileInput || !fileInput.files || !fileInput.files[0])) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Berkas Belum Dipilih',
@@ -1002,7 +1101,7 @@
                 return;
             }
 
-            if (currentInputMode === 'text' && (!textInput || !textInput.value || textInput.value.trim().length < 10)) {
+            if (state.inputMode === 'text' && (!textInput || !textInput.value || textInput.value.trim().length < 10)) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Teks Terlalu Singkat',
@@ -1016,7 +1115,7 @@
             showLoadingState(true);
 
             const formData = new FormData(formElement);
-            if (currentInputMode === 'file') {
+            if (state.inputMode === 'file') {
                 formData.delete('direct_text');
                 // Make sure the file is included
                 if (fileInput && fileInput.files[0]) {
@@ -1134,8 +1233,8 @@
         if (loading) { loading.style.display = 'none'; loading.classList.add('hidden'); }
         if (container) { container.style.display = 'block'; container.classList.remove('hidden'); }
 
-        currentActiveSummaryMarkdown = data.summary_markdown;
-        currentActiveSummaryTitle = data.title;
+        state.activeSummaryMarkdown = data.summary_markdown;
+        state.activeSummaryTitle = data.title;
 
         // Populate header fields
         const badgeType = document.getElementById('res-badge-type');
@@ -1187,8 +1286,8 @@
 
     // Copy Summary Text
     window.copySummaryText = function() {
-        if (!currentActiveSummaryMarkdown) return;
-        navigator.clipboard.writeText(currentActiveSummaryMarkdown).then(() => {
+        if (!state.activeSummaryMarkdown) return;
+        navigator.clipboard.writeText(state.activeSummaryMarkdown).then(() => {
             Swal.fire({
                 icon: 'success',
                 title: 'Teks Berhasil Disalin!',
@@ -1201,11 +1300,11 @@
 
     // Download Current Summary as Markdown
     window.downloadCurrentSummary = function() {
-        if (!currentActiveSummaryMarkdown) return;
-        const blob = new Blob([currentActiveSummaryMarkdown], { type: 'text/markdown;charset=utf-8' });
+        if (!state.activeSummaryMarkdown) return;
+        const blob = new Blob([state.activeSummaryMarkdown], { type: 'text/markdown;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        const safeTitle = (currentActiveSummaryTitle || 'Ringkasan_Dokumen').replace(/[^a-zA-Z0-9_-]/g, '_');
+        const safeTitle = (state.activeSummaryTitle || 'Ringkasan_Dokumen').replace(/[^a-zA-Z0-9_-]/g, '_');
         a.href = url;
         a.download = `Ringkasan_RoboMath_${safeTitle}.md`;
         document.body.appendChild(a);
@@ -1218,7 +1317,7 @@
     window.printSummary = function() {
         const bodyElem = document.getElementById('res-markdown-body');
         const printContent = bodyElem ? bodyElem.innerHTML : '';
-        const title = currentActiveSummaryTitle || 'Ringkasan Dokumen RoboMath';
+        const title = state.activeSummaryTitle || 'Ringkasan Dokumen RoboMath';
         const win = window.open('', '_blank', 'height=700,width=900');
         if (!win) {
             Swal.fire({
@@ -1275,7 +1374,7 @@
             });
             const data = await response.json();
 
-            modalMarkdownCache = data.summary;
+            state.modalMarkdownCache = data.summary;
             const titleElem = document.getElementById('modal-title');
             const styleElem = document.getElementById('modal-badge-style');
             const metaElem = document.getElementById('modal-meta');
@@ -1325,8 +1424,8 @@
     };
 
     window.copyModalContent = function() {
-        if (!modalMarkdownCache) return;
-        navigator.clipboard.writeText(modalMarkdownCache).then(() => {
+        if (!state.modalMarkdownCache) return;
+        navigator.clipboard.writeText(state.modalMarkdownCache).then(() => {
             Swal.fire({
                 icon: 'success',
                 title: 'Teks Berhasil Disalin!',
@@ -1335,6 +1434,108 @@
             });
         });
     };
+
+    // ============================================================
+    // PUBLISH TO STUDENTS
+    // ============================================================
+
+    window.openPublishModal = function() {
+        if (!state.activeSummaryMarkdown) {
+            Swal.fire({ icon: 'warning', title: 'Belum Ada Soal', text: 'Buat soal terlebih dahulu sebelum mengirim ke siswa.', confirmButtonColor: '#059669' });
+            return;
+        }
+
+        // Estimate question count from markdown
+        const questionBlocks = (state.activeSummaryMarkdown.match(/###\s*(?:📝|🌟)?\s*Soal\s*\d+/gi) || []).length;
+        const previewEl = document.getElementById('publish-preview');
+        const previewText = document.getElementById('publish-preview-text');
+        if (previewEl && previewText) {
+            if (questionBlocks > 0) {
+                previewText.textContent = `${questionBlocks} soal terdeteksi dan siap dikirim ke bank soal siswa.`;
+                previewEl.classList.remove('hidden');
+            } else {
+                previewEl.classList.add('hidden');
+            }
+        }
+
+        const modal = document.getElementById('publish-modal');
+        if (modal) modal.classList.remove('hidden');
+    };
+
+    window.closePublishModal = function() {
+        const modal = document.getElementById('publish-modal');
+        if (modal) modal.classList.add('hidden');
+    };
+
+    window.submitPublishToStudents = async function() {
+        const topicId = document.getElementById('publish-topic-id')?.value;
+        const difficulty = document.querySelector('input[name="publish-difficulty"]:checked')?.value || 'sedang';
+        const points = document.getElementById('publish-points')?.value || '10';
+
+        if (!topicId) {
+            Swal.fire({ icon: 'warning', title: 'Pilih Topik', text: 'Silakan pilih topik tujuan untuk soal-soal ini.', confirmButtonColor: '#059669' });
+            return;
+        }
+
+        const confirmBtn = document.getElementById('btn-publish-confirm');
+        if (confirmBtn) {
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<span class="animate-spin mr-2">⏳</span> Mengirim...';
+        }
+
+        try {
+            const res = await fetch("{{ route('admin.document-summarizer.publish-to-students') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    topic_id: topicId,
+                    markdown: state.activeSummaryMarkdown,
+                    difficulty: difficulty,
+                    points: parseInt(points),
+                })
+            });
+
+            const data = await res.json();
+
+            closePublishModal();
+
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: `🎉 ${data.count} Soal Terkirim!`,
+                    html: `<div style="font-size:14px;">${data.message}<br><br><strong>Siswa sudah bisa mengerjakan soal baru ini sekarang.</strong></div>`,
+                    confirmButtonColor: '#059669',
+                    confirmButtonText: 'Lihat Bank Soal →',
+                    showCancelButton: true,
+                    cancelButtonText: 'Tutup',
+                    cancelButtonColor: '#94a3b8',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('admin.quizzes.index') }}";
+                    }
+                });
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal Mengirim', text: data.message || 'Terjadi kesalahan.', confirmButtonColor: '#059669' });
+            }
+        } catch (err) {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: 'Gagal Mengirim', text: 'Terjadi gangguan koneksi.', confirmButtonColor: '#059669' });
+        } finally {
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg><span>Kirim ke Siswa!</span>';
+            }
+        }
+    };
+
+    // Close publish modal when clicking outside
+    document.getElementById('publish-modal')?.addEventListener('click', function(e) {
+        if (e.target === this) closePublishModal();
+    });
 
     } // end initSummarizerPage()
 
