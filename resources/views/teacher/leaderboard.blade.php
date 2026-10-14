@@ -16,7 +16,7 @@
         </div>
         <div>
             <a href="{{ route('guru.laporan.download') }}" class="inline-flex items-center gap-2 bg-white text-indigo-700 px-5 py-3 rounded-2xl font-black text-sm shadow-md hover:bg-amber-50 transition">
-                <span>📥</span> Unduh Laporan CSV
+                <span>📊</span> Unduh Laporan Excel
             </a>
         </div>
     </div>

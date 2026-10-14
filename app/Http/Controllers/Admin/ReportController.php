@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\SimpleXlsxExporter;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ReportController extends Controller
 {
@@ -50,7 +51,7 @@ class ReportController extends Controller
         ));
     }
 
-    public function export(Request $request): StreamedResponse
+    public function export(Request $request): BinaryFileResponse
     {
         $kelasFilter = $request->query('kelas', 'all');
         $periodFilter = $request->query('period', 'all');
@@ -61,40 +62,38 @@ class ReportController extends Controller
         }
 
         $students = $query->orderBy('kelas')->orderBy('name')->get();
-        $filename = 'laporan-performa-'.date('Y-m-d').'.csv';
+        $filename = 'laporan-performa-'.date('Y-m-d').'.xlsx';
 
-        return response()->streamDownload(function () use ($students, $periodFilter) {
-            $handle = fopen('php://output', 'w');
-            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
-            fputcsv($handle, ['Nama', 'Email', 'Kelas', 'Total Skor', 'Level', 'Materi Selesai', 'Soal Dijawab', 'Jawaban Benar', 'Akurasi (%)', 'Poin Diperoleh']);
+        $headers = ['Nama', 'Email', 'Kelas', 'Total Skor', 'Level', 'Materi Selesai', 'Soal Dijawab', 'Jawaban Benar', 'Akurasi (%)', 'Poin Diperoleh'];
 
-            foreach ($students as $student) {
-                $attemptsQuery = $student->quizAttempts();
-                if ($periodFilter === 'week') {
-                    $attemptsQuery->where('created_at', '>=', now()->subWeek());
-                } elseif ($periodFilter === 'month') {
-                    $attemptsQuery->where('created_at', '>=', now()->subMonth());
-                }
-                $attempts = $attemptsQuery->get();
-                $total = $attempts->count();
-                $correct = $attempts->where('is_correct', true)->count();
-                $accuracy = $total > 0 ? round(($correct / $total) * 100) : 0;
-                $completedLessons = $student->progress()->where('status', 'selesai')->count();
-
-                fputcsv($handle, [
-                    $student->name,
-                    $student->email,
-                    "Kelas {$student->kelas} SD",
-                    $student->total_score,
-                    $student->level_name,
-                    $completedLessons,
-                    $total,
-                    $correct,
-                    "{$accuracy}%",
-                    $attempts->sum('points_earned'),
-                ]);
+        $rows = [];
+        foreach ($students as $student) {
+            $attemptsQuery = $student->quizAttempts();
+            if ($periodFilter === 'week') {
+                $attemptsQuery->where('created_at', '>=', now()->subWeek());
+            } elseif ($periodFilter === 'month') {
+                $attemptsQuery->where('created_at', '>=', now()->subMonth());
             }
-            fclose($handle);
-        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+            $attempts = $attemptsQuery->get();
+            $total = $attempts->count();
+            $correct = $attempts->where('is_correct', true)->count();
+            $accuracy = $total > 0 ? round(($correct / $total) * 100) : 0;
+            $completedLessons = $student->progress()->where('status', 'selesai')->count();
+
+            $rows[] = [
+                $student->name,
+                $student->email,
+                "Kelas {$student->kelas} SD",
+                $student->total_score,
+                $student->level_name,
+                $completedLessons,
+                $total,
+                $correct,
+                "{$accuracy}%",
+                $attempts->sum('points_earned'),
+            ];
+        }
+
+        return SimpleXlsxExporter::download($filename, $headers, $rows, 'Laporan Performa');
     }
 }

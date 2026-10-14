@@ -119,7 +119,7 @@ class RoboMathSPA {
             // Beda domain -> biarkan navigasi normal
             if (targetUrl.origin !== window.location.origin) return;
 
-            // Route logout, unduh CSV, ekspor file -> lewati SPA
+            // Route logout, unduh Excel / file, ekspor file -> lewati SPA
             if (
                 targetUrl.pathname.includes('/logout') ||
                 targetUrl.pathname.includes('/download') ||

@@ -15,7 +15,7 @@
         <div class="flex flex-wrap gap-3">
             <a href="{{ route('guru.laporan.download') }}" class="inline-flex items-center gap-2 bg-white text-emerald-800 font-black px-5 py-3 rounded-2xl text-xs shadow-md hover:bg-emerald-50 transition transform active:scale-95">
                 <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                Unduh Laporan CSV
+                Unduh Laporan Excel 
             </a>
             <a href="{{ route('guru.classes.create') }}" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-black px-5 py-3 rounded-2xl text-xs shadow-md transition transform active:scale-95">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>

@@ -6,9 +6,10 @@ use App\Models\Progress;
 use App\Models\QuizAttempt;
 use App\Models\Topic;
 use App\Models\User;
+use App\Services\SimpleXlsxExporter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TeacherDashboardController extends Controller
 {
@@ -86,9 +87,9 @@ class TeacherDashboardController extends Controller
     }
 
     /**
-     * Download laporan siswa sebagai CSV
+     * Download laporan siswa sebagai Excel (.xlsx)
      */
-    public function downloadReport(Request $request): StreamedResponse
+    public function downloadReport(Request $request): BinaryFileResponse
     {
         $kelasFilter = $request->query('kelas', 'all');
 
@@ -100,38 +101,30 @@ class TeacherDashboardController extends Controller
 
         $students = $query->get();
 
-        $filename = 'laporan-siswa-'.($kelasFilter !== 'all' ? "kelas{$kelasFilter}-" : '').date('Y-m-d').'.csv';
+        $filename = 'laporan-siswa-'.($kelasFilter !== 'all' ? "kelas{$kelasFilter}-" : '').date('Y-m-d').'.xlsx';
 
-        return response()->streamDownload(function () use ($students) {
-            $handle = fopen('php://output', 'w');
+        $headers = ['Nama Siswa', 'Email', 'Kelas', 'Total Poin', 'Level', 'Materi Selesai', 'Akurasi (%)', 'Lencana'];
 
-            // BOM for Excel UTF-8
-            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
+        $rows = [];
+        foreach ($students as $student) {
+            $totalAttempts = $student->quizAttempts()->count();
+            $correctAttempts = $student->quizAttempts()->where('is_correct', true)->count();
+            $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100) : 0;
+            $completedLessons = $student->progress()->where('status', 'selesai')->count();
+            $badgeCount = $student->badges()->count();
 
-            fputcsv($handle, ['Nama Siswa', 'Email', 'Kelas', 'Total Poin', 'Level', 'Materi Selesai', 'Akurasi (%)', 'Lencana']);
+            $rows[] = [
+                $student->name,
+                $student->email,
+                "Kelas {$student->kelas} SD",
+                $student->total_score,
+                "{$student->level_name} (Level {$student->level})",
+                $completedLessons,
+                "{$accuracy}%",
+                $badgeCount,
+            ];
+        }
 
-            foreach ($students as $student) {
-                $totalAttempts = $student->quizAttempts()->count();
-                $correctAttempts = $student->quizAttempts()->where('is_correct', true)->count();
-                $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100) : 0;
-                $completedLessons = $student->progress()->where('status', 'selesai')->count();
-                $badgeCount = $student->badges()->count();
-
-                fputcsv($handle, [
-                    $student->name,
-                    $student->email,
-                    "Kelas {$student->kelas} SD",
-                    $student->total_score,
-                    "{$student->level_name} (Level {$student->level})",
-                    $completedLessons,
-                    "{$accuracy}%",
-                    $badgeCount,
-                ]);
-            }
-
-            fclose($handle);
-        }, $filename, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-        ]);
+        return SimpleXlsxExporter::download($filename, $headers, $rows, 'Laporan Siswa');
     }
 }

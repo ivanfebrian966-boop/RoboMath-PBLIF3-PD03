@@ -41,9 +41,9 @@
             </select>
         </form>
 
-        <a href="{{ route('admin.reports.export', ['kelas' => $kelasFilter, 'period' => $periodFilter]) }}" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-2xl text-xs font-black flex items-center justify-center gap-2 shadow-md transition transform active:scale-95">
+        <a href="{{ route('admin.reports.export', ['kelas' => $kelasFilter, 'period' => $periodFilter]) }}" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-2xl text-xs font-black flex items-center justify-center gap-2 shadow-md transition transform active:scale-95">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Ekspor Laporan CSV
+            Ekspor Laporan Excel
         </a>
     </div>
 
