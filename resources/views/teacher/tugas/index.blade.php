@@ -30,19 +30,19 @@
                 <div>
                     <h3 class="font-black text-slate-800 text-lg">{{ $tugas->judul }}</h3>
                     <p class="text-sm text-slate-500 mt-0.5">
-                        🏫 {{ $tugas->classRoom->name }}
+                        {{ $tugas->classRoom->name }}
                         @if($tugas->topic)
-                            · 📚 {{ $tugas->topic->title }}
+                             {{ $tugas->topic->title }}
                         @endif
                     </p>
                     <div class="flex flex-wrap items-center gap-3 mt-2">
                         @if($tugas->tenggat_waktu)
                         <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 text-rose-700 rounded-full text-xs font-bold border border-rose-100">
-                            ⏰ Tenggat: {{ $tugas->tenggat_waktu->format('d M Y, H:i') }}
+                             Tenggat: {{ $tugas->tenggat_waktu->format('d M Y, H:i') }}
                         </span>
                         @endif
                         <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-100">
-                            🎯 Nilai Lulus: {{ $tugas->nilai_lulus }}
+                             Nilai Lulus: {{ $tugas->nilai_lulus }}
                         </span>
                     </div>
                 </div>

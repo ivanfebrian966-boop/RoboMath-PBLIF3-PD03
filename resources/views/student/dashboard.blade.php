@@ -8,16 +8,10 @@
     <!-- Welcome Header Banner -->
     <div class="bg-[#3B82F6] rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-blue-400/30">
         <div class="relative z-10 space-y-2 max-w-xl">
-            <span class="bg-white/20 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
-                Kelas {{ $user->kelas }} SD
-            </span>
-            <h1 class="text-3xl sm:text-4xl font-black">Halo, {{ $user->name }}! 🎒✨</h1>
+            <h1 class="text-3xl sm:text-4xl font-black">Halo, {{ $user->name }}!</h1>
             <p class="text-blue-100 font-semibold text-base">
                 Siap petualangan matematika hari ini? Selesaikan soal kuis, kumpulkan lencana, dan raih skor tertinggi!
             </p>
-        </div>
-        <div class="absolute right-4 bottom-0 opacity-20 sm:opacity-30 text-9xl pointer-events-none select-none">
-            🚀
         </div>
     </div>
 

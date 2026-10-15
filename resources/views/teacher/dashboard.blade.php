@@ -8,19 +8,10 @@
     <!-- Teacher Header -->
     <div class="bg-[#059669] rounded-3xl p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 border border-emerald-400/30">
         <div class="space-y-2">
-            <span class="bg-white/20 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Dasbor Monitoring Guru</span>
-            <h1 class="text-3xl sm:text-4xl font-black">Dashboard Guru & Siswa</h1>
+            <h1 class="text-3xl sm:text-4xl font-black">Dashboard Guru</h1>
             <p class="text-emerald-100 font-semibold text-sm max-w-xl">Ringkasan kelas, daftar siswa aktif, serta pantauan aktivitas latihan matematika waktu nyata.</p>
         </div>
         <div class="flex flex-wrap gap-3">
-            <a href="{{ route('guru.laporan.download') }}" class="inline-flex items-center gap-2 bg-white text-emerald-800 font-black px-5 py-3 rounded-2xl text-xs shadow-md hover:bg-emerald-50 transition transform active:scale-95">
-                <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                Unduh Laporan Excel (.xlsx)
-            </a>
-            <a href="{{ route('guru.classes.create') }}" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-black px-5 py-3 rounded-2xl text-xs shadow-md transition transform active:scale-95">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                Buat Kelas Baru
-            </a>
         </div>
     </div>
 

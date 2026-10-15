@@ -1,47 +1,81 @@
-<header class="bg-[#FAF6EF]/90 backdrop-blur-md border-b-2 border-amber-200/70 sticky top-0 z-40 shadow-sm" id="app-navbar">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+<header class="sticky top-0 z-40 pt-3 pb-2 px-4 sm:px-6 lg:px-8 bg-[#FAF6EF]/80 backdrop-blur-md" id="app-navbar">
+    <div class="max-w-7xl mx-auto h-16 bg-white border-2 border-amber-200/80 rounded-full px-5 sm:px-6 flex items-center justify-between shadow-sm">
         
-        <!-- Logo RoboMath image -->
-        <a href="{{ route('home') }}" class="flex items-center group">
-            <img src="{{ asset('images/logo.png') }}" alt="RoboMath Logo"
-                 class="h-7 sm:h-8 w-auto drop-shadow-sm group-hover:scale-105 transition-transform duration-200">
-        </a>
+        <!-- Sisi Kiri: Logo + Divider + Badge Panel -->
+        <div class="flex items-center gap-3">
+            <a href="{{ route('home') }}" class="flex items-center group">
+                <img src="{{ asset('images/logo.png') }}" alt="RoboMath Logo"
+                     class="h-7 sm:h-8 w-auto drop-shadow-sm group-hover:scale-105 transition-transform duration-200">
+            </a>
 
-        <!-- User Profile / Auth Action -->
-        <div class="flex items-center gap-4">
+            @auth
+                {{-- Divider Garis Vertikal --}}
+                <div class="hidden sm:block h-6 w-px bg-slate-200 mx-1"></div>
+
+                {{-- Pill Badge Panel Peran --}}
+                @if(auth()->user()->isAdmin())
+                    <span class="hidden sm:inline-flex items-center px-3.5 py-1 rounded-full text-xs font-black bg-blue-50 text-blue-700 border border-blue-200/60 shadow-2xs">
+                        Panel Admin
+                    </span>
+                @elseif(auth()->user()->isGuru())
+                    <span class="hidden sm:inline-flex items-center px-3.5 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200/60 shadow-2xs">
+                        Panel Guru
+                    </span>
+                @elseif(auth()->user()->isSiswa())
+                    <span class="hidden sm:inline-flex items-center px-3.5 py-1 rounded-full text-xs font-black bg-amber-50 text-amber-800 border border-amber-200/60 shadow-2xs">
+                        Panel Siswa
+                    </span>
+                @endif
+            @endauth
+        </div>
+
+        <!-- Sisi Kanan: Poin (Siswa), Profile Card & Tombol Logout Bulat -->
+        <div class="flex items-center gap-3">
             @auth
                 @if(auth()->user()->isSiswa())
                     <!-- Score & Level Badge for Siswa -->
-                    <div class="hidden sm:flex items-center gap-2.5 bg-white border-2 border-amber-300 px-4 py-1.5 rounded-full font-bold text-amber-900 shadow-sm">
-                        <svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" style="display:none;"/>
+                    <div class="hidden md:flex items-center gap-2 bg-amber-50/80 border border-amber-200/80 px-3.5 py-1.5 rounded-full font-bold text-amber-900 shadow-2xs text-xs">
+                        <svg class="w-3.5 h-3.5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                         </svg>
-                        <span class="text-sm font-extrabold text-slate-800">{{ auth()->user()->total_score }} Poin</span>
-                        <span class="bg-amber-400 text-xs px-2.5 py-0.5 rounded-full text-amber-950 font-black">Lvl {{ auth()->user()->level }}</span>
+                        <span class="font-extrabold text-slate-800">{{ auth()->user()->total_score }} Poin</span>
+                        <span class="bg-amber-400 text-[10px] px-2 py-0.5 rounded-full text-amber-950 font-black">Lvl {{ auth()->user()->level }}</span>
                     </div>
                 @endif
 
-                <!-- User Profile Link -->
-                <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-2xl border-2 border-amber-200/80 shadow-sm">
-                    <a href="{{ route('profil.show') }}" class="flex items-center gap-3 hover:opacity-80 transition" title="Lihat Profil">
-                        <div class="w-10 h-10 rounded-xl bg-[#FF9500] flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
+                <!-- User Profile Link Sesuai Gambar -->
+                <a href="{{ route('profil.show') }}" 
+                   class="flex items-center gap-2.5 px-2 py-1 rounded-full hover:bg-slate-50 transition group"
+                   title="Lihat Profil">
+                    {{-- Avatar Lingkaran Oranye dengan Ring --}}
+                    <div class="relative flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-[#FF9500] ring-2 ring-amber-300 ring-offset-2 flex items-center justify-center text-slate-950 font-black text-base shadow-xs group-hover:scale-105 transition-transform">
                             {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                         </div>
-                        <div class="hidden md:block text-left">
-                            <div class="font-extrabold text-slate-800 text-sm leading-none">{{ auth()->user()->name }}</div>
-                            <div class="text-xs font-bold text-amber-600 uppercase mt-0.5">{{ auth()->user()->role }}</div>
+                    </div>
+                    
+                    {{-- Info Nama & Badge Kapsul Peran --}}
+                    <div class="hidden sm:block text-left">
+                        <div class="text-sm font-black text-slate-900 group-hover:text-amber-600 transition-colors truncate max-w-[150px] leading-tight">
+                            {{ auth()->user()->name }}
                         </div>
-                    </a>
-                    <form action="{{ route('logout') }}" method="POST" class="ml-2">
-                        @csrf
-                        <button type="submit" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all" title="Keluar">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                        </button>
-                    </form>
-                </div>
+                        <span class="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider {{ auth()->user()->isAdmin() ? 'bg-amber-100 text-amber-900' : (auth()->user()->isGuru() ? 'bg-emerald-100 text-emerald-900' : 'bg-blue-100 text-blue-900') }}">
+                            {{ auth()->user()->role }}
+                        </span>
+                    </div>
+                </a>
+
+                {{-- Tombol Logout Bulat (Sesuai Gambar) --}}
+                <form action="{{ route('logout') }}" method="POST" class="m-0 flex items-center">
+                    @csrf
+                    <button type="submit" 
+                            class="w-10 h-10 rounded-full bg-[#FFF0F0] border border-rose-200/80 flex items-center justify-center text-rose-600 hover:bg-rose-100 hover:border-rose-300 hover:text-rose-700 transition-all active:scale-95 cursor-pointer shadow-2xs"
+                            title="Keluar">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                    </button>
+                </form>
             @else
                 <a href="{{ route('login') }}" class="font-extrabold text-white bg-gradient-to-r from-[#FF5722] to-[#FFA000] hover:from-[#E64A19] hover:to-[#FF8F00] px-6 py-2 rounded-2xl shadow-md hover:shadow-orange-500/25 transition-all">Masuk</a>
             @endauth

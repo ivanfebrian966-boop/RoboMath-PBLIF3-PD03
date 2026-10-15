@@ -8,16 +8,13 @@
     <!-- Header Banner -->
     <div class="rounded-3xl bg-[#4F46E5] p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border-2 border-indigo-400/30">
         <div class="space-y-1">
-            <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-black uppercase tracking-wider mb-1">
-                📊 Monitoring Akademik Guru
-            </span>
             <h1 class="text-3xl font-black">Progress Siswa & Leaderboard</h1>
             <p class="text-indigo-100 text-sm max-w-xl">Pantau perkembangan capaian materi, akurasi pengerjaan soal kuis, papan peringkat, dan unduh laporan performa kelas.</p>
         </div>
         <div>
             <a href="{{ route('guru.laporan.download') }}" class="inline-flex items-center gap-2 bg-white text-indigo-700 px-5 py-3 rounded-2xl font-black text-xs shadow-md hover:bg-amber-50 transition transform active:scale-95">
                 <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                <span>Unduh Laporan Excel (.xlsx)</span>
+                <span>Unduh Laporan Excel</span>
             </a>
         </div>
     </div>
