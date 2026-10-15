@@ -562,4 +562,48 @@ EOT;
             'key_points' => $points,
         ];
     }
+
+    /**
+     * Convert essay/uraian question markdown into interactive multiple-choice quiz questions.
+     */
+    public function convertEssayToMultipleChoice(string $markdown, ?User $user = null): string
+    {
+        $prompt = <<<EOT
+Anda adalah Guru Matematika & Pembuat Kuis Anak SD di RoboMath.
+Tugas Anda: Ubah butir-butir soal uraian/essay berikut ini menjadi BUTIR SOAL PILIHAN GANDA (A, B, C, D) interaktif yang seru dan mudah dimengerti anak SD.
+
+ATURAN UTAMA:
+1. Pertahankan topik dan maksud pertanyaan dari setiap butir soal.
+2. Buatkan 4 pilihan jawaban yang masuk akal: - A., - B., - C., - D.
+3. Tentukan 1 kunci jawaban yang benar sesuai kunci jawaban asli.
+4. Buatkan pembahasan singkat dan jelas.
+5. DILARANG ada teks pembuka atau basa-basi robotik, langsung mulai dari "### 📝 Soal 1".
+
+FORMAT WAJIB SETIAP SOAL:
+### 📝 Soal [Nomor]
+[Pertanyaan pilihan ganda ramah anak]
+- A. [Pilihan A]
+- B. [Pilihan B]
+- C. [Pilihan C]
+- D. [Pilihan D]
+
+> **🔑 Kunci Jawaban:** [Pilihan benar, contoh: A. ...]
+> **💡 Pembahasan:** [Penjelasan cara menjawab]
+
+SOAL ASLI YANG PERLU DIUBAH:
+{$markdown}
+EOT;
+
+        try {
+            $response = $this->aiManager->chat($prompt, $user, 'raw');
+            $clean = $this->stripIntroPreamble($response->text);
+            if (! empty($clean) && preg_match('/###\s*(?:📝|🌟)?\s*Soal/i', $clean) && preg_match('/[-*]?\s*[A-D][\.\)]/i', $clean)) {
+                return $clean;
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Convert essay to MCQ failed: '.$e->getMessage());
+        }
+
+        return '';
+    }
 }

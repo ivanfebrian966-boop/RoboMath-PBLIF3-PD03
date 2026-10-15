@@ -313,93 +313,70 @@
                 </div>
             </div>
 
-            <!-- STATE 3: RESULT CONTENT CARD -->
-            <div id="result-container" class="hidden bg-white rounded-3xl p-5 sm:p-7 border-2 border-amber-200/80 shadow-md space-y-6">
-                
-                <!-- Result Header & Metrics -->
-                <div class="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
-                    <div>
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 uppercase tracking-wider mb-1" id="res-badge-type">
-                            PDF • 1.2 MB
-                        </span>
-                        <h3 class="text-base sm:text-lg font-black text-slate-900 leading-snug" id="res-title">
-                            Judul Dokumen
-                        </h3>
-                        <div class="flex items-center gap-3 text-xs text-slate-400 font-semibold mt-1">
-                            <span id="res-date">Hari ini, 15:30</span>
-                            <span>•</span>
-                            <span class="text-indigo-600 font-bold" id="res-provider">Gemini Flash</span>
+            <!-- STATE 3: RESULT READY → opens popup modal -->
+            <div id="result-container" class="hidden bg-white rounded-3xl p-5 sm:p-6 border-2 border-emerald-300 shadow-lg space-y-4">
+                <!-- Success Banner -->
+                <div class="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500 flex items-center justify-center text-white text-lg flex-shrink-0 shadow-md">✅</div>
+                    <div class="min-w-0">
+                        <div class="font-black text-emerald-900 text-sm" id="res-title">Paket Soal Siap!</div>
+                        <div class="text-xs text-emerald-700 font-medium mt-0.5">
+                            <span id="res-badge-type" class="font-bold"></span>
+                            <span class="mx-1">•</span>
+                            <span id="res-provider" class="text-indigo-700 font-bold"></span>
                         </div>
                     </div>
-
-                    <!-- Question Count Metric Badge -->
-                    <div class="text-right flex-shrink-0">
-                        <div class="text-xl sm:text-2xl font-black text-purple-600" id="res-compression">🎯 Paket Soal</div>
-                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hasil Pembuatan AI</div>
+                    <div class="ml-auto text-right flex-shrink-0">
+                        <div class="text-lg font-black text-purple-700" id="res-compression">0%</div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase">AI Score</div>
                     </div>
                 </div>
 
-                <!-- Word Count Comparison Strip -->
-                <div class="grid grid-cols-2 gap-3 bg-amber-50/60 p-3 rounded-2xl border border-amber-200/70 text-xs">
-                    <div>
-                        <div class="text-[10px] font-bold text-amber-900/60 uppercase">Kata Dokumen Sumber</div>
-                        <div class="font-black text-slate-800 text-sm" id="res-words-original">1,240 Kata</div>
+                <!-- Stats Strip -->
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-amber-50/80 border border-amber-200/70 rounded-2xl p-3">
+                        <div class="text-[10px] font-bold text-amber-900/60 uppercase">Kata Sumber</div>
+                        <div class="font-black text-slate-800 text-sm mt-0.5" id="res-words-original">—</div>
                     </div>
-                    <div>
-                        <div class="text-[10px] font-bold text-amber-900/60 uppercase">Panjang Butir Soal</div>
-                        <div class="font-black text-purple-700 text-sm" id="res-words-summary">280 Kata</div>
+                    <div class="bg-purple-50 border border-purple-200/70 rounded-2xl p-3">
+                        <div class="text-[10px] font-bold text-purple-900/60 uppercase">Panjang Soal</div>
+                        <div class="font-black text-purple-700 text-sm mt-0.5" id="res-words-summary">—</div>
                     </div>
                 </div>
 
-                <!-- Action Buttons: Copy, Download, Print, Publish -->
-                <div class="flex flex-col gap-3">
-                    <!-- Primary CTA: Kirim ke Siswa -->
+                <!-- Hidden fields needed by JS functions -->
+                <div id="res-markdown-body" class="hidden"></div>
+                <div id="res-key-points-box" class="hidden"><ul id="res-key-points-list"></ul></div>
+                <span id="res-date" class="hidden"></span>
+
+                <!-- Open Popup Button -->
+                <button type="button" onclick="openResultPopup()"
+                        class="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl font-black text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 active:scale-[0.99] transition-all duration-200 text-base">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                    <span>Buka Hasil Soal AI (Layar Penuh)</span>
+                </button>
+
+                <!-- Quick Actions Row -->
+                <div class="flex items-center gap-2">
                     <button type="button" onclick="openPublishModal()"
                             id="btn-publish-to-students"
-                            class="w-full flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl text-sm font-black bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all duration-200 ring-2 ring-emerald-400/30 hover:ring-emerald-400/60">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                        <span>Kirim Soal ke Siswa Sekarang 🚀</span>
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-md shadow-emerald-500/20 transition-all duration-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        <span>Kirim ke Siswa 🚀</span>
                     </button>
-                    <p class="text-[11px] text-center text-emerald-700 font-semibold -mt-1">Soal langsung masuk ke bank soal & bisa dimainkan siswa</p>
-
-                    <!-- Secondary Buttons Row -->
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <button type="button" onclick="copySummaryText()"
-                                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all cursor-pointer">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                            <span>Salin Semua Soal</span>
-                        </button>
-
-                        <button type="button" onclick="downloadCurrentSummary()"
-                                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-all cursor-pointer">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                            <span>Unduh .MD</span>
-                        </button>
-
-                        <button type="button" onclick="printSummary()"
-                                class="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer" title="Cetak Soal">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                        </button>
-                    </div>
+                    <button type="button" onclick="copySummaryText()"
+                            class="p-2.5 rounded-xl text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all cursor-pointer" title="Salin Semua Soal">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                    <button type="button" onclick="downloadCurrentSummary()"
+                            class="p-2.5 rounded-xl text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer" title="Unduh .MD">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    </button>
+                    <button type="button" onclick="printSummary()"
+                            class="p-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer" title="Cetak Soal">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    </button>
                 </div>
-
-                <!-- Markdown Content Render Container -->
-                <div class="space-y-4">
-                    <div id="res-markdown-body" class="prose prose-purple prose-sm max-w-none text-slate-700 leading-relaxed max-h-[500px] overflow-y-auto pr-2 border-t border-slate-100 pt-4">
-                        <!-- Dynamic Markdown HTML goes here -->
-                    </div>
-                </div>
-
-                <!-- Highlight Key Points Strip -->
-                <div id="res-key-points-box" class="hidden bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 space-y-2.5">
-                    <div class="text-xs font-black text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>📌 Rangkuman Konsep Soal</span>
-                    </div>
-                    <ul class="text-xs font-medium text-slate-700 space-y-2 list-none" id="res-key-points-list">
-                        <!-- Bullet points appended dynamically -->
-                    </ul>
-                </div>
-
             </div>
 
         </div>
@@ -525,10 +502,10 @@
 </div>
 
 <!-- ======================================================== -->
-<!-- MODAL POPUP: LIHAT RINGKASAN LENGKAP -->
+<!-- MODAL POPUP: LIHAT RINGKASAN LENGKAP (Riwayat) -->
 <!-- ======================================================== -->
 <div id="summary-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border-2 border-amber-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border-2 border-amber-200 overflow-hidden">
         
         <!-- Modal Top Bar -->
         <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-[#FAF6EF]/60">
@@ -560,7 +537,7 @@
         <!-- Modal Footer -->
         <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
             <button type="button" onclick="copyModalContent()" class="px-4 py-2 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                 <span>Salin Teks Ringkasan</span>
             </button>
 
@@ -572,10 +549,105 @@
     </div>
 </div>
 
+<!-- ======================================================== -->
+<!-- MODAL POPUP BESAR: HASIL SOAL AI (Setelah Generate) -->
+<!-- ======================================================== -->
+<div id="result-popup-modal" class="fixed inset-0 z-[60] hidden" style="background: rgba(15,15,35,0.75); backdrop-filter: blur(6px);">
+    <div class="flex items-stretch justify-center min-h-screen p-3 sm:p-5">
+        <div class="bg-white rounded-3xl w-full max-w-6xl flex flex-col shadow-2xl border border-white/20 overflow-hidden" style="max-height: calc(100vh - 24px);">
+
+            <!-- Popup Header Bar -->
+            <div class="flex items-center justify-between gap-4 px-6 sm:px-8 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-700 via-indigo-700 to-indigo-600 flex-shrink-0">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-2xl bg-white/20 flex items-center justify-center text-white font-black text-lg flex-shrink-0">🤖</div>
+                    <div class="min-w-0">
+                        <h2 class="text-base sm:text-lg font-black text-white truncate" id="popup-res-title">Paket Soal AI</h2>
+                        <div class="flex items-center gap-2 text-purple-200 text-xs font-semibold mt-0.5">
+                            <span id="popup-res-badge-type"></span>
+                            <span>•</span>
+                            <span id="popup-res-provider" class="text-amber-300"></span>
+                            <span>•</span>
+                            <span id="popup-res-date"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <!-- Action buttons in header -->
+                    <button type="button" onclick="openPublishModal()" title="Kirim ke Siswa"
+                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-emerald-500 hover:bg-emerald-400 text-white shadow-md transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        <span class="hidden sm:inline">Kirim ke Siswa</span>
+                    </button>
+                    <button type="button" onclick="copySummaryText()" title="Salin Semua"
+                            class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                    <button type="button" onclick="downloadCurrentSummary()" title="Unduh .MD"
+                            class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    </button>
+                    <button type="button" onclick="printSummary()" title="Cetak"
+                            class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    </button>
+                    <button type="button" onclick="closeResultPopup()"
+                            class="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-black text-lg transition-all ml-1">&times;</button>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-6 px-6 sm:px-8 py-3 bg-slate-50 border-b border-slate-100 flex-shrink-0 text-xs overflow-x-auto">
+                <div>
+                    <span class="text-slate-400 font-bold uppercase tracking-wider">Kata Sumber</span>
+                    <span class="font-black text-slate-800 ml-2" id="popup-res-words-original">—</span>
+                </div>
+                <div class="w-px h-4 bg-slate-200"></div>
+                <div>
+                    <span class="text-slate-400 font-bold uppercase tracking-wider">Panjang Soal</span>
+                    <span class="font-black text-purple-700 ml-2" id="popup-res-words-summary">—</span>
+                </div>
+                <div class="w-px h-4 bg-slate-200"></div>
+                <div>
+                    <span class="text-slate-400 font-bold uppercase tracking-wider">AI Score</span>
+                    <span class="font-black text-indigo-700 ml-2" id="popup-res-compression">—</span>
+                </div>
+                <div class="ml-auto flex-shrink-0">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Soal Siap Digunakan
+                    </span>
+                </div>
+            </div>
+
+            <!-- Main Body: Questions Scroll Area -->
+            <div class="flex-1 overflow-y-auto p-5 sm:p-8 space-y-0" id="popup-res-markdown-body" style="scroll-behavior: smooth;">
+                <!-- Dynamic question cards rendered here -->
+            </div>
+
+            <!-- Key Points (if any) -->
+            <div id="popup-res-key-points-box" class="hidden mx-5 sm:mx-8 mb-5 bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 space-y-2.5 flex-shrink-0">
+                <div class="text-xs font-black text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <span>📌 Rangkuman Konsep Soal</span>
+                </div>
+                <ul class="text-xs font-medium text-slate-700 space-y-2 list-none" id="popup-res-key-points-list"></ul>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-6 sm:px-8 py-4 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3 flex-shrink-0">
+                <p class="text-[11px] text-slate-400 font-medium">Dibuat oleh <span class="font-bold text-purple-700">RoboMath AI</span> • Klik soal untuk menyembunyikan/tampilkan pembahasan</p>
+                <button type="button" onclick="closeResultPopup()"
+                        class="px-5 py-2 rounded-xl text-xs font-black bg-slate-800 text-white hover:bg-slate-700 shadow-md transition-all">
+                    Tutup Popup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ============================================================ -->
 <!-- MODAL: PUBLISH SOAL KE SISWA -->
 <!-- ============================================================ -->
-<div id="publish-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);">
+<div id="publish-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 space-y-6 relative border-2 border-emerald-200">
         <!-- Modal Header -->
         <div class="flex items-center justify-between">
@@ -1223,7 +1295,7 @@
         }
     }
 
-    // Render Summary Result into UI
+    // Render Summary Result into UI — shows compact card + opens popup automatically
     function renderSummaryResult(data) {
         const placeholder = document.getElementById('result-placeholder');
         const loading = document.getElementById('result-loading');
@@ -1236,7 +1308,7 @@
         state.activeSummaryMarkdown = data.summary_markdown;
         state.activeSummaryTitle = data.title;
 
-        // Populate header fields
+        // Populate compact card fields
         const badgeType = document.getElementById('res-badge-type');
         const resTitle = document.getElementById('res-title');
         const resDate = document.getElementById('res-date');
@@ -1254,15 +1326,14 @@
         if (resWordsOrig) resWordsOrig.textContent = `${(data.word_count_original || 0).toLocaleString()} Kata`;
         if (resWordsSum) resWordsSum.textContent = `${(data.word_count_summary || 0).toLocaleString()} Kata`;
 
-        // Render Markdown HTML
+        // Store rendered HTML in hidden container
         if (markdownBody) {
             markdownBody.innerHTML = parseMarkdownToHtml(data.summary_markdown);
         }
 
-        // Render Key Points Box
+        // Render Key Points (hidden compact version)
         const keyPointsBox = document.getElementById('res-key-points-box');
         const keyPointsList = document.getElementById('res-key-points-list');
-
         if (keyPointsList) {
             keyPointsList.innerHTML = '';
             if (data.key_points && data.key_points.length > 0) {
@@ -1278,11 +1349,68 @@
             }
         }
 
-        // Scroll result smoothly into view
+        // Scroll compact card into view then auto-open popup
         if (container) {
             container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
+        setTimeout(() => openResultPopup(), 400);
     }
+
+    // Open the large AI result popup modal
+    window.openResultPopup = function() {
+        const popupModal = document.getElementById('result-popup-modal');
+        if (!popupModal) return;
+
+        // Sync header data from compact card
+        const fields = [
+            ['popup-res-title',          'res-title'],
+            ['popup-res-badge-type',     'res-badge-type'],
+            ['popup-res-provider',       'res-provider'],
+            ['popup-res-date',           'res-date'],
+            ['popup-res-compression',    'res-compression'],
+            ['popup-res-words-original', 'res-words-original'],
+            ['popup-res-words-summary',  'res-words-summary'],
+        ];
+        fields.forEach(([popupId, srcId]) => {
+            const src = document.getElementById(srcId);
+            const dst = document.getElementById(popupId);
+            if (src && dst) dst.textContent = src.textContent;
+        });
+
+        // Clone rendered question cards into popup body
+        const srcBody = document.getElementById('res-markdown-body');
+        const dstBody = document.getElementById('popup-res-markdown-body');
+        if (srcBody && dstBody) {
+            dstBody.innerHTML = srcBody.innerHTML;
+        }
+
+        // Clone key points
+        const srcKpList = document.getElementById('res-key-points-list');
+        const dstKpList = document.getElementById('popup-res-key-points-list');
+        const dstKpBox  = document.getElementById('popup-res-key-points-box');
+        if (dstKpList && srcKpList) {
+            dstKpList.innerHTML = srcKpList.innerHTML;
+            if (dstKpBox) {
+                if (srcKpList.children.length > 0) dstKpBox.classList.remove('hidden');
+                else dstKpBox.classList.add('hidden');
+            }
+        }
+
+        popupModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    // Close the large result popup
+    window.closeResultPopup = function() {
+        const popupModal = document.getElementById('result-popup-modal');
+        if (popupModal) popupModal.classList.add('hidden');
+        document.body.style.overflow = '';
+    };
+
+    // Close popup when clicking backdrop
+    document.getElementById('result-popup-modal')?.addEventListener('click', function(e) {
+        if (e.target === this || e.target === this.firstElementChild) closeResultPopup();
+    });
 
     // Copy Summary Text
     window.copySummaryText = function() {
@@ -1445,13 +1573,18 @@
             return;
         }
 
-        // Estimate question count from markdown
+        // Check if markdown has MCQ options or is essay
+        const hasOptions = /(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i.test(state.activeSummaryMarkdown);
         const questionBlocks = (state.activeSummaryMarkdown.match(/###\s*(?:📝|🌟)?\s*Soal\s*\d+/gi) || []).length;
         const previewEl = document.getElementById('publish-preview');
         const previewText = document.getElementById('publish-preview-text');
         if (previewEl && previewText) {
             if (questionBlocks > 0) {
-                previewText.textContent = `${questionBlocks} soal terdeteksi dan siap dikirim ke bank soal siswa.`;
+                if (hasOptions) {
+                    previewText.textContent = `${questionBlocks} butir soal pilihan ganda siap dikirim ke bank soal siswa.`;
+                } else {
+                    previewText.textContent = `${questionBlocks} butir soal terdeteksi. AI akan otomatis melengkapi dengan opsi jawaban interaktif agar siswa dapat langsung mengerjakan kuis ini di akun mereka.`;
+                }
                 previewEl.classList.remove('hidden');
             } else {
                 previewEl.classList.add('hidden');
