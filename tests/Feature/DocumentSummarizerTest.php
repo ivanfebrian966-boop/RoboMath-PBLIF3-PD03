@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\DocumentSummary;
+use App\Models\Quiz;
+use App\Models\Topic;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -199,5 +201,101 @@ class DocumentSummarizerTest extends TestCase
         $this->assertDatabaseMissing('document_summaries', [
             'id' => $summary->id,
         ]);
+    }
+
+    public function test_admin_can_publish_mcq_quizzes_to_students(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $topic = Topic::create([
+            'title' => 'Operasi Hitung',
+            'slug' => 'operasi-hitung',
+            'description' => 'Belajar operasi hitung dasar',
+            'icon' => '➕',
+            'color' => '#6366F1',
+            'kelas_level' => 1,
+            'order' => 1,
+            'category' => 'urutan',
+            'is_active' => true,
+        ]);
+
+        $markdown = <<<'MD'
+## 🌟 Paket Soal: Operasi Bilangan
+
+### 📝 Soal 1
+Berapa hasil dari 5 + 3?
+- A. 6
+- B. 7
+- C. 8
+- D. 9
+
+> **🔑 Kunci Jawaban:** C. 8
+> **💡 Pembahasan:** 5 ditambah 3 sama dengan 8.
+MD;
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.publish-to-students'), [
+            'topic_id' => $topic->id,
+            'markdown' => $markdown,
+            'difficulty' => 'mudah',
+            'points' => 10,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'count' => 1,
+        ]);
+
+        $this->assertDatabaseHas('quizzes', [
+            'topic_id' => $topic->id,
+            'correct_answer' => 'C',
+        ]);
+    }
+
+    public function test_admin_can_publish_essay_quizzes_to_students_with_automatic_option_synthesis(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $topic = Topic::create([
+            'title' => 'Jadwal Presentasi',
+            'slug' => 'jadwal-presentasi',
+            'description' => 'Materi jadwal presentasi',
+            'icon' => '📅',
+            'color' => '#8B5CF6',
+            'kelas_level' => 2,
+            'order' => 2,
+            'category' => 'pola',
+            'is_active' => true,
+        ]);
+
+        $essayMarkdown = <<<'MD'
+## 🌟 Paket Soal Uraian
+
+### 📝 Soal 1
+Perhatikan jadwal untuk Kelas Malam. Berapa total nama kelompok Presenter yang ada?
+
+> **🔑 Kunci Jawaban:** Total kelompok presenter di kelas malam adalah 4 kelompok.
+> **💡 Pembahasan:** Menghitung jumlah kelompok presenter pada jadwal kelas malam diperoleh 4 kelompok.
+MD;
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.publish-to-students'), [
+            'topic_id' => $topic->id,
+            'markdown' => $essayMarkdown,
+            'difficulty' => 'sedang',
+            'points' => 15,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'count' => 1,
+        ]);
+
+        $quiz = Quiz::where('topic_id', $topic->id)->latest()->first();
+        $this->assertNotNull($quiz);
+        $this->assertCount(4, $quiz->options);
+        $this->assertArrayHasKey('A', $quiz->options);
+        $this->assertArrayHasKey('B', $quiz->options);
+        $this->assertArrayHasKey('C', $quiz->options);
+        $this->assertArrayHasKey('D', $quiz->options);
+        $this->assertContains($quiz->correct_answer, ['A', 'B', 'C', 'D']);
     }
 }

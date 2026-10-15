@@ -276,12 +276,22 @@ class DocumentSummarizerController extends Controller
         $difficulty = $request->input('difficulty', 'sedang');
         $defaultPoints = (int) $request->input('points', 10);
 
+        // Check if markdown is predominantly essay/uraian (no A-D options)
+        $hasMcqOptions = (bool) preg_match('/(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i', $markdown);
+        if (! $hasMcqOptions) {
+            // Attempt AI conversion from essay to multiple choice
+            $aiConverted = $this->summarizerService->convertEssayToMultipleChoice($markdown, $request->user());
+            if (! empty($aiConverted)) {
+                $markdown = $aiConverted;
+            }
+        }
+
         $quizzes = $this->parseQuizzesFromMarkdown($markdown, $difficulty, $defaultPoints);
 
         if (empty($quizzes)) {
             return response()->json([
                 'success' => false,
-                'message' => 'AI tidak menghasilkan soal pilihan ganda yang dapat dibaca. Pastikan format output AI menyertakan pilihan jawaban A, B, C, D dan kunci jawaban.',
+                'message' => 'Tidak dapat mendeteksi butir soal dari dokumen. Pastikan dokumen memuat soal dan kunci jawaban yang jelas.',
             ], 422);
         }
 
@@ -306,12 +316,13 @@ class DocumentSummarizerController extends Controller
             'success' => true,
             'count' => $created,
             'topic' => $topic->title,
-            'message' => "{$created} soal berhasil dikirim ke bank soal topik \"{$topic->title}\" dan langsung dapat dimainkan siswa!",
+            'message' => "{$created} butir soal berhasil dikirim ke bank soal topik \"{$topic->title}\" dan langsung dapat dimainkan siswa!",
         ]);
     }
 
     /**
      * Parse structured quiz question blocks from AI markdown output.
+     * Supports both multiple choice and essay/uraian questions with automatic option synthesis.
      *
      * @return array<int, array{question: string, options: array<string,string>, correct_answer: string, explanation: string, difficulty: string, points: int}>
      */
@@ -342,7 +353,7 @@ class DocumentSummarizerController extends Controller
                 }
                 if ($inOptions) {
                     $optionLines[] = $trimmed;
-                } elseif (! preg_match('/^(?:🔑|💡|\*\*🔑|\*\*💡|Kunci|Pembahasan)/i', $trimmed)) {
+                } elseif (! preg_match('/^(?:🔑|💡|\*\*🔑|\*\*💡|Kunci|Pembahasan|>)/i', $trimmed)) {
                     $bodyLines[] = preg_replace('/^#+\s*/', '', $trimmed);
                 }
             }
@@ -364,25 +375,37 @@ class DocumentSummarizerController extends Controller
                 }
             }
 
-            // Need at least 2 options to be valid MCQ
-            if (count($options) < 2) {
-                continue;
-            }
-
-            // Extract answer key
-            $correctAnswer = '';
-            if (preg_match('/(?:🔑\s*Kunci\s*Jawaban|Kunci\s*Jawaban)\s*:\s*\*?\*?\s*([A-D](?:\s*[-–]\s*\S+)?)/i', $block, $km)) {
-                $correctAnswer = strtoupper(trim(preg_replace('/[*_>\s]/', '', substr($km[1], 0, 1))));
-            }
-            if (! $correctAnswer || ! isset($options[$correctAnswer])) {
-                // fallback: pick first available option
-                $correctAnswer = array_key_first($options);
-            }
-
             // Extract explanation
             $explanation = '';
             if (preg_match('/(?:💡\s*Pembahasan(?:\s*Seru|\s*&\s*Langkah)?|Pembahasan(?:\s*&\s*Langkah)?)\s*:\s*\*?\*?\s*([^\n\r#]+)/i', $block, $em)) {
                 $explanation = trim(preg_replace('/[*_>]/', '', $em[1]));
+            }
+
+            // Extract answer key or synthesize options if missing
+            $correctAnswer = '';
+            if (count($options) >= 2) {
+                if (preg_match('/(?:🔑\s*Kunci\s*Jawaban|Kunci\s*Jawaban)\s*:\s*\*?\*?\s*([A-D](?:\s*[-–]\s*\S+)?)/i', $block, $km)) {
+                    $correctAnswer = strtoupper(trim(preg_replace('/[*_>\s]/', '', substr($km[1], 0, 1))));
+                }
+                if (! $correctAnswer || ! isset($options[$correctAnswer])) {
+                    $correctAnswer = array_key_first($options);
+                }
+            } else {
+                // Synthesize 4 options for essay/uraian questions
+                $rawKey = '';
+                if (preg_match('/(?:🔑\s*Kunci\s*Jawaban|Kunci\s*Jawaban)\s*:\s*\*?\*?\s*([^\n\r>]+)/i', $block, $km)) {
+                    $rawKey = trim(preg_replace('/[*_>]/', '', $km[1]));
+                }
+                if (empty($rawKey)) {
+                    $rawKey = 'Sesuai dengan pembahasan dan materi dokumen';
+                }
+
+                $synthesized = $this->synthesizeOptionsFromRawKey($rawKey);
+                $options = $synthesized['options'];
+                $correctAnswer = $synthesized['correct_answer'];
+                if (empty($explanation)) {
+                    $explanation = "Jawaban yang tepat adalah opsi {$correctAnswer}: {$synthesized['correct_text']}.";
+                }
             }
 
             $quizzes[] = [
@@ -396,6 +419,68 @@ class DocumentSummarizerController extends Controller
         }
 
         return $quizzes;
+    }
+
+    /**
+     * Synthesize 4 plausible multiple-choice options from an essay answer key.
+     *
+     * @return array{options: array<string,string>, correct_answer: string, correct_text: string}
+     */
+    protected function synthesizeOptionsFromRawKey(string $rawKey): array
+    {
+        $cleanKey = trim(preg_replace('/\s+/', ' ', $rawKey));
+        $correctText = mb_strlen($cleanKey) > 95 ? mb_substr($cleanKey, 0, 92).'...' : $cleanKey;
+
+        $distractors = [];
+
+        // Check for numbers in answer key to generate numerical distractors
+        if (preg_match('/\b(\d+)\b/', $correctText, $numMatch)) {
+            $num = (int) $numMatch[1];
+            $d1 = max(1, $num - 1);
+            $d2 = $num + 1;
+            $d3 = $num + 2;
+            $distractors[] = preg_replace('/\b'.preg_quote((string) $num, '/').'\b/', (string) $d1, $correctText, 1);
+            $distractors[] = preg_replace('/\b'.preg_quote((string) $num, '/').'\b/', (string) $d2, $correctText, 1);
+            $distractors[] = preg_replace('/\b'.preg_quote((string) $num, '/').'\b/', (string) $d3, $correctText, 1);
+        }
+
+        // Generic distractor pool
+        $genericPool = [
+            'Belum dapat dipastikan dari data dokumen materi',
+            'Hanya sebagian kelompok yang ditugaskan',
+            'Semua kelompok bertugas di waktu yang sama',
+            'Tidak ada pasangan yang memenuhi kriteria',
+            'Informasi berbeda dengan petunjuk di dokumen',
+        ];
+
+        foreach ($genericPool as $poolItem) {
+            if (count($distractors) >= 3) {
+                break;
+            }
+            if (! in_array($poolItem, $distractors) && $poolItem !== $correctText) {
+                $distractors[] = $poolItem;
+            }
+        }
+
+        // Randomize placement
+        $letters = ['A', 'B', 'C', 'D'];
+        $correctLetter = $letters[array_rand($letters)];
+        $options = [];
+        $dIndex = 0;
+
+        foreach ($letters as $letter) {
+            if ($letter === $correctLetter) {
+                $options[$letter] = $correctText;
+            } else {
+                $options[$letter] = $distractors[$dIndex++] ?? 'Pilihan jawaban lainnya';
+            }
+        }
+
+        return [
+            'options' => $options,
+            'correct_answer' => $correctLetter,
+            'correct_text' => $correctText,
+        ];
     }
 
     /**
