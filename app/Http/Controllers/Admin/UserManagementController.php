@@ -37,7 +37,7 @@ class UserManagementController extends Controller
             });
         }
 
-        $users = $query->paginate(25)->withQueryString();
+        $users = $query->paginate(10)->withQueryString();
 
         $totalSiswa = User::where('role', 'siswa')->count();
         $totalGuru = User::where('role', 'guru')->count();

@@ -133,8 +133,7 @@
 
         {{-- Subtitle --}}
         <p class="text-sm sm:text-base text-slate-600 font-medium max-w-xl mx-auto leading-relaxed mb-7">
-            Dari penjumlahan dasar hingga pemecahan logika tingkat lanjut,<br class="hidden sm:inline">
-            RoboMath membantu siswa SD belajar mandiri dengan <strong class="text-slate-800 font-bold">Asisten AI RoboBot</strong> dan gamifikasi poin.
+            Dari penjumlahan dasar hingga pemecahan masalah, RoboMath membantu siswa SD belajar mandiri dengan latihan soal adaptif berbasis AI serta gamifikasi poin, badge, dan leaderboard.
         </p>
 
         {{-- Action Buttons --}}

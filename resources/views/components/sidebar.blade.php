@@ -122,65 +122,64 @@
                 <!-- 3. Navigasi Admin (Warna-Warni Sesuai Modul) -->
                 @elseif(auth()->user()->isAdmin())
                     <nav class="space-y-2">
-                        {{-- Dashboard Admin (Tema Oranye) --}}
+                        {{-- Dashboard Admin --}}
                         @php $isActive = request()->routeIs('admin.dashboard') || request()->routeIs('admin.reports*'); @endphp
                         <a href="{{ route('admin.dashboard') }}"
-                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF9500] text-slate-950 font-black shadow-[0_8px_20px_rgba(255,149,0,0.32)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-orange-50/70 hover:text-orange-950 hover:scale-[1.01]' }} active:scale-95 group">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-amber-200/60 text-slate-950' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }} transition-transform">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF9500] text-white font-black shadow-[0_8px_20px_rgba(255,149,0,0.32)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-orange-50/70 hover:text-orange-950 hover:scale-[1.01]' }} active:scale-95 group">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-500 group-hover:scale-105' }} transition-transform">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                                 </svg>
                             </span>
                             <span>Dashboard Admin</span>
                         </a>
 
-                        {{-- Kelola Materi AI (Tema Ungu Royal) --}}
+                        {{-- Kelola Materi (Tema Oranye) --}}
                         @php $isActive = request()->routeIs('admin.document-summarizer*') || request()->routeIs('admin.lessons*'); @endphp
                         <a href="{{ route('admin.document-summarizer.index') }}"
-                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#7C3AED] text-white font-black shadow-[0_8px_20px_rgba(124,58,237,0.35)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-purple-50/70 hover:text-purple-950 hover:scale-[1.01]' }} active:scale-95 group">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-purple-100 text-purple-600 group-hover:scale-105' }} transition-transform">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF9500] text-white font-black shadow-[0_8px_20px_rgba(255,149,0,0.32)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-orange-50/70 hover:text-orange-950 hover:scale-[1.01]' }} active:scale-95 group">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }} transition-transform">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                                 </svg>
                             </span>
                             <span>Kelola Materi</span>
-                            <span class="ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-md {{ $isActive ? 'bg-white/25 text-white' : 'bg-purple-100 text-purple-700' }}">AI</span>
                         </a>
 
-                        {{-- Review AI (Tema Merah / Rose) --}}
+                        {{-- Review AI (Tema Biru Muda) --}}
                         @php $isActive = request()->routeIs('admin.ai-recommendations*') || request()->routeIs('admin.quizzes*'); @endphp
                         <a href="{{ route('admin.ai-recommendations.index') }}"
-                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF3B30] text-white font-black shadow-[0_8px_20px_rgba(255,59,48,0.35)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-rose-50/70 hover:text-rose-950 hover:scale-[1.01]' }} active:scale-95 group">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-600 group-hover:scale-105' }} transition-transform">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#3B82F6] text-white font-black shadow-[0_8px_20px_rgba(59,130,246,0.35)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-blue-50/70 hover:text-blue-950 hover:scale-[1.01]' }} active:scale-95 group">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-500 group-hover:scale-105' }} transition-transform">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
                                 </svg>
                             </span>
                             <span>Review AI</span>
                             @php $pendingCount = \App\Models\AiRecommendation::where('status', 'pending')->count(); @endphp
-                            @if($pendingCount > 0)
-                                <span class="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full {{ $isActive ? 'bg-white/25 text-white' : 'bg-rose-500 text-white' }}">{{ $pendingCount }}</span>
+                            @if($pendingCount > 0 && !$isActive)
+                                <span class="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-500 text-white">{{ $pendingCount }}</span>
                             @endif
                         </a>
 
-                        {{-- Kelola Pengguna (Tema Indigo) --}}
+                        {{-- Kelola Pengguna (Tema Hijau Mint / Emerald) --}}
                         @php $isActive = request()->routeIs('admin.users*'); @endphp
                         <a href="{{ route('admin.users.index') }}"
-                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#4F46E5] text-white font-black shadow-[0_8px_20px_rgba(79,70,229,0.35)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-indigo-50/70 hover:text-indigo-950 hover:scale-[1.01]' }} active:scale-95 group">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-600 group-hover:scale-105' }} transition-transform">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#10B981] text-white font-black shadow-[0_8px_20px_rgba(16,185,129,0.35)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-emerald-50/70 hover:text-emerald-950 hover:scale-[1.01]' }} active:scale-95 group">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:scale-105' }} transition-transform">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                             </span>
                             <span>Kelola Pengguna</span>
                         </a>
 
-                        {{-- Profil (Tema Hijau Emerald) --}}
+                        {{-- Profil (Tema Kuning / Amber) --}}
                         @php $isActive = request()->routeIs('profil*'); @endphp
                         <a href="{{ route('profil.show') }}"
-                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#10B981] text-white font-black shadow-[0_8px_20px_rgba(16,185,129,0.35)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-emerald-50/70 hover:text-emerald-950 hover:scale-[1.01]' }} active:scale-95 group">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-600 group-hover:scale-105' }} transition-transform">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#F59E0B] text-slate-950 font-black shadow-[0_8px_20px_rgba(245,158,11,0.35)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-amber-50/70 hover:text-amber-950 hover:scale-[1.01]' }} active:scale-95 group">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-amber-200/60 text-slate-950' : 'bg-amber-100 text-amber-600 group-hover:scale-105' }} transition-transform">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                             </span>
@@ -216,27 +215,6 @@
                         $progressPercent = $lvl >= 5 ? 100 : min(100, max(5, round((($score - $prevTarget) / $diff) * 100)));
                         $remaining = max(0, $nextTarget - $score);
                     @endphp
-
-                    {{-- Card Level Siswa --}}
-                    <div class="rounded-2xl p-4 bg-[#FFF8E7] border border-amber-200/80 space-y-2.5">
-                        <div class="flex items-center justify-between text-xs font-black text-slate-900">
-                            <span>Level {{ $lvl }}</span>
-                            <span class="text-slate-700">{{ number_format($score) }} / {{ number_format($nextTarget) }} poin</span>
-                        </div>
-                        
-                        {{-- Progress Bar Oranye --}}
-                        <div class="w-full bg-amber-200/60 rounded-full h-2.5 overflow-hidden">
-                            <div class="bg-[#FF9500] h-full rounded-full transition-all duration-500" style="width: {{ $progressPercent }}%"></div>
-                        </div>
-                        
-                        <div class="text-[11px] font-semibold text-slate-500">
-                            @if($lvl >= 5)
-                                Level Tertinggi (Maksimal) 🌟
-                            @else
-                                {{ number_format($remaining) }} poin lagi menuju Level {{ $lvl + 1 }}
-                            @endif
-                        </div>
-                    </div>
                 @endif
             @endauth
 
