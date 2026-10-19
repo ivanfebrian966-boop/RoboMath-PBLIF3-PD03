@@ -47,6 +47,15 @@
     transform: translateY(-4px);
     box-shadow: 0 16px 30px -10px rgba(0, 0, 0, 0.08);
 }
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
 </style>
 
 <div class="relative overflow-x-hidden selection:bg-amber-200 selection:text-amber-900 bg-[#FAF6EF] min-h-screen">
@@ -57,53 +66,77 @@
                 activeNav: 'hero',
                 init() {
                     const sections = ['hero', 'fitur', 'modul', 'prestasi'];
-                    const obs = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) this.activeNav = entry.target.id;
-                        });
-                    }, { threshold: 0.3, rootMargin: '-40px 0px -40% 0px' });
-                    sections.forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) obs.observe(el);
-                    });
+                    const updateActive = () => {
+                        const scrollY = window.scrollY;
+                        // Bottom of page check
+                        if ((window.innerHeight + scrollY) >= (document.documentElement.scrollHeight - 100)) {
+                            this.activeNav = 'prestasi';
+                            return;
+                        }
+                        const offset = 220;
+                        for (let i = sections.length - 1; i >= 0; i--) {
+                            const el = document.getElementById(sections[i]);
+                            if (el && scrollY + offset >= el.offsetTop) {
+                                this.activeNav = sections[i];
+                                return;
+                            }
+                        }
+                        this.activeNav = 'hero';
+                    };
+                    window.addEventListener('scroll', updateActive, { passive: true });
+                    window.addEventListener('resize', updateActive, { passive: true });
+                    updateActive();
                 }
             }">
-        <nav class="bg-white/95 backdrop-blur-md rounded-full px-5 py-2.5 flex items-center justify-between border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+        <nav class="bg-white/95 backdrop-blur-md rounded-full px-4 sm:px-5 py-2.5 flex items-center justify-between border transition-all duration-300"
+             :class="{
+                 'border-red-200/90 shadow-[0_6px_25px_rgba(255,59,48,0.12)]': activeNav === 'hero',
+                 'border-blue-200/90 shadow-[0_6px_25px_rgba(52,120,246,0.12)]': activeNav === 'fitur',
+                 'border-emerald-200/90 shadow-[0_6px_25px_rgba(16,185,129,0.12)]': activeNav === 'modul',
+                 'border-amber-200/90 shadow-[0_6px_25px_rgba(255,149,0,0.12)]': activeNav === 'prestasi',
+             }">
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="flex items-center gap-2 group flex-shrink-0">
                 <img src="{{ asset('images/logo.png') }}" alt="RoboMath Logo" class="h-7 w-auto transition-transform duration-200 group-hover:scale-105">
             </a>
 
             {{-- Nav Links --}}
-            <div class="hidden sm:flex items-center gap-2 text-xs font-semibold">
+            <div class="flex items-center gap-1 sm:gap-2 text-xs font-semibold overflow-x-auto no-scrollbar py-0.5">
+                {{-- Beranda: Merah #FF3B30 --}}
                 <a href="#hero"
                    @click="activeNav = 'hero'"
-                   :class="activeNav === 'hero' ? 'border border-[#FF3B30] text-[#FF3B30] bg-red-50/50 font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-slate-900 px-3 py-1 transition-colors'"
-                   class="transition-all duration-200">
+                   :class="activeNav === 'hero' ? 'border border-[#FF3B30] text-[#FF3B30] bg-red-50/80 shadow-xs font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-[#FF3B30] hover:bg-red-50/50 px-3 py-1 rounded-full transition-colors'"
+                   class="transition-all duration-200 whitespace-nowrap">
                     Beranda
                 </a>
+
+                {{-- Fitur AI: Biru #3478F6 --}}
                 <a href="#fitur"
                    @click="activeNav = 'fitur'"
-                   :class="activeNav === 'fitur' ? 'border border-[#FF3B30] text-[#FF3B30] bg-red-50/50 font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-slate-900 px-3 py-1 transition-colors'"
-                   class="transition-all duration-200">
+                   :class="activeNav === 'fitur' ? 'border border-[#3478F6] text-[#3478F6] bg-blue-50/80 shadow-xs font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-[#3478F6] hover:bg-blue-50/50 px-3 py-1 rounded-full transition-colors'"
+                   class="transition-all duration-200 whitespace-nowrap">
                     Fitur AI
                 </a>
+
+                {{-- Modul SD: Hijau #10B981 --}}
                 <a href="#modul"
                    @click="activeNav = 'modul'"
-                   :class="activeNav === 'modul' ? 'border border-[#FF3B30] text-[#FF3B30] bg-red-50/50 font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-slate-900 px-3 py-1 transition-colors'"
-                   class="transition-all duration-200">
+                   :class="activeNav === 'modul' ? 'border border-[#10B981] text-[#10B981] bg-emerald-50/80 shadow-xs font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-[#10B981] hover:bg-emerald-50/50 px-3 py-1 rounded-full transition-colors'"
+                   class="transition-all duration-200 whitespace-nowrap">
                     Modul SD
                 </a>
+
+                {{-- Prestasi: Oranye #FF9500 --}}
                 <a href="#prestasi"
                    @click="activeNav = 'prestasi'"
-                   :class="activeNav === 'prestasi' ? 'border border-[#FF3B30] text-[#FF3B30] bg-red-50/50 font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-slate-900 px-3 py-1 transition-colors'"
-                   class="transition-all duration-200">
+                   :class="activeNav === 'prestasi' ? 'border border-[#FF9500] text-[#FF9500] bg-amber-50/80 shadow-xs font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-[#FF9500] hover:bg-amber-50/50 px-3 py-1 rounded-full transition-colors'"
+                   class="transition-all duration-200 whitespace-nowrap">
                     Prestasi
                 </a>
             </div>
 
             {{-- Auth Action --}}
-            <div class="flex items-center gap-2 text-xs font-bold">
+            <div class="flex items-center gap-2 text-xs font-bold flex-shrink-0">
                 @auth
                     <a href="{{ auth()->user()->isGuru() ? route('guru.dashboard') : (auth()->user()->isAdmin() ? route('admin.dashboard') : route('siswa.dashboard')) }}"
                        class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-1.5 rounded-full transition-all">
@@ -111,7 +144,13 @@
                     </a>
                 @else
                     <a href="{{ route('login') }}"
-                       class="border border-[#FF3B30]/60 text-[#FF3B30] hover:bg-[#FF3B30] hover:text-white px-4 py-1.5 rounded-full transition-all duration-200">
+                       :class="{
+                           'border-[#FF3B30]/60 text-[#FF3B30] hover:bg-[#FF3B30]': activeNav === 'hero',
+                           'border-[#3478F6]/60 text-[#3478F6] hover:bg-[#3478F6]': activeNav === 'fitur',
+                           'border-[#10B981]/60 text-[#10B981] hover:bg-[#10B981]': activeNav === 'modul',
+                           'border-[#FF9500]/60 text-[#FF9500] hover:bg-[#FF9500]': activeNav === 'prestasi',
+                       }"
+                       class="border hover:text-white px-4 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap">
                         Masuk
                     </a>
                 @endauth
@@ -120,7 +159,7 @@
     </header>
 
     {{-- HERO SECTION --}}
-    <section id="hero" class="relative pt-12 pb-16 px-4 text-center">
+    <section id="hero" class="relative pt-12 pb-16 px-4 text-center scroll-mt-24">
         {{-- Headline --}}
         <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.2] max-w-4xl mx-auto mb-4">
             Belajar Matematika SD<br>
@@ -194,7 +233,7 @@
     </section>
 
     {{-- SECTION: FITUR UTAMA ROBOMATH --}}
-    <section id="fitur" class="max-w-5xl mx-auto px-4 py-16">
+    <section id="fitur" class="max-w-5xl mx-auto px-4 py-16 scroll-mt-24">
         <div class="text-center max-w-xl mx-auto mb-10">
             <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">
                 Fitur Utama RoboMath
@@ -316,7 +355,7 @@
     </section>
 
     {{-- SECTION: MODUL PEMBELAJARAN SD --}}
-    <section id="modul" class="max-w-5xl mx-auto px-4 py-12">
+    <section id="modul" class="max-w-5xl mx-auto px-4 py-12 scroll-mt-24">
         <h2 class="text-2xl sm:text-3xl font-black text-slate-900 text-center tracking-tight mb-8">
             Modul Pembelajaran SD
         </h2>
@@ -393,7 +432,7 @@
     </section>
 
     {{-- SECTION: LENCANA PRESTASI --}}
-    <section id="prestasi" class="max-w-4xl mx-auto px-4 py-12">
+    <section id="prestasi" class="max-w-4xl mx-auto px-4 py-12 scroll-mt-24">
         <div class="text-center max-w-xl mx-auto mb-8">
             <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-1">
                 Lencana Prestasi

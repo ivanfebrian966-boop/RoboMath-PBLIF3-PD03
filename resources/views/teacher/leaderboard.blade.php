@@ -8,7 +8,7 @@
     <!-- Header Banner -->
     <div class="rounded-3xl bg-[#4F46E5] p-8 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 border-2 border-indigo-400/30">
         <div class="space-y-1">
-            <h1 class="text-3xl font-black">Progress Siswa & Leaderboard</h1>
+            <h1 class="text-3xl font-black">Leaderboard</h1>
             <p class="text-indigo-100 text-sm max-w-xl">Pantau perkembangan capaian materi, akurasi pengerjaan soal kuis, papan peringkat, dan unduh laporan performa kelas.</p>
         </div>
         <div>

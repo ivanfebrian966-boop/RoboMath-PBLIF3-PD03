@@ -5,16 +5,23 @@
 @section('content')
 <div class="max-w-2xl mx-auto space-y-6">
 
-    <!-- Profile Header Card -->
-    <div class="rounded-3xl bg-gradient-to-br from-amber-400 via-orange-400 to-amber-500 p-8 text-white shadow-xl relative overflow-hidden">
+    @if(session('success'))
+        <div class="p-4 bg-emerald-50 border-2 border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 font-bold text-sm shadow-xs">
+            <span class="text-xl">✅</span>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
+    <!-- Profile Header Card (Hijau - sesuai warna sidebar Profil) -->
+    <div class="rounded-[28px] bg-gradient-to-br from-[#059669] via-[#10B981] to-[#34D399] p-8 text-white shadow-[0_8px_24px_rgba(5,150,105,0.22)] relative overflow-hidden border border-emerald-400/40">
         <div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full -translate-y-1/4 translate-x-1/4"></div>
         <div class="relative flex items-center gap-6">
-            <div class="w-20 h-20 rounded-3xl bg-white/30 backdrop-blur flex items-center justify-center text-4xl font-black shadow-lg">
+            <div class="w-20 h-20 rounded-3xl bg-white/20 backdrop-blur flex items-center justify-center text-4xl font-black shadow-lg flex-shrink-0">
                 {{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}
             </div>
             <div>
                 <h1 class="text-3xl font-black">{{ $user->name }}</h1>
-                <p class="text-amber-100 mt-0.5">{{ $user->email }}</p>
+                <p class="text-emerald-100 mt-0.5">{{ $user->email }}</p>
                 <div class="flex flex-wrap items-center gap-2 mt-2">
                     <span class="px-3 py-1 bg-white/20 rounded-full text-xs font-black uppercase tracking-wider">
                         {{ ucfirst($user->role) }}
