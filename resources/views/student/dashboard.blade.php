@@ -5,14 +5,15 @@
 @section('content')
 <div class="space-y-8">
     
-    <!-- Welcome Header Banner -->
-    <div class="bg-[#3B82F6] rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden border border-blue-400/30">
+    <!-- Welcome Header Banner (Merah - sesuai warna sidebar Dashboard Siswa) -->
+    <div class="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-[#FF3B30] via-[#FF4D42] to-[#FF6057] p-6 sm:p-8 text-white shadow-[0_8px_24px_rgba(255,59,48,0.22)] border border-red-400/40">
         <div class="relative z-10 space-y-2 max-w-xl">
             <h1 class="text-3xl sm:text-4xl font-black">Halo, {{ $user->name }}!</h1>
-            <p class="text-blue-100 font-semibold text-base">
+            <p class="text-red-100 font-semibold text-base">
                 Siap petualangan matematika hari ini? Selesaikan soal kuis, kumpulkan lencana, dan raih skor tertinggi!
             </p>
         </div>
+        <div class="absolute -right-8 -bottom-8 w-44 h-44 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
     </div>
 
     <!-- Quick Menu Navigasi Utama Siswa -->

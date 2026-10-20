@@ -1,223 +1,282 @@
 @extends('layouts.app')
 
+@section('title', 'Latihan Soal Logika - RoboMath')
+
 @section('content')
-<div x-data="quizIndex()" class="space-y-6">
+<div x-data="quizIndex()" class="max-w-6xl mx-auto space-y-6 sm:space-y-7 pb-12">
 
-    <!-- Hero Header & Progress Overview -->
-    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl space-y-6 border border-orange-400/30 relative overflow-hidden">
-        <div class="absolute -right-10 -bottom-10 opacity-15 pointer-events-none text-9xl">
-            🎯
-        </div>
-
-        <div class="relative z-10 space-y-2">
-            <span class="inline-flex items-center gap-1.5 bg-white/20 text-white font-extrabold text-xs px-3.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">
-                <span>🤖</span> Latihan Logika Interaktif AI
-            </span>
-            <h1 class="text-2xl sm:text-4xl font-black tracking-tight">Pilih Soal Latihan Logika! 🎯</h1>
-            <p class="text-orange-100 font-semibold text-sm sm:text-base max-w-2xl leading-relaxed">
+    <!-- 1. HERO HEADER BANNER (Biru Solid Sesuai Mockup) -->
+    <div class="relative overflow-hidden rounded-[28px] sm:rounded-[32px] bg-[#2563EB] p-6 sm:p-8 text-white shadow-[0_8px_24px_rgba(37,99,235,0.22)]">
+        <div class="relative z-10 space-y-2 max-w-3xl">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-white">
+                Pilih Soal Latihan Logika!
+            </h1>
+            <p class="text-white/90 font-medium text-xs sm:text-sm leading-relaxed">
                 Kamu dapat melihat seluruh soal dan memilih soal mana pun yang ingin kamu kerjakan secara bebas. Selesaikan tantangannya dan raih poin maksimal!
             </p>
         </div>
+    </div>
 
-        <!-- Overall Statistics Cards -->
-        <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-            <div class="bg-white/15 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col justify-between">
-                <span class="text-xs font-bold text-orange-100 uppercase tracking-wider">Total Soal</span>
-                <span class="text-2xl sm:text-3xl font-black text-white mt-1">{{ $totalQuizzes }} <span class="text-sm font-semibold">Soal</span></span>
-            </div>
-            <div class="bg-white/15 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col justify-between">
-                <span class="text-xs font-bold text-orange-100 uppercase tracking-wider">Soal Selesai</span>
-                <span class="text-2xl sm:text-3xl font-black text-white mt-1">{{ $completedQuizzesCount }} <span class="text-sm font-semibold">/ {{ $totalQuizzes }}</span></span>
-            </div>
-            <div class="bg-white/15 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col justify-between">
-                <span class="text-xs font-bold text-orange-100 uppercase tracking-wider">Poin Diperoleh</span>
-                <span class="text-2xl sm:text-3xl font-black text-amber-200 mt-1">+{{ $totalEarnedPoints }} <span class="text-sm font-semibold">Poin</span></span>
-            </div>
-            <div class="bg-white/15 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex flex-col justify-between">
-                <div class="flex items-center justify-between text-xs font-bold text-orange-100 uppercase tracking-wider">
-                    <span>Kemajuan</span>
-                    <span>{{ $overallProgressPercent }}%</span>
+    <!-- 2. CARD STATISTIK / KPI (Putih 4 Kolom Sesuai Mockup) -->
+    <div class="bg-white rounded-[24px] sm:rounded-[26px] p-5 sm:p-6 shadow-xs border border-amber-100/50">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+            {{-- Total Soal --}}
+            <div class="space-y-1">
+                <span class="text-[10px] sm:text-[11px] font-black uppercase text-slate-400 tracking-wider">TOTAL SOAL</span>
+                <div class="text-2xl sm:text-3xl font-black text-[#EF4444] leading-tight">
+                    {{ $totalQuizzes }}
                 </div>
-                <div class="w-full bg-white/20 h-3 rounded-full overflow-hidden mt-2 border border-white/30">
-                    <div class="bg-white h-full rounded-full transition-all duration-500" style="width: {{ $overallProgressPercent }}%;"></div>
+                <span class="text-[11px] text-slate-400 font-semibold block">Soal</span>
+            </div>
+
+            {{-- Soal Selesai --}}
+            <div class="space-y-1 pt-3 sm:pt-0 sm:pl-6">
+                <span class="text-[10px] sm:text-[11px] font-black uppercase text-slate-400 tracking-wider">SOAL SELESAI</span>
+                <div class="text-2xl sm:text-3xl font-black leading-tight flex items-baseline gap-1">
+                    <span class="text-[#10B981]">{{ $completedQuizzesCount }}</span>
+                    <span class="text-slate-400 font-bold text-base sm:text-lg">/ {{ $totalQuizzes }}</span>
+                </div>
+                <span class="text-[11px] text-slate-400 font-semibold block">Soal</span>
+            </div>
+
+            {{-- Poin Diperoleh --}}
+            <div class="space-y-1 pt-3 sm:pt-0 sm:pl-6">
+                <span class="text-[10px] sm:text-[11px] font-black uppercase text-slate-400 tracking-wider">POIN DIPEROLEH</span>
+                <div class="text-2xl sm:text-3xl font-black text-[#F59E0B] leading-tight">
+                    +{{ $totalEarnedPoints }}
+                </div>
+                <span class="text-[11px] text-slate-400 font-semibold block">Poin</span>
+            </div>
+
+            {{-- Kemajuan --}}
+            <div class="space-y-1 pt-3 sm:pt-0 sm:pl-6">
+                <span class="text-[10px] sm:text-[11px] font-black uppercase text-slate-400 tracking-wider">KEMAJUAN</span>
+                <div class="text-2xl sm:text-3xl font-black text-[#2563EB] leading-tight">
+                    {{ $overallProgressPercent }}%
+                </div>
+                <div class="w-full bg-[#E5E7EB] h-1.5 rounded-full overflow-hidden mt-2.5">
+                    <div class="bg-[#2563EB] h-full rounded-full transition-all duration-500" style="width: {{ $overallProgressPercent }}%;"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Filters & Search Toolbar -->
-    <div class="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-sm space-y-4">
-        
-        <!-- Search and Status Filter Row -->
-        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-            <!-- Search Input -->
-            <div class="relative flex-1">
-                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                </span>
-                <input type="text" 
-                       x-model="searchQuery" 
-                       placeholder="Cari kata kunci soal latihan..." 
-                       class="w-full pl-10 pr-10 py-3 rounded-2xl border-2 border-slate-200 focus:border-amber-500 focus:ring-4 focus:ring-amber-100 font-semibold text-slate-800 placeholder-slate-400 text-sm transition-all outline-none">
-                <button x-show="searchQuery.length > 0" 
-                        @click="searchQuery = ''" 
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 font-bold text-sm">
-                    ✕
-                </button>
-            </div>
-
-            <!-- Status Filter Segmented Control -->
-            <div class="inline-flex p-1 bg-slate-100 rounded-2xl border border-slate-200 text-xs font-extrabold flex-shrink-0">
-                <button type="button" 
-                        @click="statusFilter = 'all'" 
-                        :class="statusFilter === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
-                        class="px-4 py-2 rounded-xl transition-all">
-                    Semua
-                </button>
-                <button type="button" 
-                        @click="statusFilter = 'uncompleted'" 
-                        :class="statusFilter === 'uncompleted' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
-                        class="px-4 py-2 rounded-xl transition-all flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-slate-400"></span> Belum Selesai
-                </button>
-                <button type="button" 
-                        @click="statusFilter = 'completed'" 
-                        :class="statusFilter === 'completed' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'"
-                        class="px-4 py-2 rounded-xl transition-all flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Selesai
-                </button>
-            </div>
-        </div>
-
-        <!-- Topic Pills Horizontal Scroll -->
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-            <button type="button" 
-                    @click="activeTopicId = 'all'" 
-                    :class="activeTopicId === 'all' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'"
-                    class="px-4 py-2 rounded-2xl font-black text-xs whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0">
-                <span>✨</span> Semua Topik ({{ $totalQuizzes }})
+    <!-- 3. PENCARIAN & STATUS FILTER -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        {{-- Search Input (Pill Bulat Putih) --}}
+        <div class="relative flex-1 max-w-md">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+            </span>
+            <input type="text" 
+                   x-model="searchQuery" 
+                   placeholder="Cari kata kunci soal latihan..." 
+                   class="w-full pl-9 pr-9 py-2.5 rounded-full bg-white border border-slate-200/90 text-xs font-semibold text-slate-800 placeholder-slate-400 outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition shadow-2xs">
+            <button x-show="searchQuery.length > 0" 
+                    @click="searchQuery = ''" 
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 font-bold text-xs"
+                    type="button">
+                ✕
             </button>
+        </div>
 
-            @foreach($topics as $topic)
-                <button type="button" 
-                        @click="activeTopicId = {{ $topic->id }}" 
-                        :class="activeTopicId === {{ $topic->id }} ? 'bg-amber-500 text-white shadow-md shadow-amber-500/20' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'"
-                        class="px-4 py-2 rounded-2xl font-black text-xs whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0">
-                    <span>{{ $topic->icon }}</span> {{ $topic->title }} ({{ $topic->quizzes_count }})
-                </button>
-            @endforeach
+        {{-- Status Filter Buttons (Semua, Belum selesai, Selesai) --}}
+        <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button type="button" 
+                    @click="statusFilter = 'all'" 
+                    :class="statusFilter === 'all' ? 'bg-[#001738] text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 bg-transparent'"
+                    class="px-4 py-1.5 rounded-full text-xs font-black transition-all">
+                Semua
+            </button>
+            <button type="button" 
+                    @click="statusFilter = 'uncompleted'" 
+                    :class="statusFilter === 'uncompleted' ? 'bg-[#001738] text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 bg-transparent'"
+                    class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all">
+                Belum selesai
+            </button>
+            <button type="button" 
+                    @click="statusFilter = 'completed'" 
+                    :class="statusFilter === 'completed' ? 'bg-[#001738] text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 bg-transparent'"
+                    class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all">
+                Selesai
+            </button>
         </div>
     </div>
 
-    <!-- Questions Display Container -->
-    <div class="space-y-8">
+    <!-- 4. TOPIC FILTER PILLS (Semua topik, Urutan, Pola, dll.) -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {{-- Semua topik --}}
+        <button type="button" 
+                @click="activeTopicId = 'all'" 
+                :class="activeTopicId === 'all' ? 'bg-[#001738] text-white shadow-xs' : 'bg-white border border-slate-200/90 text-slate-700 hover:border-slate-300'"
+                class="px-4 py-1.5 rounded-full font-black text-xs whitespace-nowrap transition-all flex items-center gap-1.5 flex-shrink-0 shadow-2xs">
+            <span>Semua topik</span>
+            <span :class="activeTopicId === 'all' ? 'text-white' : 'text-slate-500'" class="font-black">{{ $totalQuizzes }}</span>
+        </button>
+
+        @php
+            $topicPalette = [
+                1 => ['dot' => 'bg-[#EF4444]', 'short' => 'Urutan', 'header_bg' => 'bg-[#FFEBEB]', 'badge_bg' => 'bg-[#FFD6D6] text-[#B91C1C]', 'num_bg' => 'bg-[#FEE2E2] text-[#EF4444]'],
+                2 => ['dot' => 'bg-[#F59E0B]', 'short' => 'Pola & Pattern', 'header_bg' => 'bg-[#FEF9C3]', 'badge_bg' => 'bg-[#FEF08A] text-[#92400E]', 'num_bg' => 'bg-[#FEF3C7] text-[#D97706]'],
+                3 => ['dot' => 'bg-[#10B981]', 'short' => 'Percabangan', 'header_bg' => 'bg-[#DCFCE7]', 'badge_bg' => 'bg-[#BBF7D0] text-[#166534]', 'num_bg' => 'bg-[#DCFCE7] text-[#15803D]'],
+                4 => ['dot' => 'bg-[#3B82F6]', 'short' => 'Pengulangan', 'header_bg' => 'bg-[#DBEAFE]', 'badge_bg' => 'bg-[#BFDBFE] text-[#1E40AF]', 'num_bg' => 'bg-[#DBEAFE] text-[#1D4ED8]'],
+                5 => ['dot' => 'bg-[#8B5CF6]', 'short' => 'Dekomposisi', 'header_bg' => 'bg-[#F3E8FF]', 'badge_bg' => 'bg-[#E9D5FF] text-[#6B21A8]', 'num_bg' => 'bg-[#F3E8FF] text-[#7E22CE]'],
+            ];
+        @endphp
+
         @foreach($topics as $topic)
+            @php
+                $style = $topicPalette[$topic->id] ?? [
+                    'dot' => 'bg-[#3B82F6]',
+                    'short' => $topic->title,
+                    'header_bg' => 'bg-[#DBEAFE]',
+                    'badge_bg' => 'bg-[#BFDBFE] text-[#1E40AF]',
+                    'num_bg' => 'bg-[#DBEAFE] text-[#1D4ED8]',
+                ];
+            @endphp
+            <button type="button" 
+                    @click="activeTopicId = {{ $topic->id }}" 
+                    :class="activeTopicId === {{ $topic->id }} ? 'bg-[#001738] text-white shadow-xs' : 'bg-white border border-slate-200/90 text-slate-700 hover:border-slate-300'"
+                    class="px-3.5 py-1.5 rounded-full font-bold text-xs whitespace-nowrap transition-all flex items-center gap-2 flex-shrink-0 shadow-2xs">
+                <span class="w-2 h-2 rounded-full {{ $style['dot'] }} flex-shrink-0"></span>
+                <span>{{ $style['short'] }}</span>
+                <span :class="activeTopicId === {{ $topic->id }} ? 'text-white' : 'text-slate-500'" class="font-black">{{ $topic->quizzes_count }}</span>
+            </button>
+        @endforeach
+    </div>
+
+    <!-- 5. DAFTAR SOAL PER TOPIK (GROUPED BY TOPIC) -->
+    <div class="space-y-6">
+        @foreach($topics as $topic)
+            @php
+                $style = $topicPalette[$topic->id] ?? [
+                    'dot' => 'bg-[#3B82F6]',
+                    'short' => $topic->title,
+                    'header_bg' => 'bg-[#DBEAFE]',
+                    'badge_bg' => 'bg-[#BFDBFE] text-[#1E40AF]',
+                    'num_bg' => 'bg-[#DBEAFE] text-[#1D4ED8]',
+                ];
+            @endphp
             <div x-show="isTopicVisible({{ $topic->id }})" 
                  x-transition 
-                 class="space-y-4">
+                 class="bg-white rounded-[24px] sm:rounded-[28px] border border-amber-100/70 overflow-hidden shadow-xs">
                 
-                <!-- Topic Group Header -->
-                <div class="bg-white rounded-3xl p-5 border-2 border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-3xl flex-shrink-0 border-2 border-amber-200 shadow-inner">
-                            {{ $topic->icon }}
+                {{-- Header Strip Topik Sesuai Mockup --}}
+                <div class="{{ $style['header_bg'] }} px-5 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/5">
+                    <div class="flex items-center gap-3.5">
+                        {{-- Icon Squircle Putih --}}
+                        <div class="w-10 h-10 rounded-2xl bg-white shadow-2xs flex items-center justify-center text-slate-700 flex-shrink-0">
+                            @if($topic->id === 1)
+                                {{-- Urutan List SVG --}}
+                                <svg class="w-5 h-5 text-slate-800" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+                                </svg>
+                            @elseif($topic->id === 2)
+                                {{-- Pola Grid SVG --}}
+                                <svg class="w-5 h-5 text-slate-800" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <rect x="4" y="4" width="6" height="6" rx="1.5" />
+                                    <rect x="14" y="4" width="6" height="6" rx="1.5" />
+                                    <rect x="4" y="14" width="6" height="6" rx="1.5" />
+                                    <rect x="14" y="14" width="6" height="6" rx="1.5" />
+                                </svg>
+                            @elseif($topic->id === 3)
+                                {{-- Percabangan Branch SVG --}}
+                                <svg class="w-5 h-5 text-slate-800" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 3v12m0 0a3 3 0 1 0 3 3m-3-3a3 3 0 0 1 3-3h6a3 3 0 1 0 0-6" />
+                                </svg>
+                            @elseif($topic->id === 4)
+                                {{-- Pengulangan Repeat SVG --}}
+                                <svg class="w-5 h-5 text-slate-800" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            @else
+                                {{-- Dekomposisi Puzzle/Cube SVG --}}
+                                <svg class="w-5 h-5 text-slate-800" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            @endif
                         </div>
+
                         <div>
                             <div class="flex items-center gap-2">
-                                <h2 class="font-black text-xl text-slate-800">{{ $topic->title }}</h2>
-                                <span class="text-xs font-black px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                                    {{ $topic->quizzes_count }} Soal
+                                <h2 class="font-black text-sm sm:text-base text-slate-900 leading-tight">{{ $topic->title }}</h2>
+                                <span class="text-[10px] font-black px-2.5 py-0.5 rounded-full {{ $style['badge_bg'] }}">
+                                    {{ $topic->quizzes_count }} soal
                                 </span>
                             </div>
-                            <div class="flex items-center gap-3 mt-1.5">
-                                <span class="text-xs font-bold text-slate-500">
-                                    {{ $topic->completed_count }} dari {{ $topic->quizzes_count }} soal selesai
-                                </span>
-                                <div class="w-24 bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
-                                    <div class="bg-emerald-500 h-full rounded-full transition-all" style="width: {{ $topic->progress_percent }}%;"></div>
-                                </div>
-                            </div>
+                            <span class="text-xs text-slate-500 font-semibold block mt-0.5">
+                                {{ $topic->completed_count }} dari {{ $topic->quizzes_count }} selesai
+                            </span>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-2 self-end sm:self-center">
+                    {{-- Tombol Kerjakan Semua Topik Ini --}}
+                    <div>
                         <a href="{{ route('siswa.quiz.play', $topic) }}" 
-                           class="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-5 py-2.5 rounded-2xl shadow-md hover:shadow-lg transition-all text-xs sm:text-sm whitespace-nowrap flex items-center gap-2">
-                            <span>🚀</span> Kerjakan Semua Topik Ini
+                           class="inline-flex items-center justify-center bg-[#001738] hover:bg-slate-800 text-white font-black text-xs px-4 py-2 rounded-full transition shadow-2xs whitespace-nowrap active:scale-95">
+                            Kerjakan semua topik ini
                         </a>
                     </div>
                 </div>
 
-                <!-- Questions Grid in this Topic -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{-- Daftar Soal (Single Column Rows Sesuai Mockup) --}}
+                <div class="divide-y divide-slate-100">
                     @forelse($topic->quizzes as $quiz)
                         <div x-show="isQuizVisible({{ $topic->id }}, {{ $quiz->id }}, {{ $quiz->user_is_correct ? 'true' : 'false' }}, {{ json_encode($quiz->question) }})" 
-                             class="bg-white rounded-3xl p-5 border-2 {{ $quiz->user_is_correct ? 'border-emerald-200 bg-emerald-50/20' : 'border-slate-200' }} hover:border-amber-400 hover:shadow-md transition-all flex flex-col justify-between space-y-4">
+                             class="px-5 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 hover:bg-[#FAF9F5]/60 transition">
                             
-                            <!-- Question Card Top Badges -->
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between gap-2 flex-wrap">
-                                    <div class="flex items-center gap-2">
-                                        <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-800 font-black text-xs flex items-center justify-center border border-slate-200">
-                                            #{{ $loop->iteration }}
-                                        </span>
-                                        @if($quiz->difficulty === 'mudah')
-                                            <span class="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 font-extrabold text-xs">
-                                                🌱 Mudah
-                                            </span>
-                                        @elseif($quiz->difficulty === 'sedang')
-                                            <span class="px-2.5 py-1 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 font-extrabold text-xs">
-                                                ⚡ Sedang
-                                            </span>
-                                        @else
-                                            <span class="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 font-extrabold text-xs">
-                                                🔥 Sulit
-                                            </span>
-                                        @endif
-                                        <span class="text-xs font-bold text-slate-400">
-                                            {{ $quiz->type_label }}
-                                        </span>
-                                    </div>
-                                    <span class="text-xs font-black text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                                        +{{ $quiz->points }} Poin
-                                    </span>
+                            {{-- Kiri: Nomor & Pertanyaan & Meta --}}
+                            <div class="flex items-start gap-3 sm:gap-3.5 flex-1 min-w-0">
+                                {{-- Nomor Squircle Badge Sesuai Warna Topik --}}
+                                <div class="w-8 h-8 rounded-xl {{ $style['num_bg'] }} font-black text-xs flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    {{ $loop->iteration }}
                                 </div>
 
-                                <!-- Question Content Preview -->
-                                <p class="text-slate-800 font-extrabold text-sm sm:text-base leading-snug line-clamp-3">
-                                    {{ $quiz->question }}
-                                </p>
+                                <div class="space-y-1 min-w-0">
+                                    {{-- Teks Pertanyaan Soal --}}
+                                    <h3 class="font-bold text-[#001738] text-xs sm:text-sm leading-snug">
+                                        {{ $quiz->question }}
+                                    </h3>
+
+                                    {{-- Meta: Dot Tingkat Kesulitan + Tipe Soal --}}
+                                    <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium">
+                                        @if($quiz->difficulty === 'mudah')
+                                            <span class="w-2 h-2 rounded-full bg-[#10B981] flex-shrink-0"></span>
+                                            <span>Mudah · {{ $quiz->type_label ?? 'Pilihan ganda' }}</span>
+                                        @elseif($quiz->difficulty === 'sedang')
+                                            <span class="w-2 h-2 rounded-full bg-[#F59E0B] flex-shrink-0"></span>
+                                            <span>Sedang · {{ $quiz->type_label ?? 'Pilihan ganda' }}</span>
+                                        @else
+                                            <span class="w-2 h-2 rounded-full bg-[#EF4444] flex-shrink-0"></span>
+                                            <span>Sulit · {{ $quiz->type_label ?? 'Pilihan ganda' }}</span>
+                                        @endif
+
+                                        @if($quiz->user_is_correct)
+                                            <span class="text-[#10B981] font-bold ml-1">· Selesai ✓</span>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Question Card Bottom Actions & Status -->
-                            <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
-                                <div>
-                                    @if($quiz->user_is_correct)
-                                        <span class="inline-flex items-center gap-1.5 text-xs font-black text-emerald-700 bg-emerald-100/70 border border-emerald-300 px-3 py-1.5 rounded-xl">
-                                            ✅ Selesai (+{{ $quiz->user_points_earned }} P)
-                                        </span>
-                                    @elseif($quiz->user_attempts_count > 0)
-                                        <span class="inline-flex items-center gap-1.5 text-xs font-black text-rose-700 bg-rose-100/70 border border-rose-300 px-3 py-1.5 rounded-xl">
-                                            ❌ Belum Tepat
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl">
-                                            ⚪ Belum Dikerjakan
-                                        </span>
-                                    @endif
-                                </div>
+                            {{-- Kanan: Badge Poin & Tombol Aksi Oranye --}}
+                            <div class="flex items-center gap-2.5 self-end sm:self-center flex-shrink-0">
+                                {{-- Badge Poin Kuning Lembut --}}
+                                <span class="px-3 py-1 rounded-full text-xs font-black bg-[#FEF3C7] text-[#D97706] whitespace-nowrap shadow-2xs">
+                                    +{{ $quiz->points }} poin
+                                </span>
 
-                                <div>
-                                    <a href="{{ route('siswa.quiz.play', [$topic, 'quiz_id' => $quiz->id]) }}" 
-                                       class="inline-flex items-center gap-2 {{ $quiz->user_is_correct ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300' : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-md' }} font-black px-4 py-2 rounded-xl text-xs sm:text-sm transition-all whitespace-nowrap">
-                                        <span>{{ $quiz->user_is_correct ? 'Ulangi 🔄' : 'Pilih & Kerjakan 🚀' }}</span>
-                                    </a>
-                                </div>
+                                {{-- Tombol Pilih & Kerjakan Oranye --}}
+                                <a href="{{ route('siswa.quiz.play', [$topic, 'quiz_id' => $quiz->id]) }}" 
+                                   class="inline-flex items-center justify-center bg-[#FF8A00] hover:bg-[#EA580C] text-white font-black text-xs px-5 py-2.5 rounded-full shadow-xs transition active:scale-95 whitespace-nowrap">
+                                    {{ $quiz->user_is_correct ? 'Ulangi' : 'Pilih & Kerjakan' }}
+                                </a>
                             </div>
 
                         </div>
                     @empty
-                        <div class="col-span-2 text-center p-8 bg-white rounded-3xl border-2 border-dashed border-slate-200 text-slate-400 font-bold text-sm">
+                        <div class="px-6 py-8 text-center text-slate-400 font-bold text-xs">
                             Belum ada soal pada topik ini.
                         </div>
                     @endforelse
@@ -225,22 +284,6 @@
 
             </div>
         @endforeach
-
-        <!-- Empty Results Message -->
-        <div x-show="totalVisibleQuizzes === 0" 
-             x-transition 
-             class="bg-white rounded-3xl p-12 border-2 border-dashed border-slate-200 text-center space-y-4">
-            <span class="text-5xl">🔍</span>
-            <div class="space-y-1">
-                <h3 class="font-black text-xl text-slate-800">Tidak ada soal yang cocok</h3>
-                <p class="text-slate-500 font-semibold text-sm">Coba ubah kata kunci pencarian atau sesuaikan filter status.</p>
-            </div>
-            <button type="button" 
-                    @click="searchQuery = ''; activeTopicId = 'all'; statusFilter = 'all'" 
-                    class="bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs shadow-md transition-all">
-                Reset Filter 🔄
-            </button>
-        </div>
     </div>
 
 </div>
@@ -283,13 +326,9 @@
                 }
 
                 return true;
-            },
-
-            get totalVisibleQuizzes() {
-                // Return estimated or fallback to 1 if default
-                return 1;
             }
         }
     }
 </script>
 @endsection
+

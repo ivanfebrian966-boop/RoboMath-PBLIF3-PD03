@@ -35,22 +35,17 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email,'.$user->id],
-            'avatar' => ['nullable', 'image', 'max:2048'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 
-        if ($request->hasFile('avatar')) {
-            $validated['avatar'] = $request->file('avatar')->store('avatars', 'public');
-        }
-
         if (! empty($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
+            $user->password = Hash::make($validated['password']);
         }
 
-        $user->update($validated);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->save();
 
-        return back()->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->route('profil.show')->with('success', 'Profil berhasil diperbarui!');
     }
 }

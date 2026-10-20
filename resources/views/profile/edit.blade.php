@@ -13,8 +13,15 @@
         <a href="{{ route('profil.show') }}" class="text-sm text-amber-600 font-bold hover:underline">← Kembali</a>
     </div>
 
-    <div class="bg-white border-2 border-amber-200/70 rounded-3xl p-8 shadow-sm">
-        <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+    @if(session('success'))
+        <div class="p-4 bg-emerald-50 border-2 border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 font-bold text-sm shadow-xs">
+            <span class="text-xl">✅</span>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
+    <div class="bg-white border-2 border-amber-200/70 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <form action="{{ route('profil.update') }}" method="POST" class="space-y-5" id="profile-form">
             @csrf @method('PUT')
 
             <div>
@@ -29,14 +36,6 @@
                 <input type="email" name="email" value="{{ old('email', $user->email) }}"
                        class="w-full px-4 py-3 border-2 border-amber-200 rounded-2xl focus:outline-none focus:border-amber-400 bg-amber-50/30 font-medium text-slate-800 transition-colors @error('email') border-rose-400 bg-rose-50 @enderror">
                 @error('email')<p class="text-xs text-rose-500 mt-1 font-semibold">{{ $message }}</p>@enderror
-            </div>
-
-            <div>
-                <label class="block text-sm font-black text-slate-700 mb-1.5">Foto Profil</label>
-                <input type="file" name="avatar" accept="image/*"
-                       class="w-full px-4 py-2.5 border-2 border-amber-200 rounded-2xl focus:outline-none focus:border-amber-400 bg-amber-50/30 text-slate-700 text-sm transition-colors">
-                <p class="text-xs text-slate-400 mt-1">Format: JPG, PNG, GIF. Maks 2MB.</p>
-                @error('avatar')<p class="text-xs text-rose-500 mt-1 font-semibold">{{ $message }}</p>@enderror
             </div>
 
             <div class="border-t border-amber-100 pt-4">
@@ -60,7 +59,7 @@
 
             <div class="flex items-center gap-3 pt-2">
                 <button type="submit"
-                        class="flex-1 py-3 bg-amber-400 hover:bg-amber-500 text-amber-900 font-black rounded-2xl shadow-sm transition-all duration-200 hover:scale-[1.02]">
+                        class="flex-1 py-3 bg-amber-400 hover:bg-amber-500 text-amber-900 font-black rounded-2xl shadow-sm transition-all duration-200 hover:scale-[1.02] cursor-pointer">
                     Simpan Perubahan
                 </button>
                 <a href="{{ route('profil.show') }}"
@@ -72,3 +71,4 @@
     </div>
 </div>
 @endsection
+
