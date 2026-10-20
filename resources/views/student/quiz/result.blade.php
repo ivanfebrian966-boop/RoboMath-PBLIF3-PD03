@@ -68,13 +68,25 @@
                     </span>
                 </div>
 
-                <div class="pl-10 space-y-1 text-xs">
+                <div class="pl-10 space-y-2 text-xs">
+                    <div class="flex items-center gap-2">
+                        @if($attempt->quiz && in_array($attempt->quiz->type, ['essay', 'uraian']))
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-purple-100 text-purple-800 border border-purple-200">
+                                ✍️ Soal Essay
+                            </span>
+                        @endif
+                    </div>
                     <p class="font-semibold text-slate-600">
                         Jawabanmu: <span class="font-black {{ $attempt->is_correct ? 'text-emerald-600' : 'text-rose-600' }}">{{ $attempt->answer }}</span>
                     </p>
-                    @if(!$attempt->is_correct && $attempt->quiz)
+                    @if($attempt->ai_feedback)
+                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-950 font-semibold leading-relaxed">
+                        🤖 <strong>Umpan Balik Guru AI:</strong> {{ $attempt->ai_feedback }}
+                    </div>
+                    @endif
+                    @if($attempt->quiz && (!$attempt->is_correct || in_array($attempt->quiz->type, ['essay', 'uraian'])))
                     <p class="font-semibold text-slate-600">
-                        Kunci Jawaban: <span class="font-black text-emerald-600">{{ $attempt->quiz->correct_answer }}</span>
+                        Kunci Jawaban Model: <span class="font-black text-emerald-600">{{ $attempt->quiz->correct_answer }}</span>
                     </p>
                     @endif
                     @if($attempt->quiz && $attempt->quiz->explanation)

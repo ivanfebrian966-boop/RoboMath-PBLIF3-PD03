@@ -56,6 +56,48 @@ class MockProvider implements AIProviderInterface
             );
         }
 
+        if (str_contains($lower, 'evaluasi jawaban essay')) {
+            $eval = [
+                'is_correct' => true,
+                'score_percent' => 100,
+                'feedback' => 'Hebat! Penjelasan dan langkah penyelesaian matematikamu sudah sangat logis dan rapi. Terus tingkatkan ya! 🌟',
+            ];
+
+            return new AIChatResponse(
+                text: json_encode($eval, JSON_PRETTY_PRINT),
+                provider: 'mock'
+            );
+        }
+
+        if (str_contains($lower, 'butir soal')) {
+            $wantEssay = str_contains($lower, 'essay') || str_contains($lower, 'uraian');
+            $mockQuestions = [
+                [
+                    'type' => $wantEssay ? 'essay' : 'pilihan_ganda',
+                    'question' => 'Randi memiliki 15 kelereng biru dan 20 kelereng merah. Ia memberikan 5 kelereng biru kepada adiknya. Berapa total sisa kelereng Randi sekarang? Jelaskan cara kamu menghitungnya!',
+                    'options' => $wantEssay ? null : ['A' => '25', 'B' => '30', 'C' => '35', 'D' => '40'],
+                    'correct_answer' => $wantEssay ? 'Sisa kelereng Randi adalah 30 kelereng. Langkah: (15 - 5) + 20 = 10 + 20 = 30.' : 'B',
+                    'explanation' => 'Kelereng biru tersisa 15 - 5 = 10. Ditambahkan dengan 20 kelereng merah: 10 + 20 = 30 kelereng.',
+                    'difficulty' => 'sedang',
+                    'points' => 10,
+                ],
+                [
+                    'type' => $wantEssay ? 'essay' : 'pilihan_ganda',
+                    'question' => 'Ibu membagi sebuah pizza menjadi 8 potong sama besar. Kakak memakan 3 potong dan Adik memakan 2 potong. Berapa bagian pizza yang tersisa? Tuliskan langkah perhitungannya!',
+                    'options' => $wantEssay ? null : ['A' => '2/8 bagian', 'B' => '3/8 bagian', 'C' => '5/8 bagian', 'D' => '6/8 bagian'],
+                    'correct_answer' => $wantEssay ? 'Sisa pizza adalah 3/8 bagian. Langkah: 8/8 - (3/8 + 2/8) = 8/8 - 5/8 = 3/8.' : 'B',
+                    'explanation' => 'Bagian yang dimakan adalah 3/8 + 2/8 = 5/8. Maka sisa bagian pizza adalah 8/8 - 5/8 = 3/8 bagian.',
+                    'difficulty' => 'sedang',
+                    'points' => 10,
+                ],
+            ];
+
+            return new AIChatResponse(
+                text: json_encode($mockQuestions, JSON_PRETTY_PRINT),
+                provider: 'mock'
+            );
+        }
+
         // Question Generator Fallback
         $mockGenerated = [
             'grade' => 4,

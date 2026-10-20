@@ -38,9 +38,15 @@ class Quiz extends Model
     {
         return match ($this->type) {
             'pilihan_ganda' => 'Pilihan Ganda',
+            'essay', 'uraian' => 'Essay / Uraian',
             'drag_drop' => 'Drag & Drop',
             'cerita_logika' => 'Cerita Logika',
             default => $this->type,
         };
+    }
+
+    public function isEssay(): bool
+    {
+        return in_array($this->type, ['essay', 'uraian']);
     }
 }

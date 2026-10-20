@@ -109,6 +109,8 @@ Route::middleware(['auth', RoleMiddleware::class.':admin'])->prefix('admin')->na
     Route::get('/quizzes', [QuizManagementController::class, 'index'])->name('quizzes.index');
     Route::get('/quizzes/create', [QuizManagementController::class, 'create'])->name('quizzes.create');
     Route::post('/quizzes', [QuizManagementController::class, 'store'])->name('quizzes.store');
+    Route::post('/quizzes/generate-ai', [QuizManagementController::class, 'generateAi'])->name('quizzes.generate-ai');
+    Route::post('/quizzes/save-batch', [QuizManagementController::class, 'saveBatch'])->name('quizzes.save-batch');
     Route::get('/quizzes/{quiz}/edit', [QuizManagementController::class, 'edit'])->name('quizzes.edit');
     Route::put('/quizzes/{quiz}', [QuizManagementController::class, 'update'])->name('quizzes.update');
     Route::delete('/quizzes/{quiz}', [QuizManagementController::class, 'destroy'])->name('quizzes.destroy');

@@ -18,7 +18,7 @@
             <p class="text-xs text-slate-500 font-semibold mt-1">Buat butir latihan interaktif untuk melatih logika berpikir matematika siswa SD.</p>
         </div>
 
-        <form action="{{ route('admin.quizzes.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin.quizzes.store') }}" method="POST" class="space-y-6" x-data="{ type: '{{ old('type', 'pilihan_ganda') }}' }">
             @csrf
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -37,10 +37,11 @@
 
                 <div>
                     <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Tipe Soal</label>
-                    <select name="type" required class="w-full bg-amber-50/30 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-3 text-xs font-bold focus:border-amber-400 focus:outline-none">
-                        <option value="pilihan_ganda" {{ old('type') === 'pilihan_ganda' ? 'selected' : '' }}>Pilihan Ganda</option>
-                        <option value="drag_drop" {{ old('type') === 'drag_drop' ? 'selected' : '' }}>Drag & Drop</option>
-                        <option value="cerita_logika" {{ old('type') === 'cerita_logika' ? 'selected' : '' }}>Soal Cerita Logika</option>
+                    <select name="type" x-model="type" required class="w-full bg-amber-50/30 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-3 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                        <option value="pilihan_ganda">Pilihan Ganda</option>
+                        <option value="essay">Soal Essay / Uraian</option>
+                        <option value="drag_drop">Drag & Drop</option>
+                        <option value="cerita_logika">Soal Cerita Logika</option>
                     </select>
                     @error('type') <p class="text-rose-500 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
                 </div>
@@ -52,34 +53,49 @@
                 @error('question') <p class="text-rose-500 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
             </div>
 
-            <!-- Pilihan Jawaban (A, B, C, D) -->
-            <div class="space-y-4 bg-amber-50/40 p-6 rounded-2xl border-2 border-amber-200">
-                <label class="block text-xs font-black text-amber-900 uppercase tracking-wider">Pilihan Opsi Jawaban</label>
+            <!-- Pilihan Jawaban (Hanya untuk Pilihan Ganda / Non-Essay) -->
+            <div x-show="type !== 'essay'" class="space-y-4 bg-amber-50/40 p-6 rounded-2xl border-2 border-amber-200 transition-all">
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-black text-amber-900 uppercase tracking-wider">Pilihan Opsi Jawaban</label>
+                    <span class="text-[11px] text-amber-700 font-bold">Wajib diisi untuk tipe Pilihan Ganda</span>
+                </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <span class="text-xs font-black text-slate-600">Opsi A:</span>
-                        <input type="text" name="options[A]" value="{{ old('options.A') }}" required placeholder="Jawaban A" class="w-full bg-white border-2 border-amber-200 text-slate-800 rounded-xl px-3 py-2 text-xs font-bold mt-1 focus:border-amber-400 focus:outline-none">
+                        <input type="text" name="options[A]" value="{{ old('options.A') }}" :required="type !== 'essay'" placeholder="Jawaban A" class="w-full bg-white border-2 border-amber-200 text-slate-800 rounded-xl px-3 py-2 text-xs font-bold mt-1 focus:border-amber-400 focus:outline-none">
                     </div>
                     <div>
                         <span class="text-xs font-black text-slate-600">Opsi B:</span>
-                        <input type="text" name="options[B]" value="{{ old('options.B') }}" required placeholder="Jawaban B" class="w-full bg-white border-2 border-amber-200 text-slate-800 rounded-xl px-3 py-2 text-xs font-bold mt-1 focus:border-amber-400 focus:outline-none">
+                        <input type="text" name="options[B]" value="{{ old('options.B') }}" :required="type !== 'essay'" placeholder="Jawaban B" class="w-full bg-white border-2 border-amber-200 text-slate-800 rounded-xl px-3 py-2 text-xs font-bold mt-1 focus:border-amber-400 focus:outline-none">
                     </div>
                     <div>
                         <span class="text-xs font-black text-slate-600">Opsi C:</span>
-                        <input type="text" name="options[C]" value="{{ old('options.C') }}" required placeholder="Jawaban C" class="w-full bg-white border-2 border-amber-200 text-slate-800 rounded-xl px-3 py-2 text-xs font-bold mt-1 focus:border-amber-400 focus:outline-none">
+                        <input type="text" name="options[C]" value="{{ old('options.C') }}" :required="type !== 'essay'" placeholder="Jawaban C" class="w-full bg-white border-2 border-amber-200 text-slate-800 rounded-xl px-3 py-2 text-xs font-bold mt-1 focus:border-amber-400 focus:outline-none">
                     </div>
                     <div>
                         <span class="text-xs font-black text-slate-600">Opsi D:</span>
-                        <input type="text" name="options[D]" value="{{ old('options.D') }}" required placeholder="Jawaban D" class="w-full bg-white border-2 border-amber-200 text-slate-800 rounded-xl px-3 py-2 text-xs font-bold mt-1 focus:border-amber-400 focus:outline-none">
+                        <input type="text" name="options[D]" value="{{ old('options.D') }}" :required="type !== 'essay'" placeholder="Jawaban D" class="w-full bg-white border-2 border-amber-200 text-slate-800 rounded-xl px-3 py-2 text-xs font-bold mt-1 focus:border-amber-400 focus:outline-none">
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <!-- Petunjuk Khusus Essay -->
+            <div x-show="type === 'essay'" style="display: none;" class="p-4 rounded-2xl bg-indigo-50 border-2 border-indigo-200 text-indigo-900 text-xs font-semibold flex items-start gap-3">
+                <span class="text-lg">✍️</span>
                 <div>
-                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">Kunci Jawaban Benar</label>
-                    <input type="text" name="correct_answer" value="{{ old('correct_answer') }}" required placeholder="Contoh: A atau teks jawaban" class="w-full bg-amber-50/30 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-3 text-xs font-bold focus:border-amber-400 focus:outline-none">
+                    <p class="font-black text-indigo-950">Mode Soal Essay / Uraian Aktif</p>
+                    <p class="text-[11px] text-indigo-800 mt-0.5">Siswa akan menjawab dengan mengetik uraian atau langkah hitungan mereka secara bebas. Evaluasi jawaban dapat dilakukan dengan memeriksa kunci model di bawah.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="sm:col-span-1" :class="{ 'sm:col-span-3': type === 'essay' }">
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
+                        <span x-text="type === 'essay' ? 'Kunci Jawaban Model (Pembahasan / Hasil Akhir)' : 'Kunci Jawaban Benar (Huruf A/B/C/D)'"></span>
+                    </label>
+                    <textarea x-show="type === 'essay'" name="correct_answer" rows="3" :placeholder="type === 'essay' ? 'Tuliskan model jawaban essay lengkap yang diharapkan...' : 'Contoh: A'" class="w-full bg-amber-50/30 border-2 border-amber-200 text-slate-800 rounded-2xl p-4 text-xs font-bold focus:border-amber-400 focus:outline-none" :disabled="type !== 'essay'">{{ old('correct_answer') }}</textarea>
+                    <input x-show="type !== 'essay'" type="text" name="correct_answer" value="{{ old('correct_answer') }}" placeholder="Contoh: A atau teks jawaban" class="w-full bg-amber-50/30 border-2 border-amber-200 text-slate-800 rounded-2xl px-4 py-3 text-xs font-bold focus:border-amber-400 focus:outline-none" :disabled="type === 'essay'">
                     @error('correct_answer') <p class="text-rose-500 text-xs mt-1 font-bold">{{ $message }}</p> @enderror
                 </div>
 

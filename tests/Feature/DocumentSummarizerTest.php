@@ -281,6 +281,7 @@ MD;
             'markdown' => $essayMarkdown,
             'difficulty' => 'sedang',
             'points' => 15,
+            'as_essay' => false,
         ]);
 
         $response->assertStatus(200);
@@ -297,5 +298,43 @@ MD;
         $this->assertArrayHasKey('C', $quiz->options);
         $this->assertArrayHasKey('D', $quiz->options);
         $this->assertContains($quiz->correct_answer, ['A', 'B', 'C', 'D']);
+    }
+
+    public function test_admin_can_publish_native_essay_quizzes_without_option_synthesis(): void
+    {
+        $this->seed();
+
+        $admin = User::where('role', 'admin')->first();
+        $topic = Topic::first();
+
+        $essayMarkdown = <<<'MD'
+## 🌟 Paket Soal: Penalaran Matematika
+
+### 📝 Soal 1
+Berapa banyak siswa yang mengikuti upacara jika terdapat 5 barisan dan setiap barisan ada 10 siswa? Jelaskan perkaliannya!
+
+> **🔑 Kunci Jawaban:** Total siswa adalah 50 anak. Caranya 5 x 10 = 50 siswa.
+> **💡 Pembahasan:** Perkalian 5 baris dengan 10 siswa menghasilkan 50 siswa.
+MD;
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.publish-to-students'), [
+            'topic_id' => $topic->id,
+            'markdown' => $essayMarkdown,
+            'difficulty' => 'sedang',
+            'points' => 15,
+            'as_essay' => true,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'count' => 1,
+        ]);
+
+        $quiz = Quiz::where('topic_id', $topic->id)->latest('id')->first();
+        $this->assertNotNull($quiz);
+        $this->assertEquals('essay', $quiz->type);
+        $this->assertNull($quiz->options);
+        $this->assertStringContainsString('Total siswa adalah 50 anak', $quiz->correct_answer);
     }
 }

@@ -276,17 +276,12 @@ class DocumentSummarizerController extends Controller
         $difficulty = $request->input('difficulty', 'sedang');
         $defaultPoints = (int) $request->input('points', 10);
 
-        // Check if markdown is predominantly essay/uraian (no A-D options)
-        $hasMcqOptions = (bool) preg_match('/(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i', $markdown);
-        if (! $hasMcqOptions) {
-            // Attempt AI conversion from essay to multiple choice
-            $aiConverted = $this->summarizerService->convertEssayToMultipleChoice($markdown, $request->user());
-            if (! empty($aiConverted)) {
-                $markdown = $aiConverted;
-            }
-        }
+        $hasAnyMcqOptions = (bool) preg_match('/(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i', $markdown);
+        $asEssay = $request->has('as_essay')
+            ? $request->boolean('as_essay')
+            : (! $hasAnyMcqOptions || $request->input('type') === 'essay');
 
-        $quizzes = $this->parseQuizzesFromMarkdown($markdown, $difficulty, $defaultPoints);
+        $quizzes = $this->parseQuizzesFromMarkdown($markdown, $difficulty, $defaultPoints, $asEssay);
 
         if (empty($quizzes)) {
             return response()->json([
@@ -300,9 +295,9 @@ class DocumentSummarizerController extends Controller
             Quiz::create([
                 'topic_id' => $topic->id,
                 'lesson_id' => null,
-                'type' => 'pilihan_ganda',
+                'type' => $q['type'] ?? (empty($q['options']) ? 'essay' : 'pilihan_ganda'),
                 'question' => $q['question'],
-                'options' => $q['options'],
+                'options' => $q['options'] ?? null,
                 'correct_answer' => $q['correct_answer'],
                 'explanation' => $q['explanation'],
                 'difficulty' => $q['difficulty'],
@@ -322,11 +317,11 @@ class DocumentSummarizerController extends Controller
 
     /**
      * Parse structured quiz question blocks from AI markdown output.
-     * Supports both multiple choice and essay/uraian questions with automatic option synthesis.
+     * Supports both multiple choice and essay/uraian questions with automatic option synthesis if requested.
      *
-     * @return array<int, array{question: string, options: array<string,string>, correct_answer: string, explanation: string, difficulty: string, points: int}>
+     * @return array<int, array{type: string, question: string, options: ?array<string,string>, correct_answer: string, explanation: string, difficulty: string, points: int}>
      */
-    protected function parseQuizzesFromMarkdown(string $markdown, string $difficulty, int $defaultPoints): array
+    protected function parseQuizzesFromMarkdown(string $markdown, string $difficulty, int $defaultPoints, bool $preserveEssay = false): array
     {
         $quizzes = [];
 
@@ -382,8 +377,10 @@ class DocumentSummarizerController extends Controller
             }
 
             // Extract answer key or synthesize options if missing
+            $type = 'pilihan_ganda';
             $correctAnswer = '';
             if (count($options) >= 2) {
+                $type = 'pilihan_ganda';
                 if (preg_match('/(?:🔑\s*Kunci\s*Jawaban|Kunci\s*Jawaban)\s*:\s*\*?\*?\s*([A-D](?:\s*[-–]\s*\S+)?)/i', $block, $km)) {
                     $correctAnswer = strtoupper(trim(preg_replace('/[*_>\s]/', '', substr($km[1], 0, 1))));
                 }
@@ -391,24 +388,36 @@ class DocumentSummarizerController extends Controller
                     $correctAnswer = array_key_first($options);
                 }
             } else {
-                // Synthesize 4 options for essay/uraian questions
                 $rawKey = '';
                 if (preg_match('/(?:🔑\s*Kunci\s*Jawaban|Kunci\s*Jawaban)\s*:\s*\*?\*?\s*([^\n\r>]+)/i', $block, $km)) {
                     $rawKey = trim(preg_replace('/[*_>]/', '', $km[1]));
                 }
                 if (empty($rawKey)) {
-                    $rawKey = 'Sesuai dengan pembahasan dan materi dokumen';
+                    $rawKey = 'Sesuai dengan pembahasan dan materi konsep pembelajaran.';
                 }
 
-                $synthesized = $this->synthesizeOptionsFromRawKey($rawKey);
-                $options = $synthesized['options'];
-                $correctAnswer = $synthesized['correct_answer'];
-                if (empty($explanation)) {
-                    $explanation = "Jawaban yang tepat adalah opsi {$correctAnswer}: {$synthesized['correct_text']}.";
+                if ($preserveEssay) {
+                    // Simpan sebagai soal essay asli
+                    $type = 'essay';
+                    $options = null;
+                    $correctAnswer = $rawKey;
+                    if (empty($explanation)) {
+                        $explanation = $rawKey;
+                    }
+                } else {
+                    // Sintesis opsi pilihan ganda
+                    $type = 'pilihan_ganda';
+                    $synthesized = $this->synthesizeOptionsFromRawKey($rawKey);
+                    $options = $synthesized['options'];
+                    $correctAnswer = $synthesized['correct_answer'];
+                    if (empty($explanation)) {
+                        $explanation = "Jawaban yang tepat adalah opsi {$correctAnswer}: {$synthesized['correct_text']}.";
+                    }
                 }
             }
 
             $quizzes[] = [
+                'type' => $type,
                 'question' => $questionText,
                 'options' => $options,
                 'correct_answer' => $correctAnswer,
