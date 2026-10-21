@@ -8,6 +8,7 @@ use App\AI\Providers\GeminiProvider;
 use App\AI\Providers\HuggingFaceProvider;
 use App\AI\Providers\LMStudioProvider;
 use App\AI\Providers\MockProvider;
+use App\AI\Providers\OpenAIProvider;
 use App\Models\User;
 use InvalidArgumentException;
 
@@ -21,6 +22,7 @@ class AIManager
         $driver = $driver ?? config('services.ai.provider', env('AI_PROVIDER', 'mock'));
 
         return match (strtolower($driver)) {
+            'openai', 'chatgpt', 'gpt' => new OpenAIProvider,
             'gemini' => new GeminiProvider,
             'huggingface', 'hf' => new HuggingFaceProvider,
             'lmstudio', 'local' => new LMStudioProvider,

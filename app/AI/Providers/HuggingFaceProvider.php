@@ -91,16 +91,16 @@ class HuggingFaceProvider implements AIProviderInterface
     }
 
     /**
-     * Fallback to Gemini if configured, otherwise Mock.
+     * Fallback to OpenAI if configured, otherwise Mock.
      */
     protected function fallback(string $message, ?User $user = null, ?string $context = null): AIChatResponse
     {
-        $geminiKey = config('services.gemini.api_key', env('GEMINI_API_KEY'));
-        if (! empty($geminiKey)) {
+        $openAiKey = config('services.openai.api_key', env('OPENAI_API_KEY'));
+        if (! empty($openAiKey)) {
             try {
-                return (new GeminiProvider)->chat($message, $user, $context);
+                return (new OpenAIProvider)->chat($message, $user, $context);
             } catch (\Throwable $e) {
-                Log::error('Hugging Face fallback to Gemini failed: '.$e->getMessage());
+                Log::error('Hugging Face fallback to OpenAI failed: '.$e->getMessage());
             }
         }
 

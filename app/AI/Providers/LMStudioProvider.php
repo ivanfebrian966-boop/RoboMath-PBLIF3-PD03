@@ -83,23 +83,23 @@ class LMStudioProvider implements AIProviderInterface
             Log::error('LM Studio Provider Exception ['.$this->baseUrl.']: '.$e->getMessage());
         }
 
-        // Fallback 1: try Hugging Face if configured
+        // Fallback 1: try OpenAI if configured
+        $openAiKey = config('services.openai.api_key', env('OPENAI_API_KEY'));
+        if (! empty($openAiKey)) {
+            try {
+                return (new OpenAIProvider)->chat($message, $user, $context);
+            } catch (\Throwable $e) {
+                Log::error('LM Studio fallback to OpenAI also failed: '.$e->getMessage());
+            }
+        }
+
+        // Fallback 2: try Hugging Face if configured
         $hfKey = config('services.huggingface.api_key', env('HUGGINGFACE_API_KEY'));
         if (! empty($hfKey)) {
             try {
                 return (new HuggingFaceProvider)->chat($message, $user, $context);
             } catch (\Throwable $e) {
                 Log::error('LM Studio fallback to Hugging Face also failed: '.$e->getMessage());
-            }
-        }
-
-        // Fallback 2: try Gemini if configured, otherwise use Mock
-        $geminiKey = config('services.gemini.api_key', env('GEMINI_API_KEY'));
-        if (! empty($geminiKey)) {
-            try {
-                return (new GeminiProvider)->chat($message, $user, $context);
-            } catch (\Throwable $e) {
-                Log::error('LM Studio fallback to Gemini also failed: '.$e->getMessage());
             }
         }
 

@@ -24,9 +24,9 @@ class GeminiProvider implements AIProviderInterface
     public function chat(string $message, ?User $user = null, ?string $context = null): AIChatResponse
     {
         if (empty($this->apiKey)) {
-            Log::warning('Gemini API key is not configured, falling back to mock response.');
+            Log::warning('Gemini API key is not configured, falling back.');
 
-            return (new MockProvider)->chat($message, $user, $context);
+            return $this->fallback($message, $user, $context);
         }
 
         $systemInstruction = match ($context) {
@@ -101,6 +101,23 @@ class GeminiProvider implements AIProviderInterface
             Log::error('Gemini API Error: '.($response ? $response->body() : 'No response'));
         } catch (\Throwable $e) {
             Log::error('Gemini Provider Exception: '.$e->getMessage());
+        }
+
+        return $this->fallback($message, $user, $context);
+    }
+
+    /**
+     * Fallback to OpenAI if configured, otherwise Mock.
+     */
+    protected function fallback(string $message, ?User $user = null, ?string $context = null): AIChatResponse
+    {
+        $openAiKey = config('services.openai.api_key', env('OPENAI_API_KEY'));
+        if (! empty($openAiKey)) {
+            try {
+                return (new OpenAIProvider)->chat($message, $user, $context);
+            } catch (\Throwable $e) {
+                Log::error('Gemini fallback to OpenAI failed: '.$e->getMessage());
+            }
         }
 
         return (new MockProvider)->chat($message, $user, $context);
