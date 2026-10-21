@@ -21,8 +21,8 @@
                         {{-- Dashboard Siswa --}}
                         @php $isActive = request()->routeIs('siswa.dashboard') || request()->routeIs('siswa.achievements'); @endphp
                         <a href="{{ route('siswa.dashboard') }}"
-                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF8A00] text-[#001738] font-black shadow-[0_12px_24px_rgba(255,138,0,0.38)]' : 'text-[#001738] font-black border border-transparent hover:border-[#FDE68A] hover:bg-[#FFFBF5] hover:shadow-xs' }} active:scale-95 group">
-                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-[#FFA834] text-[#001738]' : 'bg-[#FFEBEB] text-[#FF3B30] group-hover:scale-105' }}">
+                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF8A00] text-[#001738] font-black shadow-[0_12px_24px_rgba(255,138,0,0.38)]' : 'text-[#001738] font-black border border-transparent hover:border-orange-200 hover:bg-orange-50 hover:shadow-xs' }} active:scale-95 group">
+                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-[#FFA834] text-[#001738]' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5 12 3l9 7.5v10.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10.5Z" />
                                 </svg>
@@ -33,8 +33,8 @@
                         {{-- Latihan Soal --}}
                         @php $isActive = request()->routeIs('siswa.quiz*') || request()->routeIs('siswa.topics*') || request()->routeIs('siswa.lessons*'); @endphp
                         <a href="{{ route('siswa.quiz') }}"
-                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF8A00] text-[#001738] font-black shadow-[0_12px_24px_rgba(255,138,0,0.38)]' : 'text-[#001738] font-black border border-transparent hover:border-[#FDE68A] hover:bg-[#FFFBF5] hover:shadow-xs' }} active:scale-95 group">
-                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-[#FFA834] text-[#001738]' : 'bg-[#E0EDFF] text-[#2563EB] group-hover:scale-105' }}">
+                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#2563EB] text-white font-black shadow-[0_12px_24px_rgba(37,99,235,0.35)]' : 'text-[#001738] font-black border border-transparent hover:border-blue-200 hover:bg-blue-50 hover:shadow-xs' }} active:scale-95 group">
+                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-blue-100 text-blue-700' : 'bg-[#E0EDFF] text-[#2563EB] group-hover:scale-105' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-1.5m-3.2-3.3A5.5 5.5 0 1 1 15.2 13.2c-.7.7-1.2 1.6-1.2 2.6H10c0-1-.5-1.9-1.2-2.6ZM9.5 20.5h5" />
                                 </svg>
@@ -46,8 +46,8 @@
                         {{-- Leaderboard --}}
                         @php $isActive = request()->routeIs('siswa.leaderboard*'); @endphp
                         <a href="{{ route('siswa.leaderboard') }}"
-                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF8A00] text-[#001738] font-black shadow-[0_12px_24px_rgba(255,138,0,0.38)]' : 'text-[#001738] font-black border border-transparent hover:border-[#FDE68A] hover:bg-[#FFFBF5] hover:shadow-xs' }} active:scale-95 group">
-                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-[#FFA834] text-[#001738]' : 'bg-[#FEF3C7] text-[#D97706] group-hover:scale-105' }}">
+                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#D97706] text-white font-black shadow-[0_12px_24px_rgba(217,119,6,0.35)]' : 'text-[#001738] font-black border border-transparent hover:border-amber-200 hover:bg-amber-50 hover:shadow-xs' }} active:scale-95 group">
+                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-amber-100 text-amber-700' : 'bg-[#FEF3C7] text-[#D97706] group-hover:scale-105' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8m-4-4v4m-5-9.5V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4.5a5 5 0 0 1-5 5 5 5 0 0 1-5-5Zm0-2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m10 4.5h2a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
                                 </svg>
@@ -58,8 +58,8 @@
                         {{-- Profil --}}
                         @php $isActive = request()->routeIs('profil*'); @endphp
                         <a href="{{ route('profil.show') }}"
-                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF8A00] text-[#001738] font-black shadow-[0_12px_24px_rgba(255,138,0,0.38)]' : 'text-[#001738] font-black border border-transparent hover:border-[#FDE68A] hover:bg-[#FFFBF5] hover:shadow-xs' }} active:scale-95 group">
-                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-[#FFA834] text-[#001738]' : 'bg-[#DCFCE7] text-[#059669] group-hover:scale-105' }}">
+                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#059669] text-white font-black shadow-[0_12px_24px_rgba(5,150,105,0.35)]' : 'text-[#001738] font-black border border-transparent hover:border-emerald-200 hover:bg-emerald-50 hover:shadow-xs' }} active:scale-95 group">
+                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-[#DCFCE7] text-[#059669] group-hover:scale-105' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                 </svg>
@@ -127,7 +127,7 @@
                         @php $isActive = request()->routeIs('admin.dashboard') || request()->routeIs('admin.reports*'); @endphp
                         <a href="{{ route('admin.dashboard') }}"
                            class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF9500] text-white font-black shadow-[0_8px_20px_rgba(255,149,0,0.32)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-orange-50/70 hover:text-orange-950 hover:scale-[1.01]' }} active:scale-95 group">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-500 group-hover:scale-105' }} transition-transform">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }} transition-transform">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                                 </svg>

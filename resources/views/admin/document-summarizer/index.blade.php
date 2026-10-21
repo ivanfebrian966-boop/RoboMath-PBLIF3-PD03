@@ -397,19 +397,37 @@
 <!-- ======================================================== -->
 <!-- LOADING MODAL OVERLAY -->
 <!-- ======================================================== -->
-<div id="result-loading" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl border border-slate-100 space-y-5">
-        <div class="relative w-16 h-16 mx-auto">
-            <div class="w-16 h-16 rounded-full border-4 border-blue-100 border-t-[#2563EB] animate-spin"></div>
-            <div class="absolute inset-0 flex items-center justify-center text-xl">🤖</div>
+<div id="result-loading" class="fixed inset-0 z-[80] hidden bg-[#191A32]/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-[#FAF6EF] rounded-3xl p-5 sm:p-7 max-w-xl w-full text-center shadow-2xl border-[3px] border-slate-900 space-y-5">
+        <div class="relative w-28 h-28 mx-auto">
+            <div class="absolute inset-0 rounded-full border-[10px] border-[#E8E1D5]"></div>
+            <div class="absolute inset-0 rounded-full border-[10px] border-transparent border-t-[#2563EB] border-r-[#2563EB] -rotate-45 animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <svg class="w-16 h-16" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                    <path d="M40 11v10" stroke="#17182F" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="40" cy="10" r="6" fill="#EF342B"/>
+                    <rect x="16" y="22" width="48" height="42" rx="15" fill="#2563EB" stroke="#17182F" stroke-width="5"/>
+                    <circle cx="31" cy="41" r="5" fill="white"/>
+                    <circle cx="49" cy="41" r="5" fill="white"/>
+                    <path d="M31 54h18" stroke="white" stroke-width="5" stroke-linecap="round"/>
+                </svg>
+            </div>
         </div>
-        <div class="space-y-1.5">
-            <h3 class="text-base font-black text-slate-800" id="loading-stage-text">Membaca berkas dokumen...</h3>
-            <p class="text-xs text-slate-500 font-medium">Model AI sedang membaca materi dan merancang butir soal berkualitas.</p>
-            <p class="text-[11px] text-amber-600 font-bold mt-1">⏳ AI lokal mungkin membutuhkan 1–3 menit. Harap ditunggu!</p>
+        <div class="space-y-2.5">
+            <h3 class="text-xl sm:text-2xl font-black text-[#17182F] tracking-tight" id="loading-stage-text">Mengekstrak materi dokumen...</h3>
+            <p class="text-sm sm:text-base text-slate-600 font-medium max-w-md mx-auto">RoboMath sedang membaca isi dokumen dan menyusun butir soal.</p>
+            <p class="inline-flex items-center justify-center px-4 py-2 rounded-full border-2 border-[#FF9500] bg-[#FFF3D9] text-xs sm:text-sm text-amber-950 font-black">
+                AI lokal bisa butuh 1–3 menit. Mohon ditunggu.
+            </p>
         </div>
-        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full w-2/3 animate-pulse"></div>
+        <div class="space-y-2">
+            <div class="w-full bg-[#E8E1D5] h-3 rounded-full overflow-hidden">
+                <div id="loading-progress-bar" class="bg-[#2563EB] h-full w-0 rounded-full transition-all duration-700"></div>
+            </div>
+            <div class="flex items-center justify-between text-xs sm:text-sm font-black text-slate-600">
+                <span id="loading-progress-label">Menyiapkan dokumen</span>
+                <span id="loading-progress-percent">0%</span>
+            </div>
         </div>
     </div>
 </div>
@@ -440,7 +458,7 @@
             <div id="modal-markdown-body" class="prose prose-blue max-w-none text-slate-700 text-sm leading-relaxed"></div>
 
             <div id="modal-key-points-box" class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-2">
-                <div class="text-xs font-black text-amber-900 uppercase tracking-wider">📌 Poin Kunci Utama</div>
+                <div class="text-xs font-black text-amber-900 uppercase tracking-wider">Poin Kunci Utama</div>
                 <ul class="text-xs font-medium text-slate-700 space-y-1.5 list-disc pl-4" id="modal-key-points-list"></ul>
             </div>
         </div>
@@ -463,80 +481,74 @@
 <!-- ======================================================== -->
 <!-- MODAL POPUP BESAR: HASIL SOAL AI (Setelah Generate) -->
 <!-- ======================================================== -->
-<div id="result-popup-modal" class="fixed inset-0 z-[60] hidden" style="background: rgba(15,15,35,0.75); backdrop-filter: blur(6px);">
+<div id="result-popup-modal" class="fixed inset-0 z-[60] hidden" style="background: rgba(35,39,68,0.92); backdrop-filter: blur(6px);">
     <div class="flex items-stretch justify-center min-h-screen p-3 sm:p-5">
-        <div class="bg-white rounded-3xl w-full max-w-5xl flex flex-col shadow-2xl border border-white/20 overflow-hidden" style="max-height: calc(100vh - 24px);">
+        <div class="bg-[#FAF6EF] rounded-3xl w-full max-w-2xl flex flex-col shadow-2xl border border-white/20 overflow-hidden" style="max-height: calc(100vh - 32px);">
 
             <!-- Popup Header Bar -->
-            <div class="flex items-center justify-between gap-4 px-6 sm:px-8 py-4 border-b border-slate-100 bg-[#2563EB] flex-shrink-0">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-9 h-9 rounded-2xl bg-white/20 flex items-center justify-center text-white font-black text-lg flex-shrink-0">🤖</div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-4 sm:px-5 py-3 bg-[#2563EB] flex-shrink-0">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-lg bg-white text-blue-600 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3.75h7.5L19.25 8.5v11.75H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Zm7.5 0V8.5h4.75M9 13h6m-6 3.5h6"/></svg>
+                    </div>
                     <div class="min-w-0">
-                        <h2 class="text-base sm:text-lg font-black text-white truncate" id="popup-res-title">Paket Soal AI</h2>
-                        <div class="flex items-center gap-2 text-blue-100 text-xs font-semibold mt-0.5">
-                            <span id="popup-res-badge-type"></span>
-                            <span>•</span>
-                            <span id="popup-res-provider" class="text-amber-200"></span>
-                            <span>•</span>
-                            <span id="popup-res-date"></span>
-                        </div>
+                        <h2 class="text-sm sm:text-base font-black text-white truncate" id="popup-res-title">Paket Soal AI</h2>
+                        <p class="text-[9px] sm:text-[10px] text-blue-100 font-semibold mt-0.5 truncate">
+                            <span id="popup-res-badge-type"></span> · <span id="popup-res-provider" class="text-amber-200"></span> · <span id="popup-res-date"></span>
+                        </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <!-- Action buttons in header -->
                     <button type="button" onclick="openPublishModal()" title="Kirim ke Siswa"
-                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-white shadow-xs transition-all">
+                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-all">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                        <span class="hidden sm:inline">Ajukan ke Review AI</span>
+                        <span>Ajukan ke Review AI</span>
                     </button>
                     <button type="button" onclick="copySummaryText()" title="Salin Semua"
-                            class="p-2 rounded-full bg-white/15 hover:bg-white/25 text-white transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            class="p-1.5 rounded-full border-2 border-white/70 hover:bg-white/15 text-white transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     </button>
                     <button type="button" onclick="downloadCurrentSummary()" title="Unduh .MD"
-                            class="p-2 rounded-full bg-white/15 hover:bg-white/25 text-white transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            class="p-1.5 rounded-full border-2 border-white/70 hover:bg-white/15 text-white transition-all">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     </button>
                     <button type="button" onclick="closeResultPopup()"
-                            class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-black text-lg transition-all ml-1">&times;</button>
+                            class="w-8 h-8 rounded-full bg-white hover:bg-blue-50 text-blue-700 flex items-center justify-center font-black text-base transition-all">&times;</button>
                 </div>
             </div>
 
             <!-- Stats Bar -->
-            <div class="flex items-center gap-6 px-6 sm:px-8 py-3 bg-slate-50 border-b border-slate-100 flex-shrink-0 text-xs overflow-x-auto">
-                <div>
-                    <span class="text-slate-400 font-bold uppercase tracking-wider">Kata Sumber</span>
-                    <span class="font-black text-slate-800 ml-2" id="popup-res-words-original">—</span>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 px-4 sm:px-5 py-3 flex-shrink-0">
+                <div class="rounded-xl bg-white border-2 border-[#E9E0D4] p-2.5">
+                    <span class="block text-[9px] text-slate-500 font-black uppercase tracking-wider">Kata sumber</span>
+                    <span class="block text-lg font-black text-slate-900 mt-0.5" id="popup-res-words-original">—</span>
                 </div>
-                <div class="w-px h-4 bg-slate-200"></div>
-                <div>
-                    <span class="text-slate-400 font-bold uppercase tracking-wider">Panjang Soal</span>
-                    <span class="font-black text-blue-600 ml-2" id="popup-res-words-summary">—</span>
+                <div class="rounded-xl bg-white border-2 border-[#E9E0D4] p-2.5">
+                    <span class="block text-[9px] text-slate-500 font-black uppercase tracking-wider">Panjang soal</span>
+                    <span class="block text-lg font-black text-slate-900 mt-0.5" id="popup-res-words-summary">—</span>
                 </div>
-                <div class="w-px h-4 bg-slate-200"></div>
-                <div>
-                    <span class="text-slate-400 font-bold uppercase tracking-wider">AI Score</span>
-                    <span class="font-black text-indigo-700 ml-2" id="popup-res-compression">—</span>
+                <div class="rounded-xl bg-[#FF9500] p-2.5">
+                    <span class="block text-[9px] text-slate-950 font-black uppercase tracking-wider">Jumlah soal</span>
+                    <span class="block text-lg font-black text-slate-950 mt-0.5" id="popup-res-question-count">—</span>
                 </div>
-                <div class="ml-auto flex-shrink-0">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Soal Siap Digunakan
-                    </span>
+                <div class="rounded-xl bg-[#FFF3D9] border-2 border-[#FF9500] p-2.5">
+                    <span class="block text-[10px] font-black text-slate-900">Perlu ditinjau guru</span>
+                    <span class="block text-[9px] text-amber-950 font-semibold mt-1 leading-relaxed">Tinjau dan setujui soal sebelum dipakai siswa.</span>
                 </div>
             </div>
 
             <!-- Main Body: Questions Scroll Area -->
-            <div class="flex-1 overflow-y-auto p-5 sm:p-8 space-y-0" id="popup-res-markdown-body" style="scroll-behavior: smooth;">
+            <div class="flex-1 overflow-y-auto px-4 sm:px-5 pb-4 space-y-2.5" id="popup-res-markdown-body" style="scroll-behavior: smooth;">
                 <!-- Dynamic question cards rendered here -->
             </div>
 
             <!-- Footer -->
-            <div class="px-6 sm:px-8 py-4 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3 flex-shrink-0">
-                <p class="text-[11px] text-slate-400 font-medium">Dibuat oleh <span class="font-bold text-blue-600">RoboMath AI</span></p>
+            <div class="px-4 sm:px-5 py-2.5 border-t border-[#E9E0D4] bg-white flex items-center justify-between gap-3 flex-shrink-0">
+                <p class="text-[10px] text-slate-500 font-medium">Dibuat oleh <span class="font-bold text-blue-600">RoboMath AI</span></p>
                 <button type="button" onclick="closeResultPopup()"
-                        class="px-5 py-2 rounded-full text-xs font-bold bg-slate-800 text-white hover:bg-slate-700 shadow-xs transition-all">
-                    Tutup Popup
+                        class="px-5 py-2 rounded-full text-xs font-bold bg-slate-900 text-white hover:bg-slate-700 shadow-xs transition-all">
+                    Tutup
                 </button>
             </div>
         </div>
@@ -546,86 +558,79 @@
 <!-- ============================================================ -->
 <!-- MODAL: PUBLISH SOAL KE REVIEW AI -->
 <!-- ============================================================ -->
-<div id="publish-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 space-y-5 relative border border-slate-100">
+<div id="publish-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-3 overflow-y-auto" style="background: rgba(25,26,50,0.78); backdrop-filter: blur(5px);">
+    <div class="bg-[#FAF6EF] rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg max-h-[80vh] overflow-y-auto p-3 sm:p-4 space-y-3 relative border-2 border-slate-900 my-auto">
         <!-- Modal Header -->
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
-                    🤖
-                </div>
-                <div>
-                    <h3 class="text-base font-black text-slate-900">Ajukan Soal ke Review AI</h3>
-                    <p class="text-xs text-slate-400 font-medium">Tinjau & verifikasi soal sebelum diterbitkan ke siswa</p>
-                </div>
+        <div class="flex items-center justify-between gap-3">
+            <div>
+                <h3 class="text-base sm:text-xl font-black text-[#17182F]">Ajukan soal ke Review AI</h3>
             </div>
-            <button type="button" onclick="closePublishModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-base transition-all">&times;</button>
+            <button type="button" onclick="closePublishModal()" aria-label="Tutup" class="w-8 h-8 rounded-full bg-white border-2 border-slate-900 hover:bg-slate-100 text-slate-900 flex items-center justify-center font-black text-lg transition-all">&times;</button>
         </div>
 
         <!-- Info Card -->
-        <div class="p-3 rounded-2xl bg-blue-50/80 border border-blue-200/80 text-xs font-semibold text-blue-900 flex items-start gap-2.5">
-            <span class="text-base flex-shrink-0 mt-0.5">💡</span>
-            <span>Soal akan disimpan dengan status <strong>"Menunggu Tinjauan"</strong> di halaman Review AI sebelum aktif dikerjakan siswa.</span>
+        <div class="p-2.5 sm:p-3 rounded-xl bg-[#E6F0FF] text-[11px] sm:text-xs font-semibold text-blue-900 leading-relaxed">
+            Soal disimpan dengan status <strong>“Menunggu tinjauan”</strong> di halaman Review AI sebelum dikerjakan siswa.
         </div>
 
         <!-- Preview -->
-        <div id="publish-preview" class="hidden p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 flex items-center gap-2">
-            <span class="text-base">✅</span>
+        <div id="publish-preview" class="hidden flex p-2.5 rounded-xl bg-[#E7F4D9] border-2 border-[#63A52E] text-[11px] sm:text-xs font-black text-slate-900 items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.75 2.25 2.25L15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
             <span id="publish-preview-text"></span>
         </div>
 
         <!-- Form Fields -->
-        <div class="space-y-4">
+        <div class="space-y-2.5">
             <!-- Pilih Topik -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Topik Tujuan <span class="text-rose-500">*</span></label>
-                <select id="publish-topic-id" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 font-bold text-slate-800 text-xs outline-none transition-all">
-                    <option value="">-- Pilih Topik --</option>
+                <label class="block text-[9px] sm:text-[10px] font-black text-slate-600 mb-1 uppercase tracking-wider">Topik tujuan <span class="text-[#EF342B]">*</span></label>
+                <select id="publish-topic-id" class="w-full px-3 py-2 rounded-lg border-2 border-slate-900 focus:border-[#2563EB] bg-white font-bold text-slate-800 text-xs outline-none transition-all">
+                    <option value="">Pilih topik</option>
                     @foreach(\App\Models\Topic::where('is_active', true)->orderBy('kelas_level')->orderBy('order')->get() as $t)
-                        <option value="{{ $t->id }}">{{ $t->icon }} {{ $t->title }} (Kelas {{ $t->kelas_level }})</option>
+                        <option value="{{ $t->id }}">{{ $t->title }} (Kelas {{ $t->kelas_level }})</option>
                     @endforeach
                 </select>
             </div>
 
             <!-- Format Soal -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Format Soal</label>
-                <div class="grid grid-cols-2 gap-2">
-                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-800">
+                <label class="block text-[9px] sm:text-[10px] font-black text-slate-600 mb-1 uppercase tracking-wider">Format soal</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#7CC043] has-[:checked]:text-slate-950">
                         <input type="radio" name="publish-type" value="essay" id="publish-type-essay" class="sr-only" checked>
-                        <span>✍️ Essay / Uraian</span>
+                        <span>Essay / Uraian</span>
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-800">
+                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#2563EB] has-[:checked]:text-white">
                         <input type="radio" name="publish-type" value="pilihan_ganda" id="publish-type-mcq" class="sr-only">
-                        <span>🔘 Pilihan Ganda (A-D)</span>
+                        <span>Pilihan Ganda (A-D)</span>
                     </label>
                 </div>
             </div>
 
             <!-- Tingkat Kesulitan -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Tingkat Kesulitan</label>
-                <div class="grid grid-cols-3 gap-2">
-                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-800">
-                        <input type="radio" name="publish-difficulty" value="mudah" class="sr-only" checked> 🌱 Mudah
+                <label class="block text-[9px] sm:text-[10px] font-black text-slate-600 mb-1 uppercase tracking-wider">Tingkat kesulitan</label>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                    <label class="flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#7CC043]">
+                        <input type="radio" name="publish-difficulty" value="mudah" class="sr-only" checked> Mudah
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 has-[:checked]:text-amber-800">
-                        <input type="radio" name="publish-difficulty" value="sedang" class="sr-only"> ⚡ Sedang
+                    <label class="flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#FFCC00]">
+                        <input type="radio" name="publish-difficulty" value="sedang" class="sr-only"> Sedang
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-800">
-                        <input type="radio" name="publish-difficulty" value="sulit" class="sr-only"> 🔥 Sulit
+                    <label class="flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#EF342B]">
+                        <input type="radio" name="publish-difficulty" value="sulit" class="sr-only"> Sulit
                     </label>
                 </div>
             </div>
 
             <!-- Poin per Soal -->
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Poin per Soal</label>
+                <label class="block text-[9px] sm:text-[10px] font-black text-slate-600 mb-1 uppercase tracking-wider">Poin per soal</label>
                 <div class="flex items-center gap-3">
                     <input type="range" id="publish-points" min="5" max="50" step="5" value="10"
                            oninput="document.getElementById('publish-points-label').textContent = this.value"
-                           class="flex-1 accent-blue-600">
-                    <span class="w-14 text-center font-bold text-blue-700 text-xs bg-blue-50 border border-blue-200 px-2 py-1 rounded-lg">
+                           class="flex-1 accent-[#2563EB]">
+                    <span class="w-20 text-center font-black text-[#17182F] text-[11px] sm:text-xs bg-[#FFF0D1] border-2 border-slate-900 px-2 py-1 rounded-lg">
                         <span id="publish-points-label">10</span> Poin
                     </span>
                 </div>
@@ -633,12 +638,12 @@
         </div>
 
         <!-- Modal Actions -->
-        <div class="flex items-center gap-3 pt-2">
-            <button type="button" onclick="closePublishModal()" class="flex-1 px-4 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all">
+        <div class="flex flex-col-reverse sm:flex-row items-center gap-2 pt-1">
+            <button type="button" onclick="closePublishModal()" class="flex-1 w-full px-3 py-2 rounded-full bg-white border-2 border-slate-900 hover:bg-slate-100 text-slate-900 font-black text-[11px] sm:text-xs transition-all">
                 Batal
             </button>
             <button type="button" onclick="submitPublishToStudents()" id="btn-publish-confirm"
-                    class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all">
+                    class="flex-1 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-full bg-[#EF342B] hover:bg-[#D72B24] border-2 border-slate-900 text-white font-black text-[11px] sm:text-xs shadow-xs transition-all">
                 <span>Ajukan ke Review AI</span>
             </button>
         </div>
@@ -779,13 +784,10 @@
                     if (headerMatch) {
                         const cleanTitle = headerMatch[1].replace(/[*#]/g, '').trim();
                         finalHtml += `
-                            <div class="p-4 sm:p-5 rounded-2xl bg-blue-50/70 border border-blue-200/80 mb-5">
-                                <div class="flex items-center gap-2.5">
-                                    <span class="text-xl">🎯</span>
-                                    <div>
-                                        <h2 class="text-sm sm:text-base font-black text-blue-950">${cleanTitle}</h2>
-                                        <p class="text-xs font-semibold text-blue-700/80 mt-0.5">Paket latihan soal dan kuis edukatif untuk siswa SD.</p>
-                                    </div>
+                            <div class="p-4 sm:p-5 rounded-2xl bg-[#7CC043] mb-3">
+                                <div>
+                                    <h2 class="text-sm sm:text-base font-black text-slate-950">${cleanTitle}</h2>
+                                    <p class="text-xs font-semibold text-slate-800 mt-0.5">Dibuat dari “${state.activeSummaryTitle || 'dokumen materi'}”.</p>
                                 </div>
                             </div>
                         `;
@@ -834,13 +836,13 @@
                         let optionsHtml = '';
                         if (isMultipleChoice) {
                             optionsHtml = `
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                                     ${options.map(opt => `
-                                        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-700">
-                                            <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                        <div class="flex items-start gap-2.5 p-2.5 rounded-2xl bg-white border-2 border-[#E9E0D4] text-xs font-semibold text-slate-700">
+                                            <span class="w-5 h-5 rounded-full bg-[#F2EDE4] text-slate-800 flex items-center justify-center font-black text-[10px] flex-shrink-0">
                                                 ${opt.letter}
                                             </span>
-                                            <span class="leading-relaxed mt-0.5">${opt.text}</span>
+                                            <span class="leading-relaxed">${opt.text}</span>
                                         </div>
                                     `).join('')}
                                 </div>
@@ -850,17 +852,15 @@
                         let answerBoxHtml = '';
                         if (keyAnswer || explanation) {
                             answerBoxHtml = `
-                                <div class="mt-3 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-1">
+                                <div class="mt-1 p-3 rounded-2xl bg-[#E7F4D9] border-2 border-[#63A52E] text-slate-800 space-y-1">
                                     ${keyAnswer ? `
-                                        <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-900">
-                                            <span>🔑 Kunci Jawaban:</span>
-                                            <span class="bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">${keyAnswer}</span>
+                                        <div class="text-xs leading-relaxed">
+                                            <strong>Kunci jawaban:</strong> ${keyAnswer}
                                         </div>
                                     ` : ''}
                                     ${explanation ? `
-                                        <div class="text-xs text-emerald-900/90 leading-relaxed flex items-start gap-1.5 pt-0.5">
-                                            <span class="leading-none">💡</span>
-                                            <div><strong>Pembahasan:</strong> ${explanation}</div>
+                                        <div class="text-xs leading-relaxed">
+                                            <strong>Pembahasan:</strong> ${explanation}
                                         </div>
                                     ` : ''}
                                 </div>
@@ -868,17 +868,17 @@
                         }
 
                         finalHtml += `
-                            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-3 mb-4">
-                                <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-2.5">
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#2563EB] text-white">
-                                        Soal #${qNum}
+                            <div class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-slate-800 space-y-3">
+                                <div class="flex items-center justify-between gap-3">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black bg-[#EF342B] text-white">
+                                        Soal ${qNum}
                                     </span>
-                                    <span class="text-[10px] font-bold uppercase tracking-wider ${isMultipleChoice ? 'text-blue-700 bg-blue-50 border-blue-200' : 'text-rose-700 bg-rose-50 border-rose-200'} px-2.5 py-0.5 rounded-full border">
-                                        ${isMultipleChoice ? 'Pilihan Ganda' : '✍️ Essay / Uraian'}
+                                    <span class="text-[10px] font-black ${isMultipleChoice ? 'text-blue-800' : 'text-slate-800'} bg-[#F2EDE4] px-2.5 py-1 rounded-full">
+                                        ${isMultipleChoice ? 'Pilihan ganda' : 'Essay / uraian'}
                                     </span>
                                 </div>
 
-                                <div class="text-xs sm:text-sm font-bold text-slate-800 leading-relaxed">
+                                <div class="text-sm font-black text-slate-900 leading-relaxed">
                                     ${questionBody || 'Pertanyaan materi latihan'}
                                 </div>
 
@@ -1054,9 +1054,16 @@
         function showLoadingState(isLoading) {
             const loading = document.getElementById('result-loading');
             const submitBtn = document.getElementById('btn-submit-summarize');
+            const progressBar = document.getElementById('loading-progress-bar');
+            const progressPercent = document.getElementById('loading-progress-percent');
+            const progressLabel = document.getElementById('loading-progress-label');
 
             if (isLoading) {
                 if (loading) { loading.style.display = 'flex'; loading.classList.remove('hidden'); }
+                state.loadingProgress = 4;
+                if (progressBar) progressBar.style.width = `${state.loadingProgress}%`;
+                if (progressPercent) progressPercent.textContent = `${state.loadingProgress}%`;
+                if (progressLabel) progressLabel.textContent = 'Menyiapkan dokumen';
                 if (submitBtn) {
                     submitBtn.disabled = true;
                     submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
@@ -1072,10 +1079,24 @@
                 ];
                 let step = 0;
                 const textElem = document.getElementById('loading-stage-text');
+                if (window.loadingInterval) clearInterval(window.loadingInterval);
                 window.loadingInterval = setInterval(() => {
-                    step = (step + 1) % messages.length;
+                    state.loadingProgress = Math.min(92, state.loadingProgress + 2);
+                    step = Math.min(messages.length - 1, Math.floor(state.loadingProgress / 18));
                     if (textElem) textElem.textContent = messages[step];
-                }, 2000);
+                    if (progressBar) progressBar.style.width = `${state.loadingProgress}%`;
+                    if (progressPercent) progressPercent.textContent = `${state.loadingProgress}%`;
+                    if (progressLabel) {
+                        progressLabel.textContent = [
+                            'Menyiapkan dokumen',
+                            'Membaca dokumen',
+                            'Menganalisis materi',
+                            'Menyusun butir soal',
+                            'Memeriksa kunci dan pembahasan',
+                            'Menyelesaikan paket soal',
+                        ][step];
+                    }
+                }, 1200);
             } else {
                 if (loading) { loading.style.display = 'none'; loading.classList.add('hidden'); }
                 if (submitBtn) {
@@ -1083,6 +1104,7 @@
                     submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
                 }
                 if (window.loadingInterval) clearInterval(window.loadingInterval);
+                window.loadingInterval = null;
             }
         }
 
@@ -1099,6 +1121,8 @@
             const resWordsOrig = document.getElementById('res-words-original');
             const resWordsSum = document.getElementById('res-words-summary');
             const markdownBody = document.getElementById('res-markdown-body');
+            const popupQuestionCount = document.getElementById('popup-res-question-count');
+            const questionCount = (data.summary_markdown.match(/###\s*(?:📝|🌟)?\s*Soal\s*\d+/gi) || []).length;
 
             if (resTitle) resTitle.textContent = data.title;
             if (badgeType) badgeType.textContent = `${data.file_type} • ${data.file_size_formatted}`;
@@ -1107,6 +1131,7 @@
             if (resCompression) resCompression.textContent = `${data.compression_ratio}%`;
             if (resWordsOrig) resWordsOrig.textContent = `${(data.word_count_original || 0).toLocaleString()} Kata`;
             if (resWordsSum) resWordsSum.textContent = `${(data.word_count_summary || 0).toLocaleString()} Kata`;
+            if (popupQuestionCount) popupQuestionCount.textContent = `${questionCount} soal`;
 
             if (markdownBody) {
                 markdownBody.innerHTML = parseMarkdownToHtml(data.summary_markdown);
@@ -1294,7 +1319,7 @@
             const selectedType = document.querySelector('input[name="publish-type"]:checked')?.value || 'essay';
 
             if (!topicId) {
-                Swal.fire({ icon: 'warning', title: 'Pilih Topik', text: 'Silakan pilih topik tujuan untuk soal-soal ini.', confirmButtonColor: '#2563EB' });
+                Swal.fire({ icon: 'warning', title: 'Pilih topik', text: 'Silakan pilih topik tujuan untuk soal-soal ini.', background: '#FAF6EF', color: '#17182F', confirmButtonColor: '#2563EB' });
                 return;
             }
 
@@ -1329,23 +1354,34 @@
                 if (data.success) {
                     Swal.fire({
                         icon: 'success',
-                        title: `🎉 ${data.count} Soal Berhasil Diajukan!`,
-                        text: 'Soal tersimpan dengan status Menunggu Tinjauan di halaman Review AI.',
-                        confirmButtonColor: '#2563EB',
-                        confirmButtonText: 'Buka Halaman Review AI →',
+                        title: `${data.count} soal berhasil diajukan`,
+                        text: 'Soal tersimpan dengan status “Menunggu tinjauan” di halaman Review AI.',
+                        background: '#FAF6EF',
+                        color: '#17182F',
+                        iconColor: '#7CC043',
+                        buttonsStyling: false,
+                        customClass: {
+                            popup: 'rounded-[30px] border-[3px] border-slate-900',
+                            title: 'font-black text-[#17182F]',
+                            htmlContainer: 'text-slate-600',
+                            confirmButton: 'px-6 py-3 rounded-full bg-[#2563EB] hover:bg-blue-700 border-[3px] border-slate-900 text-white font-black',
+                            cancelButton: 'px-6 py-3 rounded-full bg-white hover:bg-slate-100 border-[3px] border-slate-900 text-slate-900 font-black',
+                            actions: 'gap-3',
+                        },
+                        confirmButtonText: 'Buka halaman Review AI',
                         showCancelButton: true,
-                        cancelButtonText: 'Tetap di Sini',
+                        cancelButtonText: 'Tetap di sini',
                     }).then((result) => {
                         if (result.isConfirmed) {
                             window.location.href = data.review_url || "{{ route('admin.ai-recommendations.index') }}";
                         }
                     });
                 } else {
-                    Swal.fire({ icon: 'error', title: 'Gagal Mengajukan', text: data.message || 'Terjadi kesalahan.', confirmButtonColor: '#2563EB' });
+                    Swal.fire({ icon: 'error', title: 'Gagal mengajukan', text: data.message || 'Terjadi kesalahan.', background: '#FAF6EF', color: '#17182F', confirmButtonColor: '#EF342B' });
                 }
             } catch (err) {
                 console.error(err);
-                Swal.fire({ icon: 'error', title: 'Gagal Mengajukan', text: 'Terjadi gangguan koneksi.', confirmButtonColor: '#2563EB' });
+                Swal.fire({ icon: 'error', title: 'Gagal mengajukan', text: 'Terjadi gangguan koneksi.', background: '#FAF6EF', color: '#17182F', confirmButtonColor: '#EF342B' });
             } finally {
                 if (confirmBtn) {
                     confirmBtn.disabled = false;

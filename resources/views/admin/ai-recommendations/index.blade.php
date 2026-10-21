@@ -3,62 +3,53 @@
 @section('title', 'Review AI & Rekomendasi - RoboMath')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-5">
 
     <!-- Header Banner -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6 sm:p-7 text-white shadow-xl shadow-indigo-500/10 border border-white/20">
-        <div class="absolute -right-12 -top-12 w-56 h-56 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
-
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div class="space-y-2 max-w-xl">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-white/20 backdrop-blur-md text-white border border-white/30 uppercase tracking-wider">
-                        🤖 Pusat Kurasi & Review AI
-                    </span>
-                    @if($totalPendingCount > 0)
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-400 text-slate-900 shadow-sm animate-pulse">
-                            {{ $totalPendingCount }} Perlu Persetujuan
-                        </span>
-                    @endif
-                </div>
-                <h1 class="text-2xl sm:text-3xl font-black text-white">
-                    Verifikasi Soal AI & Rekomendasi
+    <div class="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_180px] gap-3">
+        <div class="rounded-3xl bg-[#2861E8] p-6 sm:p-7 text-white shadow-lg shadow-blue-900/10">
+            <div class="space-y-2 max-w-2xl">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-white text-blue-700">
+                    🤖 Pusat Kurasi & Review AI
+                </span>
+                <h1 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+                    Verifikasi Soal AI<br class="hidden sm:block"> & Rekomendasi
                 </h1>
-                <p class="text-indigo-100 text-xs sm:text-sm font-medium leading-relaxed">
-                    Tinjau, setujui, atau tolak butir soal yang di-generate AI dari dokumen materi sebelum diterbitkan ke siswa, serta kelola rekomendasi remedial adaptif.
+                <p class="text-blue-100 text-xs sm:text-sm font-semibold leading-relaxed max-w-xl">
+                    Tinjau, setujui, atau tolak butir soal yang dibuat AI dari dokumen materi sebelum ditampilkan ke siswa.
                 </p>
             </div>
+        </div>
 
-            <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-white/20 text-center min-w-[105px] flex-1 sm:flex-initial">
-                    <div class="text-2xl sm:text-3xl font-black text-white">{{ $pendingQuizzesCount }}</div>
-                    <div class="text-[11px] font-bold text-indigo-100 uppercase tracking-wider mt-0.5">Soal Pending</div>
-                </div>
-                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-white/20 text-center min-w-[105px] flex-1 sm:flex-initial">
-                    <div class="text-2xl sm:text-3xl font-black text-white">{{ $pendingRecommendationsCount }}</div>
-                    <div class="text-[11px] font-bold text-indigo-100 uppercase tracking-wider mt-0.5">Remedial Siswa</div>
-                </div>
+        <div class="grid grid-cols-2 md:grid-cols-1 gap-3">
+            <div class="rounded-3xl bg-[#FF9500] p-4 sm:p-5 flex flex-col justify-center">
+                <div class="text-3xl sm:text-4xl font-black text-slate-950">{{ $pendingQuizzesCount }}</div>
+                <div class="text-[11px] font-black text-slate-950 mt-1">Soal menunggu tinjauan</div>
+            </div>
+            <div class="rounded-3xl bg-[#7CC043] p-4 sm:p-5 flex flex-col justify-center">
+                <div class="text-3xl sm:text-4xl font-black text-slate-950">{{ $pendingRecommendationsCount }}</div>
+                <div class="text-[11px] font-black text-slate-950 mt-1">Remedial siswa</div>
             </div>
         </div>
     </div>
 
     <!-- Navigasi Tab Utama -->
-    <div class="flex items-center gap-2 border-b-2 border-slate-200/80 pb-1">
+    <div class="flex flex-wrap items-center gap-2">
         <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => $statusFilter, 'topic_id' => $topicFilter]) }}"
-           class="inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl text-sm font-black transition-all duration-200 {{ $activeTab === 'quiz' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-            <span>📝 Soal AI dari Modul Materi</span>
+           class="inline-flex items-center gap-2.5 px-4 py-3 rounded-full text-xs sm:text-sm font-black transition-all duration-200 {{ $activeTab === 'quiz' ? 'bg-slate-950 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
+            <span>Soal AI dari modul materi</span>
             @if($pendingQuizzesCount > 0)
-                <span class="px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'quiz' ? 'bg-white text-indigo-700' : 'bg-rose-500 text-white' }}">
+                <span class="px-2 py-0.5 text-xs rounded-full bg-[#FF9500] text-slate-950">
                     {{ $pendingQuizzesCount }}
                 </span>
             @endif
         </a>
 
         <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'student', 'status' => $statusFilter, 'topic_id' => $topicFilter]) }}"
-           class="inline-flex items-center gap-2.5 px-5 py-3 rounded-2xl text-sm font-black transition-all duration-200 {{ $activeTab === 'student' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 scale-[1.02]' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100' }}">
-            <span>🎯 Rekomendasi Remedial Siswa</span>
+           class="inline-flex items-center gap-2.5 px-4 py-3 rounded-full text-xs sm:text-sm font-black transition-all duration-200 {{ $activeTab === 'student' ? 'bg-slate-950 text-white shadow-md' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50' }}">
+            <span>Rekomendasi remedial siswa</span>
             @if($pendingRecommendationsCount > 0)
-                <span class="px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'student' ? 'bg-white text-indigo-700' : 'bg-rose-500 text-white' }}">
+                <span class="px-2 py-0.5 text-xs rounded-full bg-[#7CC043] text-slate-950">
                     {{ $pendingRecommendationsCount }}
                 </span>
             @endif
@@ -71,26 +62,27 @@
     <!-- ======================================================== -->
 
     <!-- Filter Bar (Topik & Status) -->
-    <div class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-slate-200/80 shadow-sm space-y-4">
+    <div class="bg-white rounded-3xl p-3 sm:p-4 border-2 border-[#E9E0D4] shadow-sm space-y-4">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <!-- Filter Status -->
-            <div class="bg-slate-100 p-1.5 rounded-2xl flex flex-wrap gap-1">
+            @php $pendingQuizFilterCount = $topicFilter ? ($pendingQuizzesByTopic[$topicFilter] ?? 0) : $pendingQuizzesCount; @endphp
+            <div class="flex flex-wrap items-center gap-1.5">
                 <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => 'pending', 'topic_id' => $topicFilter]) }}"
-                   class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-black transition {{ $statusFilter === 'pending' ? 'bg-white text-indigo-700 shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900' }}">
-                    <span>⏳ Menunggu Tinjauan</span>
-                    <span class="px-2 py-0.5 text-[10px] rounded-full {{ $statusFilter === 'pending' ? 'bg-amber-100 text-amber-900' : 'bg-slate-200 text-slate-700' }}">{{ $pendingQuizzesCount }}</span>
+                   class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-full text-xs font-black transition {{ $statusFilter === 'pending' ? 'bg-[#FF9500] text-slate-950 border border-orange-600 shadow-sm' : 'text-slate-600 border border-[#E9E0D4] hover:bg-amber-50' }}">
+                    <span>Menunggu</span>
+                    <span class="px-2 py-0.5 text-[10px] rounded-full bg-white/80 text-slate-900">{{ $pendingQuizFilterCount }}</span>
                 </a>
                 <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => 'approved', 'topic_id' => $topicFilter]) }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition {{ $statusFilter === 'approved' ? 'bg-white text-emerald-700 shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900' }}">
-                    <span>✓ Disetujui (Aktif di Siswa)</span>
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs font-black transition {{ $statusFilter === 'approved' ? 'bg-emerald-600 text-white border border-emerald-700 shadow-sm' : 'text-slate-600 border border-[#E9E0D4] hover:bg-emerald-50' }}">
+                    <span>Disetujui</span>
                 </a>
                 <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => 'rejected', 'topic_id' => $topicFilter]) }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition {{ $statusFilter === 'rejected' ? 'bg-white text-rose-700 shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900' }}">
-                    <span>✕ Ditolak</span>
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs font-black transition {{ $statusFilter === 'rejected' ? 'bg-rose-600 text-white border border-rose-700 shadow-sm' : 'text-slate-600 border border-[#E9E0D4] hover:bg-rose-50' }}">
+                    <span>Ditolak</span>
                 </a>
                 <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => 'all', 'topic_id' => $topicFilter]) }}"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition {{ $statusFilter === 'all' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900' }}">
-                    <span>📋 Semua Status</span>
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-xs font-black transition {{ $statusFilter === 'all' ? 'bg-slate-800 text-white border border-slate-900 shadow-sm' : 'text-slate-600 border border-[#E9E0D4] hover:bg-slate-50' }}">
+                    <span>Semua status</span>
                 </a>
             </div>
 
@@ -98,10 +90,10 @@
             <form action="{{ route('admin.ai-recommendations.index') }}" method="GET" class="flex items-center gap-2">
                 <input type="hidden" name="tab" value="quiz">
                 <input type="hidden" name="status" value="{{ $statusFilter }}">
-                <label for="topic_id" class="text-xs font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Filter Topik:</label>
+                <label for="topic_id" class="text-[10px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Topik</label>
                 <select name="topic_id" id="topic_id" onchange="this.form.submit()"
-                        class="px-3.5 py-2 rounded-xl border-2 border-slate-200 text-xs font-bold text-slate-800 bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none">
-                    <option value="">-- Semua Topik --</option>
+                        class="min-w-0 max-w-full px-3.5 py-2.5 rounded-full border-2 border-[#E9E0D4] text-xs font-bold text-slate-800 bg-[#FAF6EF] focus:border-amber-500 focus:ring-2 focus:ring-amber-100 outline-none">
+                    <option value="">Semua topik</option>
                     @foreach($topics as $t)
                         @php $pendingCountInTopic = $pendingQuizzesByTopic[$t->id] ?? 0; @endphp
                         <option value="{{ $t->id }}" {{ $topicFilter == $t->id ? 'selected' : '' }}>
@@ -118,17 +110,17 @@
             $currentTopic = $topics->firstWhere('id', $topicFilter);
             $countPendingTopic = $pendingQuizzesByTopic[$topicFilter];
         @endphp
-        <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="p-4 rounded-2xl bg-[#FFF3D9] border-2 border-[#FFB84D] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl flex-shrink-0">
                     ⚡
                 </div>
                 <div>
-                    <h4 class="text-xs sm:text-sm font-black text-amber-900">
-                        {{ $countPendingTopic }} Soal Menunggu Persetujuan pada Topik "{{ $currentTopic->title }}"
+                    <h4 class="text-xs sm:text-sm font-black text-slate-900">
+                        {{ $countPendingTopic }} soal menunggu persetujuan di topik "{{ $currentTopic->title }}"
                     </h4>
-                    <p class="text-[11px] text-amber-700 font-medium">
-                        Anda dapat menyetujui seluruh soal topik ini sekaligus agar langsung diterbitkan ke siswa.
+                    <p class="text-[11px] text-amber-900 font-medium">
+                        Setelah disetujui, soal langsung masuk ke latihan siswa.
                     </p>
                 </div>
             </div>
@@ -139,7 +131,7 @@
                     <button type="button" onclick="confirmTopicBulk('approve', {{ $currentTopic->id }}, '{{ addslashes($currentTopic->title) }}', {{ $countPendingTopic }})"
                             class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-xl text-xs font-black shadow-md transition transform active:scale-95">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        <span>Setujui Semua ({{ $countPendingTopic }}) 🚀</span>
+                        <span>Setujui semua ({{ $countPendingTopic }})</span>
                     </button>
                 </form>
 
@@ -147,7 +139,7 @@
                     @csrf
                     <button type="button" onclick="confirmTopicBulk('reject', {{ $currentTopic->id }}, '{{ addslashes($currentTopic->title) }}', {{ $countPendingTopic }})"
                             class="inline-flex items-center gap-1 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-black transition">
-                        <span>Tolak Semua</span>
+                        <span>Tolak semua</span>
                     </button>
                 </form>
             </div>
@@ -156,13 +148,13 @@
     </div>
 
     <!-- Daftar Soal AI -->
-    <div class="bg-white border-2 border-slate-200/80 rounded-3xl overflow-hidden shadow-sm">
-        <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+    <div>
+        <div class="pb-3 flex items-center justify-between">
             <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
-                <span>📑</span> Daftar Butir Soal AI
+                Daftar butir soal AI
             </h3>
-            <span class="text-xs text-slate-500 font-extrabold bg-slate-50 border border-slate-200 px-3 py-1 rounded-full">
-                {{ $quizzes->total() }} Butir Soal
+            <span class="text-xs text-slate-500 font-extrabold">
+                {{ $quizzes->total() }} butir soal
             </span>
         </div>
 
@@ -183,44 +175,44 @@
             </div>
         </div>
         @else
-        <div class="divide-y divide-slate-100">
+        <div class="space-y-4">
             @foreach($quizzes as $index => $q)
-            <div class="p-5 sm:p-6 space-y-4 hover:bg-slate-50/50 transition">
+            <article class="p-5 sm:p-6 space-y-4 bg-white border-2 border-[#E9E0D4] rounded-3xl shadow-sm">
                 <!-- Header Kartu Soal -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-2 flex-wrap">
-                        <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 font-black text-xs flex items-center justify-center">
+                        <span class="w-8 h-8 rounded-xl bg-[#EF342B] text-white font-black text-xs flex items-center justify-center">
                             #{{ $quizzes->firstItem() + $index }}
                         </span>
 
                         <!-- Badge Topik -->
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-blue-50 text-blue-700 border border-blue-100">
                             {{ $q->topic->icon ?? '📘' }} {{ $q->topic->title ?? 'Topik' }} • Kelas {{ $q->topic->kelas_level ?? '-' }} SD
                         </span>
 
                         <!-- Badge Tipe Soal -->
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-black {{ $q->isEssay() ? 'bg-purple-100 text-purple-800' : 'bg-emerald-100 text-emerald-800' }}">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-black bg-slate-100 text-slate-800">
                             {{ $q->isEssay() ? '✍️ Essay / Uraian' : '🔘 Pilihan Ganda' }}
                         </span>
 
                         <!-- Badge Kesulitan & Poin -->
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                            ⭐ {{ ucfirst($q->difficulty) }} • {{ $q->points }} Poin
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-orange-100 text-orange-900">
+                            Modul · +{{ $q->points }} poin
                         </span>
                     </div>
 
                     <!-- Badge Status -->
                     <div>
                         @if($q->review_status === 'pending')
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-100 text-amber-900 border border-amber-300 shadow-sm animate-pulse">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-amber-100 text-amber-900">
                                 <span>⏳ Menunggu Tinjauan</span>
                             </span>
                         @elseif($q->review_status === 'approved')
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-900 border border-emerald-300">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-900">
                                 <span>✓ Disetujui & Aktif di Siswa</span>
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-rose-100 text-rose-900 border border-rose-300">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-rose-100 text-rose-900">
                                 <span>✕ Ditolak</span>
                             </span>
                         @endif
@@ -229,14 +221,14 @@
 
                 <!-- Modul Sumber (Jika Ada) -->
                 @if($q->documentSummary)
-                <div class="text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 flex items-center gap-2">
+                <div class="text-[11px] font-semibold text-slate-500 flex items-center gap-2">
                     <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Sumber Dokumen Modul: <strong class="text-slate-800">{{ $q->documentSummary->title }}</strong> ({{ $q->documentSummary->original_filename }})</span>
+                    <span>Sumber: {{ $q->documentSummary->original_filename ?: $q->documentSummary->title }}</span>
                 </div>
                 @endif
 
                 <!-- Pertanyaan -->
-                <div class="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-3">
+                <div class="space-y-3">
                     <div class="text-sm font-extrabold text-slate-900 leading-relaxed">
                         {!! nl2br(e($q->question)) !!}
                     </div>
@@ -245,40 +237,34 @@
                     @if(!$q->isEssay() && is_array($q->options))
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                         @foreach($q->options as $letter => $optText)
-                        @php $isCorrect = (strtoupper($letter) === strtoupper($q->correct_answer)); @endphp
-                        <div class="p-2.5 rounded-xl border text-xs font-semibold flex items-start gap-2.5 {{ $isCorrect ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-bold' : 'bg-white border-slate-200 text-slate-700' }}">
-                            <span class="w-5 h-5 rounded-lg flex items-center justify-center font-black flex-shrink-0 {{ $isCorrect ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600' }}">
+                        <div class="p-2.5 rounded-2xl border-2 border-[#E9E0D4] text-xs font-semibold flex items-start gap-2.5 bg-white text-slate-700">
+                            <span class="w-5 h-5 rounded-full flex items-center justify-center font-black flex-shrink-0 bg-[#F2EDE4] text-slate-700">
                                 {{ $letter }}
                             </span>
                             <span class="flex-1">{{ $optText }}</span>
-                            @if($isCorrect)
-                                <span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded uppercase">Kunci</span>
-                            @endif
                         </div>
                         @endforeach
                     </div>
                     @endif
 
-                    <!-- Kunci Jawaban Model (Jika Essay) -->
-                    @if($q->isEssay())
-                    <div class="p-3 rounded-xl bg-purple-50/80 border border-purple-200 text-xs space-y-1">
-                        <div class="font-black text-purple-900 flex items-center gap-1.5">
-                            <span>🔑 Model Kunci Jawaban Essay:</span>
+                    <!-- Kunci Jawaban -->
+                    @if($q->isEssay() || $q->correct_answer)
+                    @php
+                        $correctOption = is_array($q->options)
+                            ? ($q->options[strtoupper((string) $q->correct_answer)] ?? null)
+                            : null;
+                    @endphp
+                    <div class="p-3 rounded-2xl bg-[#E7F4D9] border-2 border-[#63A52E] text-xs flex items-start gap-2.5">
+                        <div class="text-emerald-800 flex-shrink-0 mt-0.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                         </div>
-                        <div class="text-slate-800 font-medium">
-                            {{ $q->correct_answer }}
-                        </div>
-                    </div>
-                    @endif
-
-                    <!-- Pembahasan -->
-                    @if($q->explanation)
-                    <div class="p-3 rounded-xl bg-amber-50/60 border border-amber-200/80 text-xs space-y-1">
-                        <div class="font-black text-amber-900 flex items-center gap-1.5">
-                            <span>💡 Pembahasan & Langkah Penyelesaian:</span>
-                        </div>
-                        <div class="text-slate-700 font-medium leading-relaxed">
-                            {{ $q->explanation }}
+                        <div class="space-y-0.5">
+                            <div class="font-black text-slate-800">
+                                Kunci: {{ $q->isEssay() ? $q->correct_answer : strtoupper((string) $q->correct_answer) . '. ' . ($correctOption ?? '') }}
+                            </div>
+                            @if($q->explanation)
+                                <div class="text-slate-700 font-medium leading-relaxed">{{ $q->explanation }}</div>
+                            @endif
                         </div>
                     </div>
                     @endif
@@ -296,9 +282,9 @@
                 </div>
 
                 <!-- Aksi Review -->
-                <div class="flex items-center justify-between gap-3 pt-1">
-                    <div class="text-xs text-slate-400 font-medium">
-                        Diajukan: {{ $q->created_at->translatedFormat('d M Y, H:i') }}
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                    <div class="text-[10px] text-slate-500 font-semibold">
+                        Dibuat {{ $q->created_at->translatedFormat('d M Y, H:i') }}
                     </div>
 
                     <div class="flex items-center gap-2">
@@ -307,9 +293,9 @@
                             <form action="{{ route('admin.ai-recommendations.quizzes.approve', $q) }}" method="POST" id="form-approve-quiz-{{ $q->id }}">
                                 @csrf
                                 <button type="button" onclick="confirmQuizAction('approve', {{ $q->id }}, '{{ addslashes($q->topic->title ?? 'Topik') }}')"
-                                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white rounded-xl text-xs font-black shadow-md transition transform active:scale-95">
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full text-xs font-black shadow-sm transition transform active:scale-95">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                    <span>Setujui & Kirim ke Siswa</span>
+                                    <span>Setujui & kirim ke siswa</span>
                                 </button>
                             </form>
 
@@ -318,7 +304,7 @@
                                 @csrf
                                 <input type="hidden" name="admin_notes" id="reject-notes-{{ $q->id }}" value="">
                                 <button type="button" onclick="confirmQuizAction('reject', {{ $q->id }}, '{{ addslashes($q->topic->title ?? 'Topik') }}')"
-                                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-rose-50 text-slate-700 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-xl text-xs font-black transition">
+                                        class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-rose-50 text-rose-700 border-2 border-rose-600 rounded-full text-xs font-black transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                     <span>Tolak</span>
                                 </button>
@@ -348,13 +334,13 @@
                                 </button>
                             </form>
                         @endif
-                    </div>
                 </div>
             </div>
+            </article>
             @endforeach
         </div>
 
-        <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+        <div class="pt-4">
             {{ $quizzes->links() }}
         </div>
         @endif
