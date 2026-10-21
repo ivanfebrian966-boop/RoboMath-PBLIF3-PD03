@@ -364,9 +364,6 @@
             {{-- SD 1: Mint green --}}
             <div class="card-hover bg-[#A7F3D0] rounded-3xl p-6 border border-emerald-300 flex flex-col justify-between min-h-[200px] relative overflow-hidden">
                 <div class="relative z-10">
-                    <span class="inline-block bg-white/70 text-slate-900 text-xs font-bold px-2.5 py-0.5 rounded-full mb-3">
-                        SD 1
-                    </span>
                     <h3 class="text-lg font-black text-slate-900 leading-snug">
                         Mengenal Angka
                     </h3>
@@ -375,13 +372,8 @@
                     1 2 3
                 </div>
             </div>
-
-            {{-- SD 2: Soft yellow --}}
             <div class="card-hover bg-[#FEF08A] rounded-3xl p-6 border border-amber-300 flex flex-col justify-between min-h-[200px] relative overflow-hidden">
                 <div class="relative z-10">
-                    <span class="inline-block bg-white/70 text-slate-900 text-xs font-bold px-2.5 py-0.5 rounded-full mb-3">
-                        SD 2
-                    </span>
                     <h3 class="text-lg font-black text-slate-900 leading-snug">
                         Operasi Dasar
                     </h3>
@@ -390,13 +382,8 @@
                     <span>+</span><span>&minus;</span><span>&times;</span>
                 </div>
             </div>
-
-            {{-- SD 3: Soft cyan --}}
             <div class="card-hover bg-[#A5F3FC] rounded-3xl p-6 border border-cyan-300 flex flex-col justify-between min-h-[200px] relative overflow-hidden">
                 <div class="relative z-10">
-                    <span class="inline-block bg-white/70 text-slate-900 text-xs font-bold px-2.5 py-0.5 rounded-full mb-3">
-                        SD 3
-                    </span>
                     <h3 class="text-lg font-black text-slate-900 leading-snug">
                         Pecahan Sederhana
                     </h3>
@@ -405,13 +392,8 @@
                     <span>&frac12;</span><span>&#8532;</span>
                 </div>
             </div>
-
-            {{-- SD 4: Soft pink --}}
             <div class="card-hover bg-[#FECDD3] rounded-3xl p-6 border border-rose-300 flex flex-col justify-between min-h-[200px] relative overflow-hidden">
                 <div class="relative z-10">
-                    <span class="inline-block bg-white/70 text-slate-900 text-xs font-bold px-2.5 py-0.5 rounded-full mb-3">
-                        SD 4
-                    </span>
                     <h3 class="text-lg font-black text-slate-900 leading-snug">
                         Pecahan Lanjutan
                     </h3>

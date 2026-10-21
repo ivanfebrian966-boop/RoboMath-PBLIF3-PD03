@@ -3,409 +3,270 @@
 @section('title', 'Ringkasan Dokumen Jadi Soal AI - RoboMath')
 
 @section('content')
-<div class="space-y-6 sm:space-y-8">
+<div class="space-y-5 sm:space-y-6">
 
     <!-- ======================================================== -->
-    <!-- HEADER HERO BANNER -->
+    <!-- 1. HEADER HERO BANNER -->
     <!-- ======================================================== -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-800 via-indigo-700 to-indigo-600 p-6 sm:p-8 text-white shadow-xl shadow-purple-900/15 border border-white/20"
-         style="background: linear-gradient(135deg, #6B21A8 0%, #4F46E5 50%, #3B82F6 100%) !important; color: #FFFFFF !important;">
-        <!-- Background decorative glows -->
-        <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
-        <div class="absolute right-1/4 -bottom-20 w-80 h-80 rounded-full bg-fuchsia-400/20 blur-3xl pointer-events-none"></div>
+    <div class="rounded-[28px] bg-[#2563EB] p-6 sm:p-8 text-white shadow-md shadow-blue-500/10">
+        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Ringkas Dokumen Jadi Soal AI
+        </h1>
+        <p class="text-blue-100 text-xs sm:text-sm font-medium mt-2 max-w-2xl leading-relaxed">
+            Unggah modul, silabus, lembar kerja, atau masukkan teks materi. AI langsung mengubahnya menjadi butir soal latihan lengkap dengan kunci dan pembahasan.
+        </p>
+    </div>
 
-        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div class="space-y-3 max-w-2xl">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-white/20 backdrop-blur-md text-white border border-white/30 uppercase tracking-wider shadow-sm">
-                        <svg class="w-3.5 h-3.5 text-amber-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                        AI Document Question Generator
-                    </span>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-400/90 text-emerald-950 backdrop-blur-sm shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-emerald-100 animate-ping"></span>
-                        <span class="w-2 h-2 rounded-full bg-emerald-950"></span>
-                        AI Siap Digunakan
-                    </span>
-                </div>
-                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
-                    Ringkas Dokumen Jadi Soal AI
-                </h1>
-                <p class="text-purple-100 text-xs sm:text-sm font-medium leading-relaxed">
-                    Unggah modul, silabus, lembar kerja (PDF, DOCX, TXT), atau masukkan teks materi. AI akan langsung meringkasnya menjadi butir-butir soal latihan dan kuis lengkap beserta kunci jawaban dan pembahasan.
-                </p>
+    <!-- ======================================================== -->
+    <!-- 2. METRICS CARD (DOKUMEN DIPROSES | KATA DIANALISIS | SOAL DIBUAT) -->
+    <!-- ======================================================== -->
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 shadow-xs border border-slate-100 grid grid-cols-3 divide-x divide-slate-100 text-center">
+        <div class="px-2">
+            <div class="text-2xl sm:text-3xl font-black text-[#EF4444]" id="stat-total-summaries">{{ $totalSummaries }}</div>
+            <div class="text-[11px] sm:text-xs font-semibold text-slate-400 mt-0.5">Dokumen diproses</div>
+        </div>
+        <div class="px-2">
+            <div class="text-2xl sm:text-3xl font-black text-slate-900">{{ number_format($totalWordsAnalyzed) }}</div>
+            <div class="text-[11px] sm:text-xs font-semibold text-slate-400 mt-0.5">Kata dianalisis</div>
+        </div>
+        <div class="px-2">
+            <div class="text-2xl sm:text-3xl font-black text-[#2563EB]">5</div>
+            <div class="text-[11px] sm:text-xs font-semibold text-slate-400 mt-0.5">Soal dibuat</div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 3. STATUS / "MENUNGGU DOKUMEN ANDA" CARD -->
+    <!-- ======================================================== -->
+    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
             </div>
+            <div>
+                <h3 class="font-black text-slate-900 text-sm sm:text-base">Menunggu dokumen Anda</h3>
+                <p class="text-xs font-medium text-slate-400 mt-0.5">Dokumen akan dibaca AI setelah Anda menekan tombol mulai.</p>
+            </div>
+        </div>
 
-            <!-- Quick Stat Counters -->
-            <div class="flex items-center gap-3 sm:gap-4 flex-wrap">
-                <div class="flex-1 sm:flex-initial rounded-2xl p-4 border border-white/30 text-center min-w-[120px] sm:min-w-[140px] shadow-sm" style="background-color: rgba(255, 255, 255, 0.15) !important;">
-                    <div class="text-2xl sm:text-3xl font-black text-white" id="stat-total-summaries">{{ $totalSummaries }}</div>
-                    <div class="text-[11px] font-bold text-purple-100 uppercase tracking-wider mt-0.5">Dokumen Diproses</div>
-                </div>
-                <div class="flex-1 sm:flex-initial rounded-2xl p-4 border border-white/30 text-center min-w-[120px] sm:min-w-[140px] shadow-sm" style="background-color: rgba(255, 255, 255, 0.15) !important;">
-                    <div class="text-2xl sm:text-3xl font-black text-amber-300">{{ number_format($totalWordsAnalyzed) }}</div>
-                    <div class="text-[11px] font-bold text-purple-100 uppercase tracking-wider mt-0.5">Total Kata Dianalisis</div>
-                </div>
-                <div class="flex-1 sm:flex-initial rounded-2xl p-4 border border-white/30 text-center min-w-[120px] sm:min-w-[140px] shadow-sm" style="background-color: rgba(255, 255, 255, 0.15) !important;">
-                    <div class="text-2xl sm:text-3xl font-black text-emerald-300">5 Soal</div>
-                    <div class="text-[11px] font-bold text-purple-100 uppercase tracking-wider mt-0.5">Default per Dokumen</div>
-                </div>
+        <div class="space-y-1.5 md:text-right">
+            <div class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-[#D97706]">HASIL YANG DIBUAT</div>
+            <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-bold text-slate-700">
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
+                    Soal otomatis
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+                    Pilihan ganda A-D
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                    Kunci jawaban
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-[#2563EB]"></span>
+                    Pembahasan
+                </span>
             </div>
         </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- MAIN WORKSPACE: UPLOAD & CONFIGURATION -->
+    <!-- 4. MAIN FORM CARD (STEP 1 & STEP 2) -->
     <!-- ======================================================== -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+    <div class="bg-white rounded-3xl sm:rounded-[32px] p-6 sm:p-8 shadow-xs border border-slate-100">
+        <form id="summarizer-form" enctype="multipart/form-data" method="POST"
+              action="{{ route('admin.document-summarizer.summarize') }}"
+              data-no-spa class="space-y-6">
+            @csrf
 
-        <!-- LEFT COLUMN: INPUT DOKUMEN & PENGATURAN (7 COLS) -->
-        <div class="lg:col-span-7 space-y-6">
-            <div class="bg-white rounded-3xl p-5 sm:p-7 border-2 border-amber-200/80 shadow-sm space-y-6">
-                
-                <!-- Section 1 Header -->
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-black">
-                            1
-                        </div>
+            <!-- Hidden fields for format compatibility -->
+            <input type="hidden" name="summary_style" value="kuis_latihan">
+            <input type="hidden" name="summary_length" id="summary_length" value="5_soal">
+
+            <!-- STEP 1: PILIH DOKUMEN SUMBER -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-full bg-red-50 text-red-500 border border-red-200 flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
                         <div>
-                            <h2 class="text-lg font-black text-slate-800">Pilih Dokumen Sumber</h2>
-                            <p class="text-xs text-slate-500 font-medium">Pilih berkas dari perangkat Anda atau masukkan teks secara manual.</p>
+                            <h2 class="text-sm sm:text-base font-black text-slate-800">Pilih dokumen sumber</h2>
+                            <p class="text-xs text-slate-400 font-medium">Pilih berkas dari perangkat atau masukkan teks materi.</p>
                         </div>
                     </div>
 
                     <!-- Input Mode Toggle -->
-                    <div class="inline-flex p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold">
+                    <div class="inline-flex p-1 rounded-full bg-slate-100 text-xs font-bold">
                         <button type="button" onclick="setInputMode('file')" id="btn-mode-file"
-                                class="px-3 py-1.5 rounded-lg transition-all bg-white text-purple-700 shadow-sm">
-                            Unggah File
+                                class="px-4 py-1.5 rounded-full transition-all bg-white text-slate-800 border border-slate-200 shadow-xs">
+                            Unggah file
                         </button>
                         <button type="button" onclick="setInputMode('text')" id="btn-mode-text"
-                                class="px-3 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900">
-                            Tempel Teks
+                                class="px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800">
+                            Tempel teks
                         </button>
                     </div>
                 </div>
 
-                <!-- FORM UPLOAD / INPUT -->
-                <form id="summarizer-form" enctype="multipart/form-data" method="POST"
-                      action="{{ route('admin.document-summarizer.summarize') }}"
-                      data-no-spa class="space-y-6">
-                    @csrf
+                <!-- 1. MODE FILE UPLOAD -->
+                <div id="mode-file-container" class="space-y-3">
+                    <input type="file" id="document_file" name="document_file" accept=".pdf,.docx,.doc,.txt,.md,.csv,.json"
+                           style="display: none !important;">
 
-                    <!-- Hidden fields for format compatibility -->
-                    <input type="hidden" name="summary_style" value="kuis_latihan">
-                    <input type="hidden" name="summary_length" id="summary_length" value="5_soal">
-
-                    <!-- 1. MODE FILE UPLOAD -->
-                    <div id="mode-file-container" class="space-y-3">
-                        <!-- Hidden Persistent File Input -->
-                        <input type="file" id="document_file" name="document_file" accept=".pdf,.docx,.doc,.txt,.md,.csv,.json"
-                                style="display: none !important;">
-
-                        <!-- Dropzone Area (Visible when no file selected) -->
-                        <div id="dropzone" onclick="document.getElementById('document_file').click()"
-                             class="border-2 border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/40 hover:bg-purple-50/80 rounded-2xl p-6 sm:p-8 text-center transition-all duration-200 cursor-pointer relative group">
-                            
-                            <div class="space-y-3 pointer-events-none" id="dropzone-idle-content">
-                                <div class="w-16 h-16 mx-auto rounded-2xl bg-white shadow-md border border-purple-100 flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="font-extrabold text-slate-800 text-sm sm:text-base">
-                                        Klik untuk memilih berkas atau seret & lepas (drag & drop) ke sini
-                                    </p>
-                                    <p class="text-xs text-slate-500 font-medium mt-1">
-                                        Mendukung format <span class="font-bold text-purple-600">PDF, Word (DOCX), TXT, Markdown</span> (Maks. 20MB)
-                                    </p>
-                                </div>
-                                <div class="pt-1">
-                                    <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black bg-purple-600 text-white shadow-md group-hover:bg-purple-700 transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                                        Pilih Berkas Dokumen
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Selected File Preview Card (Visible when file is selected) -->
-                        <div id="file-preview-card" class="hidden bg-gradient-to-r from-purple-50 via-white to-slate-50 border-2 border-purple-300 rounded-2xl p-4 shadow-sm transition-all">
-                            <div class="flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-3.5 min-w-0">
-                                    <div class="w-12 h-12 rounded-xl bg-purple-600 text-white flex flex-col items-center justify-center font-black shadow-md flex-shrink-0" id="file-ext-badge-container">
-                                        <span class="text-base leading-none" id="file-icon-emoji">📄</span>
-                                        <span class="text-[9px] font-black uppercase mt-0.5 tracking-wider" id="file-ext-badge">PDF</span>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-black text-slate-800 text-sm sm:text-base truncate" id="file-name-label">document.pdf</span>
-                                            <span class="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                                Dokumen Siap Dibuat Soal
-                                            </span>
-                                        </div>
-                                        <div class="flex items-center gap-2 text-xs text-slate-500 font-medium mt-0.5">
-                                            <span id="file-size-label" class="font-bold text-slate-600">1.2 MB</span>
-                                            <span>•</span>
-                                            <button type="button" onclick="document.getElementById('document_file').click()" class="text-purple-600 hover:text-purple-800 font-bold hover:underline cursor-pointer">
-                                                Ganti Berkas
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="clearSelectedFile()" class="p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all flex-shrink-0 cursor-pointer" title="Hapus Berkas">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 2. MODE DIRECT TEXT INPUT -->
-                    <div id="mode-text-container" class="hidden space-y-2">
-                        <label for="direct_text" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">
-                            Teks Materi / Dokumen
-                        </label>
-                        <div class="relative">
-                            <textarea id="direct_text" name="direct_text" rows="7"
-                                      placeholder="Salin atau ketik teks materi pembelajaran di sini (minimal 20 karakter)..."
-                                      class="w-full rounded-2xl border-2 border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 p-4 text-sm font-medium text-slate-800 placeholder-slate-400 resize-y transition-all"
-                                      oninput="updateTextCounter(this)"></textarea>
-                            <div class="absolute bottom-3 right-3 text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500" id="text-char-count">
-                                0 kata
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Judul Dokumen (Opsional) -->
-                    <div class="space-y-1.5">
-                        <label for="custom_title" class="block text-xs font-bold text-slate-600 uppercase tracking-wider">
-                            Judul Dokumen / Topik (Opsional)
-                        </label>
-                        <input type="text" id="custom_title" name="custom_title" placeholder="Contoh: Modul Pecahan Senilai Kelas 4 SD"
-                               class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 text-sm font-bold text-slate-800 transition-all">
-                    </div>
-
-                    <!-- ======================================================== -->
-                    <!-- 2. CHAT PROMPT / INSTRUKSI KUSTOM (OPSIONAL) -->
-                    <!-- ======================================================== -->
-                    <div class="border-t border-slate-100 pt-5 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-black">
-                                    2
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-black text-slate-800 flex items-center gap-2">
-                                        <span>Chat Prompt & Instruksi Soal</span>
-                                        <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 uppercase tracking-wider">Opsional</span>
-                                    </h3>
-                                    <p class="text-xs text-slate-500 font-medium">Beri instruksi spesifik kepada AI atau kosongkan untuk otomatis 5 butir soal.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Chat Prompt Box -->
-                        <div class="space-y-2">
-                            <div class="relative">
-                                <textarea id="custom_prompt" name="custom_prompt" rows="3"
-                                          placeholder="Contoh: 'Buatkan 10 soal cerita tingkat HOTS tentang pecahan untuk kelas 4 SD', 'Buatkan 5 soal pilihan ganda dan 2 soal essay singkat', atau kosongkan saja..."
-                                          class="w-full rounded-2xl border-2 border-purple-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 p-4 text-xs sm:text-sm font-semibold text-slate-800 placeholder-slate-400 resize-y transition-all"></textarea>
-                            </div>
-
-                            <!-- Quick Suggestion Chips -->
-                            <div class="flex items-center gap-1.5 flex-wrap pt-1">
-                                <span class="text-[11px] font-bold text-slate-400 mr-1">Rekomendasi Prompt:</span>
-                                <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal essay/uraian beserta pedoman kunci jawaban dan langkah penyelesaiannya.')"
-                                        class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition-all cursor-pointer">
-                                    ✍️ 5 Soal Essay / Uraian
-                                </button>
-                                <button type="button" onclick="setPromptTemplate('Buatkan 5 soal HOTS (Higher Order Thinking Skills) dengan analisis penalaran mendalam dan studi kasus cerita.')"
-                                        class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 transition-all cursor-pointer">
-                                    🧠 5 Soal HOTS
-                                </button>
-                                <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal cerita kontekstual anak SD dengan nama tokoh ramah dan situasi sehari-hari.')"
-                                        class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 transition-all cursor-pointer">
-                                    📖 5 Soal Cerita
-                                </button>
-                                <button type="button" onclick="setPromptTemplate('Buatkan 10 butir soal kuis evaluasi komprehensif mencakup semua bab materi pada dokumen.')"
-                                        class="px-2.5 py-1 rounded-xl text-[11px] font-bold bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 transition-all cursor-pointer">
-                                    🎯 10 Soal Evaluasi
-                                </button>
-                            </div>
-
-                            <!-- Informative Helper Banner -->
-                            <div class="flex items-start gap-2.5 p-3 rounded-2xl bg-purple-50/70 border border-purple-200/80 text-purple-900 text-xs mt-2">
-                                <span class="text-base flex-shrink-0">💡</span>
-                                <div class="leading-relaxed">
-                                    <strong class="font-bold">Info Mode Default:</strong> Jika prompt di atas dikosongkan, AI akan otomatis meringkas dokumen menjadi <strong>5 butir soal pilihan ganda standar</strong> dengan 4 pilihan (A, B, C, D), kunci jawaban benar, dan pembahasan edukatif.
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Checkbox Simpan ke Riwayat -->
-                        <div class="flex items-center gap-2.5 pt-2">
-                            <input type="checkbox" id="save_history" name="save_history" value="1" checked
-                                   class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500 border-slate-300">
-                            <label for="save_history" class="text-xs font-bold text-slate-700 select-none cursor-pointer">
-                                Simpan paket soal ke riwayat dokumen
-                            </label>
-                        </div>
-
-                    </div>
-
-                    <!-- TOMBOL SUBMIT EKSEKUSI -->
-                    <div class="pt-2">
-                        <button type="submit" id="btn-submit-summarize"
-                                class="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl font-black text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-lg shadow-purple-500/25 active:scale-[0.99] transition-all duration-200 cursor-pointer">
-                            <svg class="w-5 h-5 text-amber-300 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    <!-- Dropzone -->
+                    <div id="dropzone" onclick="document.getElementById('document_file').click()"
+                         class="border-2 border-dashed border-slate-200 hover:border-blue-400 bg-white hover:bg-blue-50/20 rounded-2xl p-8 sm:p-10 text-center transition-all cursor-pointer">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                             </svg>
-                            <span>Mulai Buat Soal dari Dokumen dengan AI</span>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-slate-800 mt-3">
+                            Klik untuk memilih berkas atau seret & lepas ke sini
+                        </p>
+                        <p class="text-[11px] sm:text-xs text-slate-400 font-medium mt-1">
+                            PDF, Word (DOCX), TXT, Markdown • maks. 20 MB
+                        </p>
+                        <span class="mt-4 inline-block px-5 py-1.5 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-full shadow-xs hover:bg-slate-50">
+                            Pilih berkas
+                        </span>
+                    </div>
+
+                    <!-- Selected File Preview Card -->
+                    <div id="file-preview-card" class="hidden bg-slate-50/80 border border-slate-200 rounded-2xl p-4 transition-all">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex flex-col items-center justify-center font-black shadow-xs flex-shrink-0" id="file-ext-badge-container">
+                                    <span class="text-[9px] font-black uppercase tracking-wider" id="file-ext-badge">PDF</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="font-bold text-slate-800 text-xs sm:text-sm truncate" id="file-name-label">document.pdf</div>
+                                    <div class="text-[11px] text-slate-400 font-medium mt-0.5">
+                                        <span id="file-size-label">1.2 MB</span>
+                                        <span class="mx-1">•</span>
+                                        <button type="button" onclick="document.getElementById('document_file').click()" class="text-blue-600 hover:underline font-bold">
+                                            Ganti Berkas
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="clearSelectedFile()" class="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors" title="Hapus Berkas">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. MODE DIRECT TEXT INPUT -->
+                <div id="mode-text-container" class="hidden space-y-2">
+                    <div class="relative">
+                        <textarea id="direct_text" name="direct_text" rows="5"
+                                  placeholder="Salin atau ketik teks materi pembelajaran di sini (minimal 20 karakter)..."
+                                  class="w-full rounded-2xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 p-4 text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 resize-y transition-all"
+                                  oninput="updateTextCounter(this)"></textarea>
+                        <div class="absolute bottom-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500" id="text-char-count">
+                            0 kata
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Judul Dokumen (Opsional) -->
+                <div class="space-y-1.5 pt-1">
+                    <label for="custom_title" class="block text-xs font-bold text-slate-700">
+                        Judul dokumen / topik <span class="font-normal text-slate-400">(opsional)</span>
+                    </label>
+                    <input type="text" id="custom_title" name="custom_title" placeholder="Contoh: Modul Pecahan Sederhana Kelas 4 SD"
+                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 transition-all">
+                </div>
+            </div>
+
+            <!-- STEP 2: INSTRUKSI SOAL -->
+            <div class="space-y-3 pt-2">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-7 h-7 rounded-full bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-black text-slate-800">
+                            Instruksi soal <span class="text-xs font-normal text-slate-400">- opsional</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 font-medium">Beri arahan khusus kepada AI tentang soal yang diinginkan.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <textarea id="custom_prompt" name="custom_prompt" rows="3"
+                              placeholder='Contoh: "Buatkan 10 soal cerita tingkat HOTS tentang pecahan untuk kelas 4 SD."'
+                              class="w-full rounded-2xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 p-4 text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 resize-y transition-all"></textarea>
+
+                    <!-- Prompt Suggestion Chips -->
+                    <div class="flex items-center gap-2 flex-wrap pt-1">
+                        <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal pesan / uraian dengan pembahasan detail dan langkah pengerjaannya.')"
+                                class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:border-red-300 hover:bg-red-50/50 flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span> 5 soal pesan / uraian
+                        </button>
+                        <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal HOTS (Higher Order Thinking Skills) dengan analisis penalaran tingkat tinggi.')"
+                                class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:border-amber-300 hover:bg-amber-50/50 flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span> 5 soal HOTS
+                        </button>
+                        <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal cerita kontekstual matematika ramah anak SD dengan skenario sehari-hari.')"
+                                class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-[#10B981]"></span> 5 soal cerita
+                        </button>
+                        <button type="button" onclick="setPromptTemplate('Buatkan 10 butir soal kuis evaluasi komprehensif mencakup semua konsep pada dokumen.')"
+                                class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
+                            <span class="w-2 h-2 rounded-full bg-[#2563EB]"></span> 10 soal evaluasi
                         </button>
                     </div>
 
-                </form>
-
+                    <p class="text-[11px] sm:text-xs text-slate-400 font-medium pt-1">
+                        <strong>Mode default:</strong> jika instruksi kosong, AI membuat 5 soal pilihan ganda (A, B, C, D) lengkap dengan kunci jawaban dan pembahasan.
+                    </p>
+                </div>
             </div>
-        </div>
 
-        <!-- RIGHT COLUMN: HASIL SOAL AI (5 COLS) -->
-        <div class="lg:col-span-5 space-y-6">
+            <!-- FORM FOOTER: CHECKBOX & BUTTON -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                <label class="flex items-center gap-2.5 text-xs font-bold text-slate-700 cursor-pointer select-none">
+                    <input type="checkbox" id="save_history" name="save_history" value="1" checked class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
+                    <span>Simpan paket soal ke riwayat dokumen</span>
+                </label>
 
-            <!-- STATE 1: KOTAK PLACEHOLDER KOSONG (Belum Ada Soal) -->
-            <div id="result-placeholder" class="bg-white rounded-3xl p-8 border-2 border-dashed border-amber-200/90 text-center flex flex-col items-center justify-center min-h-[460px] shadow-sm">
-                <div class="w-20 h-20 rounded-3xl bg-amber-50 border-2 border-amber-200/80 flex items-center justify-center text-amber-600 mb-4 shadow-inner">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                <button type="submit" id="btn-submit-summarize"
+                        class="w-full sm:w-auto px-7 py-3 rounded-full font-bold text-white bg-[#FF3B30] hover:bg-[#E0352B] shadow-lg shadow-red-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                     </svg>
-                </div>
-                <h3 class="text-lg font-black text-slate-800">Menunggu Dokumen Anda</h3>
-                <p class="text-xs text-slate-500 font-medium max-w-sm mt-1 leading-relaxed">
-                    Pilih dokumen atau masukkan teks di sebelah kiri lalu klik <strong>Mulai Buat Soal</strong>. AI akan langsung menyajikan butir soal, kunci jawaban, dan pembahasan di sini.
-                </p>
-                <div class="mt-6 flex flex-wrap justify-center gap-2">
-                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">5 Soal Otomatis</span>
-                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">Pilihan Ganda (A-D)</span>
-                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-[11px] font-bold">Kunci & Pembahasan</span>
-                    <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-[11px] font-bold">RoboMath AI</span>
-                </div>
-            </div>
-
-            <!-- STATE 2: LOADING PROGRESS INDICATOR -->
-            <div id="result-loading" class="hidden bg-white rounded-3xl p-8 border-2 border-purple-200 text-center flex flex-col items-center justify-center min-h-[460px] shadow-sm space-y-5">
-                <div class="relative">
-                    <div class="w-20 h-20 rounded-full border-4 border-purple-100 border-t-purple-600 animate-spin"></div>
-                    <div class="absolute inset-0 flex items-center justify-center text-xl">🤖</div>
-                </div>
-                <div class="space-y-1">
-                    <h3 class="text-lg font-black text-slate-800" id="loading-stage-text">Membaca berkas dokumen...</h3>
-                    <p class="text-xs text-slate-500 font-medium">Model AI sedang membaca materi dan merancang butir soal berkualitas.</p>
-                    <p class="text-[11px] text-amber-600 font-bold mt-1">⏳ AI lokal mungkin membutuhkan 1–3 menit. Harap ditunggu!</p>
-                </div>
-                <div class="w-full max-w-xs bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div class="bg-gradient-to-r from-purple-500 to-indigo-600 h-full w-2/3 animate-pulse"></div>
-                </div>
-            </div>
-
-            <!-- STATE 3: RESULT READY → opens popup modal -->
-            <div id="result-container" class="hidden bg-white rounded-3xl p-5 sm:p-6 border-2 border-emerald-300 shadow-lg space-y-4">
-                <!-- Success Banner -->
-                <div class="flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200">
-                    <div class="w-10 h-10 rounded-2xl bg-emerald-500 flex items-center justify-center text-white text-lg flex-shrink-0 shadow-md">✅</div>
-                    <div class="min-w-0">
-                        <div class="font-black text-emerald-900 text-sm" id="res-title">Paket Soal Siap!</div>
-                        <div class="text-xs text-emerald-700 font-medium mt-0.5">
-                            <span id="res-badge-type" class="font-bold"></span>
-                            <span class="mx-1">•</span>
-                            <span id="res-provider" class="text-indigo-700 font-bold"></span>
-                        </div>
-                    </div>
-                    <div class="ml-auto text-right flex-shrink-0">
-                        <div class="text-lg font-black text-purple-700" id="res-compression">0%</div>
-                        <div class="text-[10px] font-bold text-slate-400 uppercase">AI Score</div>
-                    </div>
-                </div>
-
-                <!-- Stats Strip -->
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                    <div class="bg-amber-50/80 border border-amber-200/70 rounded-2xl p-3">
-                        <div class="text-[10px] font-bold text-amber-900/60 uppercase">Kata Sumber</div>
-                        <div class="font-black text-slate-800 text-sm mt-0.5" id="res-words-original">—</div>
-                    </div>
-                    <div class="bg-purple-50 border border-purple-200/70 rounded-2xl p-3">
-                        <div class="text-[10px] font-bold text-purple-900/60 uppercase">Panjang Soal</div>
-                        <div class="font-black text-purple-700 text-sm mt-0.5" id="res-words-summary">—</div>
-                    </div>
-                </div>
-
-                <!-- Hidden fields needed by JS functions -->
-                <div id="res-markdown-body" class="hidden"></div>
-                <div id="res-key-points-box" class="hidden"><ul id="res-key-points-list"></ul></div>
-                <span id="res-date" class="hidden"></span>
-
-                <!-- Open Popup Button -->
-                <button type="button" onclick="openResultPopup()"
-                        class="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-2xl font-black text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 active:scale-[0.99] transition-all duration-200 text-base">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
-                    <span>Buka Hasil Soal AI (Layar Penuh)</span>
+                    <span>Mulai buat soal dengan AI</span>
                 </button>
-
-                <!-- Quick Actions Row -->
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="openPublishModal()"
-                            id="btn-publish-to-students"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-indigo-500/20 transition-all duration-200">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
-                        <span>Ajukan ke Review AI 🤖</span>
-                    </button>
-                    <button type="button" onclick="copySummaryText()"
-                            class="p-2.5 rounded-xl text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all cursor-pointer" title="Salin Semua Soal">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    </button>
-                    <button type="button" onclick="downloadCurrentSummary()"
-                            class="p-2.5 rounded-xl text-slate-600 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer" title="Unduh .MD">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    </button>
-                    <button type="button" onclick="printSummary()"
-                            class="p-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer" title="Cetak Soal">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                    </button>
-                </div>
             </div>
-
-        </div>
-
+        </form>
     </div>
 
     <!-- ======================================================== -->
-    <!-- RIWAYAT DOKUMEN RINGKASAN TERAKHIR (HISTORY TABLE) -->
+    <!-- 5. RIWAYAT PAKET SOAL DOKUMEN TABLE CARD -->
     <!-- ======================================================== -->
-    <div class="bg-white rounded-3xl p-5 sm:p-7 border-2 border-amber-200/80 shadow-sm space-y-5">
+    <div class="bg-white rounded-3xl sm:rounded-[32px] p-6 sm:p-8 shadow-xs border border-slate-100 space-y-5">
         
-        <!-- Table Header with Search & Filter -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-4">
+        <!-- Header with Search -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-                <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
-                    <span>Riwayat Paket Soal Dokumen</span>
-                    <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ $summaries->total() }}</span>
-                </h2>
-                <p class="text-xs text-slate-500 font-medium">Daftar arsip paket soal yang pernah dibuat dari dokumen materi.</p>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-base sm:text-lg font-black text-slate-800">Riwayat Paket Soal Dokumen</h2>
+                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-black flex items-center justify-center">{{ $summaries->total() }}</span>
+                </div>
+                <p class="text-xs text-slate-400 font-medium mt-0.5">Daftar arsip paket soal yang pernah dibuat dari dokumen materi</p>
             </div>
 
-            <form method="GET" action="{{ route('admin.document-summarizer.index') }}" class="flex items-center gap-2 flex-wrap">
+            <form method="GET" action="{{ route('admin.document-summarizer.index') }}" class="relative w-full sm:w-64">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama dokumen..."
-                       class="px-3 py-2 rounded-xl border-2 border-slate-200 text-xs font-bold text-slate-800 placeholder-slate-400 focus:border-purple-500 transition-all">
-
-                @if(request('q') || request('style'))
-                    <a href="{{ route('admin.document-summarizer.index') }}" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200">
-                        Reset
-                    </a>
+                       class="w-full pl-9 pr-4 py-2 rounded-full border border-slate-200 text-xs font-medium text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:outline-none transition-all">
+                @if(request('q'))
+                    <a href="{{ route('admin.document-summarizer.index') }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold">&times;</a>
                 @endif
             </form>
         </div>
@@ -421,56 +282,72 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs">
                     <thead>
-                        <tr class="border-b border-slate-100 text-slate-400 font-extrabold uppercase tracking-wider">
-                            <th class="py-3 px-4">Nama Dokumen</th>
+                        <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[11px]">
+                            <th class="py-3 px-3">Nama Dokumen</th>
                             <th class="py-3 px-3">Jenis Pembuatan</th>
-                            <th class="py-3 px-3">Kata Dokumen / Soal</th>
+                            <th class="py-3 px-3">Kata Sumber / Soal</th>
                             <th class="py-3 px-3">Tanggal</th>
-                            <th class="py-3 px-4 text-right">Aksi</th>
+                            <th class="py-3 px-3 text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                    <tbody class="divide-y divide-slate-50 font-medium text-slate-700">
                         @foreach($summaries as $item)
-                            <tr class="hover:bg-slate-50/70 transition-colors">
-                                <td class="py-3.5 px-4">
+                            <tr class="hover:bg-slate-50/60 transition-colors">
+                                <!-- Nama Dokumen -->
+                                <td class="py-4 px-3">
                                     <div class="flex items-center gap-3">
-                                        <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 font-black text-[10px] flex items-center justify-center uppercase flex-shrink-0">
-                                            {{ $item->file_type }}
+                                        <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 font-black text-[10px] flex items-center justify-center uppercase flex-shrink-0">
+                                            {{ $item->file_type ?: 'DOCX' }}
                                         </span>
                                         <div class="min-w-0">
-                                            <div class="font-extrabold text-slate-800 text-sm truncate max-w-[240px]" title="{{ $item->title }}">
+                                            <div class="font-bold text-slate-800 text-xs sm:text-sm truncate max-w-[240px]" title="{{ $item->title }}">
                                                 {{ $item->title }}
                                             </div>
-                                            <div class="text-[11px] text-slate-400 truncate max-w-[240px]" title="{{ $item->original_filename }}">
-                                                {{ $item->original_filename }} ({{ $item->formatted_file_size }})
+                                            <div class="text-[11px] text-slate-400 truncate max-w-[240px] mt-0.5" title="{{ $item->original_filename }}">
+                                                {{ $item->original_filename }} • {{ $item->formatted_file_size }}
                                             </div>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="py-3.5 px-3">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200/60">
-                                        🎯 Soal & Kuis Latihan
+
+                                <!-- Jenis Pembuatan -->
+                                <td class="py-4 px-3 whitespace-nowrap">
+                                    <span class="bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5">
+                                        <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
+                                        Soal & Kuis Latihan
                                     </span>
                                 </td>
-                                <td class="py-3.5 px-3 whitespace-nowrap">
-                                    <div class="font-bold text-slate-800">{{ number_format($item->word_count_original) }} <span class="text-slate-400 font-normal">kata sumber</span></div>
-                                    <div class="text-[11px] text-purple-600 font-bold">↳ {{ number_format($item->word_count_summary) }} kata soal</div>
+
+                                <!-- Kata Sumber / Soal -->
+                                <td class="py-4 px-3 whitespace-nowrap space-y-1">
+                                    <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
+                                        <span class="w-2 h-2 rounded-full bg-[#2563EB]"></span>
+                                        {{ number_format($item->word_count_original) }} kata sumber
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
+                                        <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
+                                        {{ number_format($item->word_count_summary) }} kata soal
+                                    </div>
                                 </td>
-                                <td class="py-3.5 px-3 whitespace-nowrap text-slate-500">
-                                    <div>{{ $item->created_at->translatedFormat('d M Y') }}</div>
-                                    <div class="text-[10px] text-slate-400">{{ $item->created_at->format('H:i') }} WIB</div>
+
+                                <!-- Tanggal -->
+                                <td class="py-4 px-3 whitespace-nowrap text-slate-500">
+                                    <div class="font-bold text-slate-800 text-xs">{{ $item->created_at->translatedFormat('d M Y') }}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5">{{ $item->created_at->format('H:i') }} WIB</div>
                                 </td>
-                                <td class="py-3.5 px-4 text-right whitespace-nowrap">
-                                    <div class="flex items-center justify-end gap-1.5">
+
+                                <!-- Aksi -->
+                                <td class="py-4 px-3 text-right whitespace-nowrap">
+                                    <div class="flex items-center justify-end gap-2">
                                         <!-- Lihat Modal -->
                                         <button type="button" onclick="viewSummaryModal({{ $item->id }})"
-                                                class="px-2.5 py-1.5 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 font-bold text-xs transition-all" title="Baca Soal">
+                                                class="px-4 py-1.5 rounded-full bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all">
                                             Lihat
                                         </button>
 
                                         <!-- Unduh -->
                                         <a href="{{ route('admin.document-summarizer.download', $item->id) }}"
-                                           class="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all" title="Unduh File">
+                                           class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 hover:bg-emerald-100 flex items-center justify-center transition-all" title="Unduh File">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                         </a>
 
@@ -479,7 +356,7 @@
                                               onsubmit="return confirm('Apakah Anda yakin ingin menghapus arsip soal ini?');" class="inline m-0">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="p-1.5 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all" title="Hapus Riwayat">
+                                            <button type="submit" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition-all" title="Hapus Riwayat">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             </button>
                                         </form>
@@ -502,46 +379,80 @@
 </div>
 
 <!-- ======================================================== -->
-<!-- MODAL POPUP: LIHAT RINGKASAN LENGKAP (Riwayat) -->
+<!-- HIDDEN DATA CONTAINERS (Preserves JS functionality) -->
+<!-- ======================================================== -->
+<div id="result-placeholder" class="hidden"></div>
+<div id="result-container" class="hidden">
+    <span id="res-badge-type"></span>
+    <span id="res-title"></span>
+    <span id="res-date"></span>
+    <span id="res-provider"></span>
+    <span id="res-compression"></span>
+    <span id="res-words-original"></span>
+    <span id="res-words-summary"></span>
+    <div id="res-markdown-body"></div>
+    <div id="res-key-points-box"><ul id="res-key-points-list"></ul></div>
+</div>
+
+<!-- ======================================================== -->
+<!-- LOADING MODAL OVERLAY -->
+<!-- ======================================================== -->
+<div id="result-loading" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl border border-slate-100 space-y-5">
+        <div class="relative w-16 h-16 mx-auto">
+            <div class="w-16 h-16 rounded-full border-4 border-blue-100 border-t-[#2563EB] animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center text-xl">🤖</div>
+        </div>
+        <div class="space-y-1.5">
+            <h3 class="text-base font-black text-slate-800" id="loading-stage-text">Membaca berkas dokumen...</h3>
+            <p class="text-xs text-slate-500 font-medium">Model AI sedang membaca materi dan merancang butir soal berkualitas.</p>
+            <p class="text-[11px] text-amber-600 font-bold mt-1">⏳ AI lokal mungkin membutuhkan 1–3 menit. Harap ditunggu!</p>
+        </div>
+        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full w-2/3 animate-pulse"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODAL POPUP: LIHAT DETAIL RINGKASAN LENGKAP (Riwayat) -->
 <!-- ======================================================== -->
 <div id="summary-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border-2 border-amber-200 overflow-hidden">
+    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden">
         
         <!-- Modal Top Bar -->
-        <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-[#FAF6EF]/60">
+        <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
             <div class="min-w-0 pr-4">
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 uppercase" id="modal-badge-style">
-                    Intisari & Poin Penting
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-100 text-blue-800 uppercase" id="modal-badge-style">
+                    Soal & Kuis Latihan
                 </span>
-                <h3 class="text-lg font-black text-slate-900 truncate mt-1" id="modal-title">Judul Dokumen</h3>
-                <p class="text-xs text-slate-500 font-medium" id="modal-meta">Berkas: - • Dibuat: -</p>
+                <h3 class="text-base sm:text-lg font-black text-slate-900 truncate mt-1" id="modal-title">Judul Dokumen</h3>
+                <p class="text-xs text-slate-400 font-medium" id="modal-meta">Berkas: - • Dibuat: -</p>
             </div>
 
-            <button type="button" onclick="closeSummaryModal()" class="w-9 h-9 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 flex items-center justify-center transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            <button type="button" onclick="closeSummaryModal()" class="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-400 hover:text-slate-800 flex items-center justify-center transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
 
         <!-- Modal Body Content -->
         <div class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-5">
-            <div id="modal-markdown-body" class="prose prose-purple max-w-none text-slate-700 text-sm leading-relaxed">
-                <!-- Modal Markdown content rendered here -->
-            </div>
+            <div id="modal-markdown-body" class="prose prose-blue max-w-none text-slate-700 text-sm leading-relaxed"></div>
 
-            <div id="modal-key-points-box" class="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 space-y-2">
-                <div class="text-xs font-black text-indigo-900 uppercase tracking-wider">📌 Poin Kunci Utama</div>
+            <div id="modal-key-points-box" class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-2">
+                <div class="text-xs font-black text-amber-900 uppercase tracking-wider">📌 Poin Kunci Utama</div>
                 <ul class="text-xs font-medium text-slate-700 space-y-1.5 list-disc pl-4" id="modal-key-points-list"></ul>
             </div>
         </div>
 
         <!-- Modal Footer -->
         <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-            <button type="button" onclick="copyModalContent()" class="px-4 py-2 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <button type="button" onclick="copyModalContent()" class="px-4 py-2 rounded-full text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                 <span>Salin Teks Ringkasan</span>
             </button>
 
-            <button type="button" onclick="closeSummaryModal()" class="px-5 py-2 rounded-xl text-xs font-black bg-purple-600 text-white hover:bg-purple-700 shadow-md">
+            <button type="button" onclick="closeSummaryModal()" class="px-5 py-2 rounded-full text-xs font-bold bg-[#2563EB] text-white hover:bg-blue-700 shadow-xs">
                 Tutup
             </button>
         </div>
@@ -554,18 +465,18 @@
 <!-- ======================================================== -->
 <div id="result-popup-modal" class="fixed inset-0 z-[60] hidden" style="background: rgba(15,15,35,0.75); backdrop-filter: blur(6px);">
     <div class="flex items-stretch justify-center min-h-screen p-3 sm:p-5">
-        <div class="bg-white rounded-3xl w-full max-w-6xl flex flex-col shadow-2xl border border-white/20 overflow-hidden" style="max-height: calc(100vh - 24px);">
+        <div class="bg-white rounded-3xl w-full max-w-5xl flex flex-col shadow-2xl border border-white/20 overflow-hidden" style="max-height: calc(100vh - 24px);">
 
             <!-- Popup Header Bar -->
-            <div class="flex items-center justify-between gap-4 px-6 sm:px-8 py-4 border-b border-slate-100 bg-gradient-to-r from-purple-700 via-indigo-700 to-indigo-600 flex-shrink-0">
+            <div class="flex items-center justify-between gap-4 px-6 sm:px-8 py-4 border-b border-slate-100 bg-[#2563EB] flex-shrink-0">
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="w-9 h-9 rounded-2xl bg-white/20 flex items-center justify-center text-white font-black text-lg flex-shrink-0">🤖</div>
                     <div class="min-w-0">
                         <h2 class="text-base sm:text-lg font-black text-white truncate" id="popup-res-title">Paket Soal AI</h2>
-                        <div class="flex items-center gap-2 text-purple-200 text-xs font-semibold mt-0.5">
+                        <div class="flex items-center gap-2 text-blue-100 text-xs font-semibold mt-0.5">
                             <span id="popup-res-badge-type"></span>
                             <span>•</span>
-                            <span id="popup-res-provider" class="text-amber-300"></span>
+                            <span id="popup-res-provider" class="text-amber-200"></span>
                             <span>•</span>
                             <span id="popup-res-date"></span>
                         </div>
@@ -574,24 +485,20 @@
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <!-- Action buttons in header -->
                     <button type="button" onclick="openPublishModal()" title="Kirim ke Siswa"
-                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-emerald-500 hover:bg-emerald-400 text-white shadow-md transition-all">
+                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-white shadow-xs transition-all">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                        <span class="hidden sm:inline">Kirim ke Siswa</span>
+                        <span class="hidden sm:inline">Ajukan ke Review AI</span>
                     </button>
                     <button type="button" onclick="copySummaryText()" title="Salin Semua"
-                            class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all">
+                            class="p-2 rounded-full bg-white/15 hover:bg-white/25 text-white transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     </button>
                     <button type="button" onclick="downloadCurrentSummary()" title="Unduh .MD"
-                            class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all">
+                            class="p-2 rounded-full bg-white/15 hover:bg-white/25 text-white transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     </button>
-                    <button type="button" onclick="printSummary()" title="Cetak"
-                            class="p-2 rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                    </button>
                     <button type="button" onclick="closeResultPopup()"
-                            class="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-black text-lg transition-all ml-1">&times;</button>
+                            class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-black text-lg transition-all ml-1">&times;</button>
                 </div>
             </div>
 
@@ -604,7 +511,7 @@
                 <div class="w-px h-4 bg-slate-200"></div>
                 <div>
                     <span class="text-slate-400 font-bold uppercase tracking-wider">Panjang Soal</span>
-                    <span class="font-black text-purple-700 ml-2" id="popup-res-words-summary">—</span>
+                    <span class="font-black text-blue-600 ml-2" id="popup-res-words-summary">—</span>
                 </div>
                 <div class="w-px h-4 bg-slate-200"></div>
                 <div>
@@ -624,19 +531,11 @@
                 <!-- Dynamic question cards rendered here -->
             </div>
 
-            <!-- Key Points (if any) -->
-            <div id="popup-res-key-points-box" class="hidden mx-5 sm:mx-8 mb-5 bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 space-y-2.5 flex-shrink-0">
-                <div class="text-xs font-black text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
-                    <span>📌 Rangkuman Konsep Soal</span>
-                </div>
-                <ul class="text-xs font-medium text-slate-700 space-y-2 list-none" id="popup-res-key-points-list"></ul>
-            </div>
-
             <!-- Footer -->
             <div class="px-6 sm:px-8 py-4 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3 flex-shrink-0">
-                <p class="text-[11px] text-slate-400 font-medium">Dibuat oleh <span class="font-bold text-purple-700">RoboMath AI</span> • Klik soal untuk menyembunyikan/tampilkan pembahasan</p>
+                <p class="text-[11px] text-slate-400 font-medium">Dibuat oleh <span class="font-bold text-blue-600">RoboMath AI</span></p>
                 <button type="button" onclick="closeResultPopup()"
-                        class="px-5 py-2 rounded-xl text-xs font-black bg-slate-800 text-white hover:bg-slate-700 shadow-md transition-all">
+                        class="px-5 py-2 rounded-full text-xs font-bold bg-slate-800 text-white hover:bg-slate-700 shadow-xs transition-all">
                     Tutup Popup
                 </button>
             </div>
@@ -645,33 +544,33 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- MODAL: PUBLISH SOAL KE SISWA -->
+<!-- MODAL: PUBLISH SOAL KE REVIEW AI -->
 <!-- ============================================================ -->
 <div id="publish-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 space-y-6 relative border-2 border-indigo-200">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 space-y-5 relative border border-slate-100">
         <!-- Modal Header -->
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl flex-shrink-0">
+                <div class="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
                     🤖
                 </div>
                 <div>
-                    <h3 class="text-lg font-black text-slate-900">Ajukan Soal ke Review AI</h3>
-                    <p class="text-xs text-slate-500 font-medium">Tinjau & verifikasi soal sebelum diterbitkan ke siswa</p>
+                    <h3 class="text-base font-black text-slate-900">Ajukan Soal ke Review AI</h3>
+                    <p class="text-xs text-slate-400 font-medium">Tinjau & verifikasi soal sebelum diterbitkan ke siswa</p>
                 </div>
             </div>
-            <button type="button" onclick="closePublishModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-black text-lg transition-all">&times;</button>
+            <button type="button" onclick="closePublishModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-base transition-all">&times;</button>
         </div>
 
-        <!-- Info Card: Alur Verifikasi -->
-        <div class="p-3.5 rounded-2xl bg-indigo-50/80 border border-indigo-200/80 text-xs font-semibold text-indigo-900 flex items-start gap-2.5">
+        <!-- Info Card -->
+        <div class="p-3 rounded-2xl bg-blue-50/80 border border-blue-200/80 text-xs font-semibold text-blue-900 flex items-start gap-2.5">
             <span class="text-base flex-shrink-0 mt-0.5">💡</span>
-            <span>Soal akan disimpan dengan status <strong>"Menunggu Tinjauan"</strong> di halaman Review AI. Soal baru aktif dan dapat dikerjakan siswa setelah Anda menyetujuinya.</span>
+            <span>Soal akan disimpan dengan status <strong>"Menunggu Tinjauan"</strong> di halaman Review AI sebelum aktif dikerjakan siswa.</span>
         </div>
 
-        <!-- Preview: jumlah soal yang terdeteksi -->
-        <div id="publish-preview" class="hidden p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-sm font-bold text-emerald-800 flex items-center gap-2">
-            <span class="text-lg">✅</span>
+        <!-- Preview -->
+        <div id="publish-preview" class="hidden p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800 flex items-center gap-2">
+            <span class="text-base">✅</span>
             <span id="publish-preview-text"></span>
         </div>
 
@@ -679,8 +578,8 @@
         <div class="space-y-4">
             <!-- Pilih Topik -->
             <div>
-                <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase tracking-wider">Topik Tujuan <span class="text-rose-500">*</span></label>
-                <select id="publish-topic-id" class="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 font-bold text-slate-800 text-sm outline-none transition-all">
+                <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Topik Tujuan <span class="text-rose-500">*</span></label>
+                <select id="publish-topic-id" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 font-bold text-slate-800 text-xs outline-none transition-all">
                     <option value="">-- Pilih Topik --</option>
                     @foreach(\App\Models\Topic::where('is_active', true)->orderBy('kelas_level')->orderBy('order')->get() as $t)
                         <option value="{{ $t->id }}">{{ $t->icon }} {{ $t->title }} (Kelas {{ $t->kelas_level }})</option>
@@ -690,13 +589,13 @@
 
             <!-- Format Soal -->
             <div>
-                <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase tracking-wider">Format Soal</label>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Format Soal</label>
                 <div class="grid grid-cols-2 gap-2">
-                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl border-2 border-slate-200 text-xs font-extrabold cursor-pointer transition-all has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50 has-[:checked]:text-indigo-800">
+                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-800">
                         <input type="radio" name="publish-type" value="essay" id="publish-type-essay" class="sr-only" checked>
                         <span>✍️ Essay / Uraian</span>
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl border-2 border-slate-200 text-xs font-extrabold cursor-pointer transition-all has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-800">
+                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-800">
                         <input type="radio" name="publish-type" value="pilihan_ganda" id="publish-type-mcq" class="sr-only">
                         <span>🔘 Pilihan Ganda (A-D)</span>
                     </label>
@@ -705,15 +604,15 @@
 
             <!-- Tingkat Kesulitan -->
             <div>
-                <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase tracking-wider">Tingkat Kesulitan</label>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Tingkat Kesulitan</label>
                 <div class="grid grid-cols-3 gap-2">
-                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl border-2 border-slate-200 text-xs font-extrabold cursor-pointer transition-all has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-800">
+                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-800">
                         <input type="radio" name="publish-difficulty" value="mudah" class="sr-only" checked> 🌱 Mudah
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl border-2 border-slate-200 text-xs font-extrabold cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 has-[:checked]:text-amber-800">
+                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 has-[:checked]:text-amber-800">
                         <input type="radio" name="publish-difficulty" value="sedang" class="sr-only"> ⚡ Sedang
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl border-2 border-slate-200 text-xs font-extrabold cursor-pointer transition-all has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-800">
+                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl border border-slate-200 text-xs font-bold cursor-pointer transition-all has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-800">
                         <input type="radio" name="publish-difficulty" value="sulit" class="sr-only"> 🔥 Sulit
                     </label>
                 </div>
@@ -721,12 +620,12 @@
 
             <!-- Poin per Soal -->
             <div>
-                <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase tracking-wider">Poin per Soal</label>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Poin per Soal</label>
                 <div class="flex items-center gap-3">
                     <input type="range" id="publish-points" min="5" max="50" step="5" value="10"
                            oninput="document.getElementById('publish-points-label').textContent = this.value"
-                           class="flex-1 accent-indigo-600">
-                    <span class="w-14 text-center font-black text-indigo-700 text-sm bg-indigo-50 border border-indigo-200 px-2 py-1 rounded-xl">
+                           class="flex-1 accent-blue-600">
+                    <span class="w-14 text-center font-bold text-blue-700 text-xs bg-blue-50 border border-blue-200 px-2 py-1 rounded-lg">
                         <span id="publish-points-label">10</span> Poin
                     </span>
                 </div>
@@ -735,12 +634,11 @@
 
         <!-- Modal Actions -->
         <div class="flex items-center gap-3 pt-2">
-            <button type="button" onclick="closePublishModal()" class="flex-1 px-4 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-sm transition-all">
+            <button type="button" onclick="closePublishModal()" class="flex-1 px-4 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all">
                 Batal
             </button>
             <button type="button" onclick="submitPublishToStudents()" id="btn-publish-confirm"
-                    class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-sm shadow-md transition-all">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
+                    class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all">
                 <span>Ajukan ke Review AI</span>
             </button>
         </div>
@@ -750,966 +648,720 @@
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 <script>
-    // ============================================================
-    // INIT FUNCTION — called on first load & after every SPA swap
-    // ============================================================
     function initSummarizerPage() {
         console.log('🤖 initSummarizerPage() executed');
 
-    // State variables — stored on window so they survive re-init on SPA navigation
-    if (typeof window._summarizerState === 'undefined') {
-        window._summarizerState = {
-            inputMode: 'file',
-            activeSummaryMarkdown: '',
-            activeSummaryTitle: '',
-            modalMarkdownCache: '',
-        };
-    }
-    const state = window._summarizerState;
-
-    // Switch Input Mode between Upload File and Paste Text
-    window.setInputMode = function(mode) {
-        console.log('🔄 Switched input mode to:', mode);
-        state.inputMode = mode;
-        const fileContainer = document.getElementById('mode-file-container');
-        const textContainer = document.getElementById('mode-text-container');
-        const btnFile = document.getElementById('btn-mode-file');
-        const btnText = document.getElementById('btn-mode-text');
-
-        if (mode === 'file') {
-            if (fileContainer) fileContainer.classList.remove('hidden');
-            if (textContainer) textContainer.classList.add('hidden');
-            if (btnFile) btnFile.className = 'px-3 py-1.5 rounded-lg transition-all bg-white text-purple-700 shadow-sm';
-            if (btnText) btnText.className = 'px-3 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900';
-        } else {
-            if (fileContainer) fileContainer.classList.add('hidden');
-            if (textContainer) textContainer.classList.remove('hidden');
-            if (btnText) btnText.className = 'px-3 py-1.5 rounded-lg transition-all bg-white text-purple-700 shadow-sm';
-            if (btnFile) btnFile.className = 'px-3 py-1.5 rounded-lg transition-all text-slate-600 hover:text-slate-900';
+        if (typeof window._summarizerState === 'undefined') {
+            window._summarizerState = {
+                inputMode: 'file',
+                activeSummaryMarkdown: '',
+                activeSummaryTitle: '',
+                modalMarkdownCache: '',
+            };
         }
-    };
+        const state = window._summarizerState;
 
-    // Handle File Selection from Input
-    window.handleFileSelected = function(input) {
-        console.log('📁 handleFileSelected triggered with files:', input.files);
-        if (!input.files || !input.files[0]) {
-            console.warn('⚠️ No file selected');
-            return;
-        }
-        const file = input.files[0];
-        displaySelectedFile(file);
-    };
+        // Switch Input Mode between Upload File and Paste Text
+        window.setInputMode = function(mode) {
+            state.inputMode = mode;
+            const fileContainer = document.getElementById('mode-file-container');
+            const textContainer = document.getElementById('mode-text-container');
+            const btnFile = document.getElementById('btn-mode-file');
+            const btnText = document.getElementById('btn-mode-text');
 
-    // Display Selected File Details in Preview Card
-    window.displaySelectedFile = function(file) {
-        console.log('👁️ displaySelectedFile for:', file.name, 'size:', file.size);
-        if (!file) return;
-        const ext = file.name.split('.').pop().toUpperCase();
-        const sizeFormatted = formatFileSize(file.size);
-
-        const badgeContainer = document.getElementById('file-ext-badge-container');
-        const badgeText = document.getElementById('file-ext-badge');
-        const iconEmoji = document.getElementById('file-icon-emoji');
-        const nameLabel = document.getElementById('file-name-label');
-        const sizeLabel = document.getElementById('file-size-label');
-        const dropzone = document.getElementById('dropzone');
-        const previewCard = document.getElementById('file-preview-card');
-
-        if (badgeText) badgeText.textContent = ext;
-        if (nameLabel) nameLabel.textContent = file.name;
-        if (sizeLabel) sizeLabel.textContent = sizeFormatted;
-
-        // Dynamic badge style based on file type
-        if (badgeContainer && iconEmoji) {
-            if (['PDF'].includes(ext)) {
-                badgeContainer.className = 'w-12 h-12 rounded-xl bg-rose-600 text-white flex flex-col items-center justify-center font-black shadow-md flex-shrink-0';
-                iconEmoji.textContent = '📄';
-            } else if (['DOC', 'DOCX'].includes(ext)) {
-                badgeContainer.className = 'w-12 h-12 rounded-xl bg-blue-600 text-white flex flex-col items-center justify-center font-black shadow-md flex-shrink-0';
-                iconEmoji.textContent = '📑';
-            } else if (['TXT', 'MD', 'MARKDOWN', 'LOG'].includes(ext)) {
-                badgeContainer.className = 'w-12 h-12 rounded-xl bg-emerald-600 text-white flex flex-col items-center justify-center font-black shadow-md flex-shrink-0';
-                iconEmoji.textContent = '📝';
-            } else if (['CSV', 'JSON'].includes(ext)) {
-                badgeContainer.className = 'w-12 h-12 rounded-xl bg-amber-600 text-white flex flex-col items-center justify-center font-black shadow-md flex-shrink-0';
-                iconEmoji.textContent = '📊';
+            if (mode === 'file') {
+                if (fileContainer) fileContainer.classList.remove('hidden');
+                if (textContainer) textContainer.classList.add('hidden');
+                if (btnFile) btnFile.className = 'px-4 py-1.5 rounded-full transition-all bg-white text-slate-800 border border-slate-200 shadow-xs font-bold';
+                if (btnText) btnText.className = 'px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 font-medium';
             } else {
-                badgeContainer.className = 'w-12 h-12 rounded-xl bg-purple-600 text-white flex flex-col items-center justify-center font-black shadow-md flex-shrink-0';
-                iconEmoji.textContent = '📁';
+                if (fileContainer) fileContainer.classList.add('hidden');
+                if (textContainer) textContainer.classList.remove('hidden');
+                if (btnText) btnText.className = 'px-4 py-1.5 rounded-full transition-all bg-white text-slate-800 border border-slate-200 shadow-xs font-bold';
+                if (btnFile) btnFile.className = 'px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800 font-medium';
             }
+        };
+
+        // Handle File Selection
+        window.handleFileSelected = function(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            displaySelectedFile(file);
+        };
+
+        // Display Selected File Details
+        window.displaySelectedFile = function(file) {
+            if (!file) return;
+            const ext = file.name.split('.').pop().toUpperCase();
+            const sizeFormatted = formatFileSize(file.size);
+
+            const badgeText = document.getElementById('file-ext-badge');
+            const nameLabel = document.getElementById('file-name-label');
+            const sizeLabel = document.getElementById('file-size-label');
+            const dropzone = document.getElementById('dropzone');
+            const previewCard = document.getElementById('file-preview-card');
+
+            if (badgeText) badgeText.textContent = ext;
+            if (nameLabel) nameLabel.textContent = file.name;
+            if (sizeLabel) sizeLabel.textContent = sizeFormatted;
+
+            if (dropzone) {
+                dropzone.style.display = 'none';
+                dropzone.classList.add('hidden');
+            }
+            if (previewCard) {
+                previewCard.style.display = 'block';
+                previewCard.classList.remove('hidden');
+            }
+
+            // Auto-fill custom title if empty
+            const titleInput = document.getElementById('custom_title');
+            if (titleInput && !titleInput.value) {
+                const rawName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                titleInput.value = rawName.replace(/[-_]/g, ' ');
+            }
+        };
+
+        // Clear Selected File
+        window.clearSelectedFile = function() {
+            const input = document.getElementById('document_file');
+            if (input) input.value = '';
+            const dropzone = document.getElementById('dropzone');
+            const previewCard = document.getElementById('file-preview-card');
+            if (dropzone) {
+                dropzone.style.display = 'block';
+                dropzone.classList.remove('hidden');
+            }
+            if (previewCard) {
+                previewCard.style.display = 'none';
+                previewCard.classList.add('hidden');
+            }
+        };
+
+        // Live Word Counter
+        window.updateTextCounter = function(textarea) {
+            const text = textarea.value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            const counterElem = document.getElementById('text-char-count');
+            if (counterElem) counterElem.textContent = `${words} kata`;
+        };
+
+        // Set Prompt Template
+        window.setPromptTemplate = function(text) {
+            const promptInput = document.getElementById('custom_prompt');
+            if (promptInput) {
+                promptInput.value = text;
+                promptInput.focus();
+            }
+        };
+
+        function formatFileSize(bytes) {
+            if (!bytes || bytes <= 0) return '0 B';
+            if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+            if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return bytes + ' B';
         }
 
-        if (dropzone) {
-            dropzone.style.display = 'none';
-            dropzone.classList.add('hidden');
-        }
-        if (previewCard) {
-            previewCard.style.display = 'block';
-            previewCard.classList.remove('hidden');
-        }
+        // Markdown / Question Parser
+        function parseMarkdownToHtml(markdownText) {
+            if (!markdownText) return '';
 
-        // Auto-fill custom title if empty
-        const titleInput = document.getElementById('custom_title');
-        if (titleInput && !titleInput.value) {
-            const rawName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-            titleInput.value = rawName.replace(/[-_]/g, ' ');
-        }
-    };
+            let cleaned = markdownText.replace(/^(?:Sebagai\s+Asisten|Tentu|Halo|Berikut\s+adalah|Saya\s+telah|Baiklah|Berikut\s+ini).*?(?=(##|###|📝|Soal\s+1))/is, '').trim();
 
-    // Clear Selected File
-    window.clearSelectedFile = function() {
-        const input = document.getElementById('document_file');
-        if (input) input.value = '';
-        const dropzone = document.getElementById('dropzone');
-        const previewCard = document.getElementById('file-preview-card');
-        if (dropzone) {
-            dropzone.style.display = 'block';
-            dropzone.classList.remove('hidden');
-        }
-        if (previewCard) {
-            previewCard.style.display = 'none';
-            previewCard.classList.add('hidden');
-        }
-    };
+            try {
+                const questionRegex = /###\s*(?:📝|🌟)?\s*Soal\s*(\d+)[\s\S]*?(?=(?:###\s*(?:📝|🌟)?\s*Soal\s*\d+|###\s*📌|$))/gi;
+                const matches = [...cleaned.matchAll(questionRegex)];
 
-    // Live Word Counter for Text Input
-    window.updateTextCounter = function(textarea) {
-        const text = textarea.value.trim();
-        const words = text ? text.split(/\s+/).length : 0;
-        const counterElem = document.getElementById('text-char-count');
-        if (counterElem) counterElem.textContent = `${words} kata`;
-    };
+                if (matches.length > 0) {
+                    let finalHtml = '';
 
-    // Set Prompt Template
-    window.setPromptTemplate = function(text) {
-        const promptInput = document.getElementById('custom_prompt');
-        if (promptInput) {
-            promptInput.value = text;
-            promptInput.focus();
-        }
-    };
-
-    // Format Bytes helper
-    function formatFileSize(bytes) {
-        if (!bytes || bytes <= 0) return '0 B';
-        if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
-        if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' KB';
-        return bytes + ' B';
-    }
-
-    // Kid-Friendly Quiz & Markdown Parser
-    function parseMarkdownToHtml(markdownText) {
-        if (!markdownText) return '';
-
-        // Clean initial conversational intro if present
-        let cleaned = markdownText.replace(/^(?:Sebagai\s+Asisten|Tentu|Halo|Berikut\s+adalah|Saya\s+telah|Baiklah|Berikut\s+ini).*?(?=(##|###|📝|Soal\s+1))/is, '');
-        cleaned = cleaned.trim();
-
-        try {
-            // Check if text contains structured questions (e.g. ### Soal 1 or ### 📝 Soal 1)
-            const questionRegex = /###\s*(?:📝|🌟)?\s*Soal\s*(\d+)[\s\S]*?(?=(?:###\s*(?:📝|🌟)?\s*Soal\s*\d+|###\s*📌|$))/gi;
-            const matches = [...cleaned.matchAll(questionRegex)];
-
-            if (matches.length > 0) {
-                let finalHtml = '';
-
-                // Extract any main title (## ...) before first question
-                const headerMatch = cleaned.match(/^##\s*(.+)$/m);
-                if (headerMatch) {
-                    const cleanTitle = headerMatch[1].replace(/[*#]/g, '').trim();
-                    finalHtml += `
-                        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-purple-100 via-indigo-50 to-purple-50 border-2 border-purple-200/80 mb-6 shadow-sm">
-                            <div class="flex items-center gap-2.5">
-                                <span class="text-2xl">🎯</span>
-                                <div>
-                                    <h2 class="text-base sm:text-lg font-black text-purple-950">${cleanTitle}</h2>
-                                    <p class="text-xs font-semibold text-purple-700/80 mt-0.5">Paket latihan soal dan kuis edukatif untuk siswa SD.</p>
+                    const headerMatch = cleaned.match(/^##\s*(.+)$/m);
+                    if (headerMatch) {
+                        const cleanTitle = headerMatch[1].replace(/[*#]/g, '').trim();
+                        finalHtml += `
+                            <div class="p-4 sm:p-5 rounded-2xl bg-blue-50/70 border border-blue-200/80 mb-5">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-xl">🎯</span>
+                                    <div>
+                                        <h2 class="text-sm sm:text-base font-black text-blue-950">${cleanTitle}</h2>
+                                        <p class="text-xs font-semibold text-blue-700/80 mt-0.5">Paket latihan soal dan kuis edukatif untuk siswa SD.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `;
-                }
+                        `;
+                    }
 
-                // Process each question
-                matches.forEach((m, idx) => {
-                    const block = m[0];
-                    const numMatch = block.match(/###\s*(?:📝|🌟)?\s*Soal\s*(\d+)/i);
-                    const qNum = numMatch ? numMatch[1] : (idx + 1);
+                    matches.forEach((m, idx) => {
+                        const block = m[0];
+                        const numMatch = block.match(/###\s*(?:📝|🌟)?\s*Soal\s*(\d+)/i);
+                        const qNum = numMatch ? numMatch[1] : (idx + 1);
 
-                    // Extract options A, B, C, D strictly from dedicated lines (e.g. "- A. ...", "A. ...")
-                    const options = [];
-                    const lines = block.split('\n');
-                    lines.forEach(line => {
-                        const trimmed = line.trim();
-                        // Only match lines explicitly formatted as option items (not blockquotes or headers)
-                        if (!trimmed.startsWith('>') && !trimmed.startsWith('###') && !trimmed.includes('Kunci Jawaban') && !trimmed.includes('Pembahasan')) {
-                            const optLineMatch = trimmed.match(/^(?:[-*]\s*)?([A-D])[\.\)]\s+(.+)$/i);
-                            if (optLineMatch) {
-                                const letter = optLineMatch[1].toUpperCase();
-                                const optText = optLineMatch[2].replace(/[*_]/g, '').trim();
-                                if (optText && !options.some(o => o.letter === letter)) {
-                                    options.push({ letter, text: optText });
+                        const options = [];
+                        const lines = block.split('\n');
+                        lines.forEach(line => {
+                            const trimmed = line.trim();
+                            if (!trimmed.startsWith('>') && !trimmed.startsWith('###') && !trimmed.includes('Kunci Jawaban') && !trimmed.includes('Pembahasan')) {
+                                const optLineMatch = trimmed.match(/^(?:[-*]\s*)?([A-D])[\.\)]\s+(.+)$/i);
+                                if (optLineMatch) {
+                                    const letter = optLineMatch[1].toUpperCase();
+                                    const optText = optLineMatch[2].replace(/[*_]/g, '').trim();
+                                    if (optText && !options.some(o => o.letter === letter)) {
+                                        options.push({ letter, text: optText });
+                                    }
                                 }
                             }
+                        });
+
+                        const isMultipleChoice = options.length >= 2;
+
+                        const bodyLines = [];
+                        for (const line of lines) {
+                            const trimmed = line.trim();
+                            if (/^###\s*(?:📝|🌟)?\s*Soal/i.test(trimmed)) continue;
+                            if (trimmed.startsWith('>') || /^(?:[-*]\s*)?[A-D][\.\)]\s+/i.test(trimmed) || /^(?:🔑|💡|\*\*🔑|\*\*💡)/i.test(trimmed)) break;
+                            if (trimmed) bodyLines.push(trimmed);
                         }
+                        const questionBody = bodyLines.join(' ').replace(/[*_#]/g, '').trim();
+
+                        let keyAnswer = '';
+                        let explanation = '';
+                        const keyMatch = block.match(/(?:🔑\s*Kunci\s*Jawaban|Kunci\s*Jawaban)\s*:\s*\*?\*?\s*([^\n]+)/i);
+                        if (keyMatch) keyAnswer = keyMatch[1].replace(/[*_>]/g, '').trim();
+
+                        const expMatch = block.match(/(?:💡\s*Pembahasan(?:\s*Seru|\s*&\s*Langkah)?|Pembahasan(?:\s*&\s*Langkah)?)\s*:\s*\*?\*?\s*([^\n\r#]+)/i);
+                        if (expMatch) explanation = expMatch[1].replace(/[*_>]/g, '').trim();
+
+                        let optionsHtml = '';
+                        if (isMultipleChoice) {
+                            optionsHtml = `
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
+                                    ${options.map(opt => `
+                                        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-700">
+                                            <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                                                ${opt.letter}
+                                            </span>
+                                            <span class="leading-relaxed mt-0.5">${opt.text}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `;
+                        }
+
+                        let answerBoxHtml = '';
+                        if (keyAnswer || explanation) {
+                            answerBoxHtml = `
+                                <div class="mt-3 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-1">
+                                    ${keyAnswer ? `
+                                        <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-900">
+                                            <span>🔑 Kunci Jawaban:</span>
+                                            <span class="bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">${keyAnswer}</span>
+                                        </div>
+                                    ` : ''}
+                                    ${explanation ? `
+                                        <div class="text-xs text-emerald-900/90 leading-relaxed flex items-start gap-1.5 pt-0.5">
+                                            <span class="leading-none">💡</span>
+                                            <div><strong>Pembahasan:</strong> ${explanation}</div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `;
+                        }
+
+                        finalHtml += `
+                            <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs space-y-3 mb-4">
+                                <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-2.5">
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#2563EB] text-white">
+                                        Soal #${qNum}
+                                    </span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider ${isMultipleChoice ? 'text-blue-700 bg-blue-50 border-blue-200' : 'text-rose-700 bg-rose-50 border-rose-200'} px-2.5 py-0.5 rounded-full border">
+                                        ${isMultipleChoice ? 'Pilihan Ganda' : '✍️ Essay / Uraian'}
+                                    </span>
+                                </div>
+
+                                <div class="text-xs sm:text-sm font-bold text-slate-800 leading-relaxed">
+                                    ${questionBody || 'Pertanyaan materi latihan'}
+                                </div>
+
+                                ${optionsHtml}
+                                ${answerBoxHtml}
+                            </div>
+                        `;
                     });
 
-                    // A question is ONLY Multiple Choice if it has at least 2 valid option items (e.g. A and B)
-                    const isMultipleChoice = options.length >= 2;
-
-                    // Extract question body: lines before options or blockquotes
-                    const bodyLines = [];
-                    for (const line of lines) {
-                        const trimmed = line.trim();
-                        if (/^###\s*(?:📝|🌟)?\s*Soal/i.test(trimmed)) {
-                            continue;
-                        }
-                        if (trimmed.startsWith('>') || /^(?:[-*]\s*)?[A-D][\.\)]\s+/i.test(trimmed) || /^(?:🔑|💡|\*\*🔑|\*\*💡)/i.test(trimmed)) {
-                            break;
-                        }
-                        if (trimmed) {
-                            bodyLines.push(trimmed);
-                        }
+                    if (typeof DOMPurify !== 'undefined') {
+                        finalHtml = DOMPurify.sanitize(finalHtml);
                     }
-                    const questionBody = bodyLines.join(' ').replace(/[*_#]/g, '').trim();
-
-                    // Extract Answer Key & Explanation
-                    let keyAnswer = '';
-                    let explanation = '';
-                    const keyMatch = block.match(/(?:🔑\s*Kunci\s*Jawaban|Kunci\s*Jawaban)\s*:\s*\*?\*?\s*([^\n]+)/i);
-                    if (keyMatch) {
-                        keyAnswer = keyMatch[1].replace(/[*_>]/g, '').trim();
-                    }
-
-                    const expMatch = block.match(/(?:💡\s*Pembahasan(?:\s*Seru|\s*&\s*Langkah)?|Pembahasan(?:\s*&\s*Langkah)?)\s*:\s*\*?\*?\s*([^\n\r#]+)/i);
-                    if (expMatch) {
-                        explanation = expMatch[1].replace(/[*_>]/g, '').trim();
-                    }
-
-                    // Badge colors per letter
-                    const badgeStyles = {
-                        'A': 'bg-blue-100 text-blue-800 border-blue-200',
-                        'B': 'bg-purple-100 text-purple-800 border-purple-200',
-                        'C': 'bg-amber-100 text-amber-800 border-amber-200',
-                        'D': 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                    };
-
-                    let optionsHtml = '';
-                    if (isMultipleChoice) {
-                        optionsHtml = `
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
-                                ${options.map(opt => `
-                                    <div class="flex items-start gap-3 p-3 rounded-2xl bg-slate-50/80 hover:bg-purple-50/60 border-2 border-slate-200 hover:border-purple-300 transition-all text-xs sm:text-sm font-bold text-slate-700 group cursor-default">
-                                        <span class="w-6 h-6 rounded-xl ${badgeStyles[opt.letter] || 'bg-purple-100 text-purple-800'} border flex items-center justify-center font-black text-xs flex-shrink-0 shadow-xs">
-                                            ${opt.letter}
-                                        </span>
-                                        <span class="leading-relaxed mt-0.5 group-hover:text-purple-950">${opt.text}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
-                    }
-
-                    let answerBoxHtml = '';
-                    if (keyAnswer || explanation) {
-                        answerBoxHtml = `
-                            <div class="mt-3.5 p-4 rounded-2xl bg-emerald-50/90 border-2 border-emerald-200 text-emerald-950 space-y-1.5 shadow-xs">
-                                ${keyAnswer ? `
-                                    <div class="flex items-center gap-1.5 text-xs font-black text-emerald-900 uppercase tracking-wider">
-                                        <span>🔑 Kunci Jawaban:</span>
-                                        <span class="text-emerald-950 bg-emerald-100 px-2 py-0.5 rounded-lg border border-emerald-300">${keyAnswer}</span>
-                                    </div>
-                                ` : ''}
-                                ${explanation ? `
-                                    <div class="text-xs font-semibold text-emerald-900/90 leading-relaxed flex items-start gap-2 pt-0.5">
-                                        <span class="text-base leading-none flex-shrink-0">💡</span>
-                                        <div><strong class="font-extrabold text-emerald-950">Pembahasan:</strong> ${explanation}</div>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    }
-
-                    finalHtml += `
-                        <div class="quiz-question-card bg-white rounded-3xl p-5 sm:p-6 border-2 border-purple-200/90 shadow-sm hover:shadow-md transition-all space-y-3.5 mb-5 relative">
-                            <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 text-white shadow-xs">
-                                    🌟 Soal #${qNum}
-                                </span>
-                                <span class="text-[10px] font-black uppercase tracking-wider ${isMultipleChoice ? 'text-purple-700 bg-purple-50 border-purple-200/70' : 'text-rose-700 bg-rose-50 border-rose-200/70'} px-2.5 py-0.5 rounded-full border">
-                                    ${isMultipleChoice ? 'Pilihan Ganda' : '✍️ Soal Essay / Uraian'}
-                                </span>
-                            </div>
-
-                            <div class="text-sm sm:text-base font-extrabold text-slate-800 leading-relaxed pt-1">
-                                ${questionBody || 'Pertanyaan materi latihan'}
-                            </div>
-
-                            ${optionsHtml}
-                            ${answerBoxHtml}
-                        </div>
-                    `;
-                });
-
-                // Check for concept summary section at the end
-                const conceptMatch = cleaned.match(/###\s*📌\s*Rangkuman Konsep Kunci([\s\S]*)$/i);
-                if (conceptMatch) {
-                    const bulletLines = conceptMatch[1].split('\n')
-                        .map(l => l.replace(/^[-*]\s*/, '').replace(/[*_#]/g, '').trim())
-                        .filter(l => l.length > 5);
-
-                    if (bulletLines.length > 0) {
-                        finalHtml += `
-                            <div class="mt-6 p-5 sm:p-6 rounded-3xl bg-amber-50/90 border-2 border-amber-200/90 shadow-sm space-y-3">
-                                <div class="text-xs sm:text-sm font-black text-amber-950 uppercase tracking-wider flex items-center gap-2">
-                                    <span class="text-lg">📌</span>
-                                    <span>Rangkuman Konsep Kunci</span>
-                                </div>
-                                <ul class="space-y-2 text-xs sm:text-sm font-bold text-amber-900/90 list-none pl-0">
-                                    ${bulletLines.map(line => `
-                                        <li class="flex items-start gap-2">
-                                            <span class="text-amber-600 font-black text-base leading-none">•</span>
-                                            <span class="leading-relaxed">${line}</span>
-                                        </li>
-                                    `).join('')}
-                                </ul>
-                            </div>
-                        `;
-                    }
+                    return finalHtml;
                 }
-
-                if (typeof DOMPurify !== 'undefined') {
-                    finalHtml = DOMPurify.sanitize(finalHtml);
-                }
-
-                return finalHtml;
+            } catch (err) {
+                console.warn('Custom parser fallback error:', err);
             }
-        } catch (err) {
-            console.warn('Custom quiz parser error, using standard parser fallback:', err);
-        }
 
-        // Standard Fallback with Marked.js
-        if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
-            try {
-                let parsedHtml = marked.parse(cleaned);
-                if (typeof DOMPurify !== 'undefined') {
-                    parsedHtml = DOMPurify.sanitize(parsedHtml);
+            if (typeof marked !== 'undefined' && typeof marked.parse === 'function') {
+                try {
+                    let parsedHtml = marked.parse(cleaned);
+                    if (typeof DOMPurify !== 'undefined') parsedHtml = DOMPurify.sanitize(parsedHtml);
+                    return parsedHtml;
+                } catch (e) {
+                    console.warn(e);
                 }
-                return parsedHtml;
-            } catch (e) {
-                console.warn('Marked.parse fallback error:', e);
             }
+
+            return `<p class="my-2 leading-relaxed">${cleaned.replace(/\n/g, '<br>')}</p>`;
         }
 
-        // Basic Regex Fallback
-        let html = cleaned
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/^### (.*$)/gim, '<h3 class="text-base font-bold text-slate-900 mt-4 mb-2">$1</h3>')
-            .replace(/^## (.*$)/gim, '<h2 class="text-lg font-black text-purple-900 mt-5 mb-2 pb-1 border-b border-purple-100">$1</h2>')
-            .replace(/^\> (.*$)/gim, '<blockquote class="border-l-4 border-purple-500 bg-purple-50/60 p-3 my-3 rounded-r-xl text-slate-700 italic">$1</blockquote>')
-            .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-slate-900">$1</strong>')
-            .replace(/^\- (.*$)/gim, '<li class="ml-4 list-disc text-slate-700 my-1">$1</li>')
-            .replace(/\n\n+/g, '</p><p class="my-2 leading-relaxed">')
-            .replace(/\n/g, '<br>');
-
-        return `<p class="my-2 leading-relaxed">${html}</p>`;
-    }
-
-    // Initialize Dropzone and Drag-Drop
-    function initDropzoneEvents() {
-        const dropzone = document.getElementById('dropzone');
-        const fileInput = document.getElementById('document_file');
-        
-        console.log('🎯 initDropzoneEvents() - dropzone:', !!dropzone, 'fileInput:', !!fileInput);
-
-        if (fileInput) {
-            // Remove old listener to avoid duplicates
-            fileInput.removeEventListener('change', window._fileInputHandler);
-            
-            // Define handler
-            window._fileInputHandler = function(e) {
-                console.log('📎 File input change event fired');
-                handleFileSelected(this);
-            };
-            
-            // Attach new listener
-            fileInput.addEventListener('change', window._fileInputHandler);
-        }
-
-        if (dropzone && fileInput) {
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropzone.addEventListener(eventName, function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }, false);
-            });
-
-            ['dragenter', 'dragover'].forEach(eventName => {
-                dropzone.addEventListener(eventName, function() {
-                    dropzone.classList.add('border-purple-600', 'bg-purple-100', 'scale-[1.01]', 'ring-4', 'ring-purple-500/20');
-                }, false);
-            });
-
-            ['dragleave', 'dragend', 'drop'].forEach(eventName => {
-                dropzone.addEventListener(eventName, function() {
-                    dropzone.classList.remove('border-purple-600', 'bg-purple-100', 'scale-[1.01]', 'ring-4', 'ring-purple-500/20');
-                }, false);
-            });
-
-            dropzone.addEventListener('drop', function(e) {
-                console.log('👇 File dropped into dropzone');
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                if (files && files.length > 0) {
-                    fileInput.files = files;
-                    displaySelectedFile(files[0]);
-                }
-            }, false);
-        }
-    }
-
-    initDropzoneEvents();
-
-    // Handle Form Submit
-    const formElement = document.getElementById('summarizer-form');
-    if (formElement && !formElement.dataset.listenerAttached) {
-        formElement.dataset.listenerAttached = '1';
-
-        formElement.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
+        // Initialize Dropzone Events
+        function initDropzoneEvents() {
+            const dropzone = document.getElementById('dropzone');
             const fileInput = document.getElementById('document_file');
-            const textInput = document.getElementById('direct_text');
 
-            if (state.inputMode === 'file' && (!fileInput || !fileInput.files || !fileInput.files[0])) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Berkas Belum Dipilih',
-                    text: 'Silakan pilih atau seret berkas dokumen (PDF, DOCX, TXT) terlebih dahulu!',
-                    confirmButtonColor: '#7C3AED'
-                });
-                return;
+            if (fileInput) {
+                fileInput.removeEventListener('change', window._fileInputHandler);
+                window._fileInputHandler = function() { handleFileSelected(this); };
+                fileInput.addEventListener('change', window._fileInputHandler);
             }
 
-            if (state.inputMode === 'text' && (!textInput || !textInput.value || textInput.value.trim().length < 10)) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Teks Terlalu Singkat',
-                    text: 'Silakan masukkan teks materi minimal 10 karakter agar AI dapat menganalisisnya!',
-                    confirmButtonColor: '#7C3AED'
+            if (dropzone && fileInput) {
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }, false);
                 });
-                return;
-            }
 
-            // Show Loading State
-            showLoadingState(true);
-
-            const formData = new FormData(formElement);
-            if (state.inputMode === 'file') {
-                formData.delete('direct_text');
-                // Make sure the file is included
-                if (fileInput && fileInput.files[0]) {
-                    formData.set('document_file', fileInput.files[0]);
-                }
-            } else {
-                formData.delete('document_file');
-            }
-
-            try {
-                // AbortController: 210s timeout (slightly > PHP's 180s LM Studio timeout)
-                const controller = new AbortController();
-                const fetchTimeout = setTimeout(() => controller.abort(), 210000);
-
-                const response = await fetch("{{ route('admin.document-summarizer.summarize') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Accept": "application/json"
-                    },
-                    body: formData,
-                    signal: controller.signal
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, function() {
+                        dropzone.classList.add('border-blue-500', 'bg-blue-50/30');
+                    }, false);
                 });
-                clearTimeout(fetchTimeout);
 
-                const data = await response.json();
+                ['dragleave', 'dragend', 'drop'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, function() {
+                        dropzone.classList.remove('border-blue-500', 'bg-blue-50/30');
+                    }, false);
+                });
 
-                if (!response.ok || !data.success) {
-                    let errorMsg = data.message || 'Terjadi kesalahan saat memproses ringkasan dokumen.';
-                    if (data.errors) {
-                        const validationMessages = Object.values(data.errors).flat();
-                        if (validationMessages.length > 0) {
-                            errorMsg = validationMessages.join('\n');
-                        }
+                dropzone.addEventListener('drop', function(e) {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (files && files.length > 0) {
+                        fileInput.files = files;
+                        displaySelectedFile(files[0]);
                     }
-                    throw new Error(errorMsg);
+                }, false);
+            }
+        }
+
+        initDropzoneEvents();
+
+        // Form Submit
+        const formElement = document.getElementById('summarizer-form');
+        if (formElement && !formElement.dataset.listenerAttached) {
+            formElement.dataset.listenerAttached = '1';
+
+            formElement.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const fileInput = document.getElementById('document_file');
+                const textInput = document.getElementById('direct_text');
+
+                if (state.inputMode === 'file' && (!fileInput || !fileInput.files || !fileInput.files[0])) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Berkas Belum Dipilih',
+                        text: 'Silakan pilih atau seret berkas dokumen (PDF, DOCX, TXT) terlebih dahulu!',
+                        confirmButtonColor: '#2563EB'
+                    });
+                    return;
                 }
 
-                // Render Output into Result Card
-                renderSummaryResult(data);
+                if (state.inputMode === 'text' && (!textInput || !textInput.value || textInput.value.trim().length < 10)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Teks Terlalu Singkat',
+                        text: 'Silakan masukkan teks materi minimal 10 karakter agar AI dapat menganalisisnya!',
+                        confirmButtonColor: '#2563EB'
+                    });
+                    return;
+                }
 
+                showLoadingState(true);
+
+                const formData = new FormData(formElement);
+                if (state.inputMode === 'file') {
+                    formData.delete('direct_text');
+                    if (fileInput && fileInput.files[0]) {
+                        formData.set('document_file', fileInput.files[0]);
+                    }
+                } else {
+                    formData.delete('document_file');
+                }
+
+                try {
+                    const controller = new AbortController();
+                    const fetchTimeout = setTimeout(() => controller.abort(), 210000);
+
+                    const response = await fetch("{{ route('admin.document-summarizer.summarize') }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Accept": "application/json"
+                        },
+                        body: formData,
+                        signal: controller.signal
+                    });
+                    clearTimeout(fetchTimeout);
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        let errorMsg = data.message || 'Terjadi kesalahan saat memproses ringkasan dokumen.';
+                        if (data.errors) {
+                            const validationMessages = Object.values(data.errors).flat();
+                            if (validationMessages.length > 0) errorMsg = validationMessages.join('\n');
+                        }
+                        throw new Error(errorMsg);
+                    }
+
+                    renderSummaryResult(data);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Paket Soal Berhasil Dibuat!',
+                        text: 'AI telah berhasil merangkum materi dan merancang butir-butir soal latihan.',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                } catch (error) {
+                    console.error(error);
+                    const isTimeout = error.name === 'AbortError';
+                    Swal.fire({
+                        icon: 'error',
+                        title: isTimeout ? 'Waktu Habis (Timeout)' : 'Gagal Membuat Soal',
+                        text: isTimeout
+                            ? 'Model AI terlalu lama merespons. Pastikan server AI aktif, lalu coba lagi.'
+                            : (error.message || 'Terjadi gangguan koneksi pada server AI.'),
+                        confirmButtonColor: '#2563EB'
+                    });
+                } finally {
+                    showLoadingState(false);
+                }
+            });
+        }
+
+        function showLoadingState(isLoading) {
+            const loading = document.getElementById('result-loading');
+            const submitBtn = document.getElementById('btn-submit-summarize');
+
+            if (isLoading) {
+                if (loading) { loading.style.display = 'flex'; loading.classList.remove('hidden'); }
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                }
+
+                const messages = [
+                    'Membaca berkas dokumen...',
+                    'Mengekstrak materi dokumen...',
+                    'Mengirim materi ke model AI...',
+                    'AI sedang menganalisis materi dan merancang butir soal...',
+                    'Menyusun opsi jawaban, kunci, dan pembahasan...',
+                    'Hampir selesai, memformat paket soal...'
+                ];
+                let step = 0;
+                const textElem = document.getElementById('loading-stage-text');
+                window.loadingInterval = setInterval(() => {
+                    step = (step + 1) % messages.length;
+                    if (textElem) textElem.textContent = messages[step];
+                }, 2000);
+            } else {
+                if (loading) { loading.style.display = 'none'; loading.classList.add('hidden'); }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+                if (window.loadingInterval) clearInterval(window.loadingInterval);
+            }
+        }
+
+        function renderSummaryResult(data) {
+            state.activeSummaryMarkdown = data.summary_markdown;
+            state.activeSummaryTitle = data.title;
+            state.activeSummaryId = data.summary_id || null;
+
+            const resTitle = document.getElementById('res-title');
+            const badgeType = document.getElementById('res-badge-type');
+            const resDate = document.getElementById('res-date');
+            const resProvider = document.getElementById('res-provider');
+            const resCompression = document.getElementById('res-compression');
+            const resWordsOrig = document.getElementById('res-words-original');
+            const resWordsSum = document.getElementById('res-words-summary');
+            const markdownBody = document.getElementById('res-markdown-body');
+
+            if (resTitle) resTitle.textContent = data.title;
+            if (badgeType) badgeType.textContent = `${data.file_type} • ${data.file_size_formatted}`;
+            if (resDate) resDate.textContent = data.created_at;
+            if (resProvider) resProvider.textContent = data.provider;
+            if (resCompression) resCompression.textContent = `${data.compression_ratio}%`;
+            if (resWordsOrig) resWordsOrig.textContent = `${(data.word_count_original || 0).toLocaleString()} Kata`;
+            if (resWordsSum) resWordsSum.textContent = `${(data.word_count_summary || 0).toLocaleString()} Kata`;
+
+            if (markdownBody) {
+                markdownBody.innerHTML = parseMarkdownToHtml(data.summary_markdown);
+            }
+
+            openResultPopup();
+        }
+
+        window.openResultPopup = function() {
+            const popupModal = document.getElementById('result-popup-modal');
+            if (!popupModal) return;
+
+            const fields = [
+                ['popup-res-title',          'res-title'],
+                ['popup-res-badge-type',     'res-badge-type'],
+                ['popup-res-provider',       'res-provider'],
+                ['popup-res-date',           'res-date'],
+                ['popup-res-compression',    'res-compression'],
+                ['popup-res-words-original', 'res-words-original'],
+                ['popup-res-words-summary',  'res-words-summary'],
+            ];
+            fields.forEach(([popupId, srcId]) => {
+                const src = document.getElementById(srcId);
+                const dst = document.getElementById(popupId);
+                if (src && dst) dst.textContent = src.textContent;
+            });
+
+            const srcBody = document.getElementById('res-markdown-body');
+            const dstBody = document.getElementById('popup-res-markdown-body');
+            if (srcBody && dstBody) {
+                dstBody.innerHTML = srcBody.innerHTML;
+            }
+
+            popupModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeResultPopup = function() {
+            const popupModal = document.getElementById('result-popup-modal');
+            if (popupModal) popupModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        };
+
+        document.getElementById('result-popup-modal')?.addEventListener('click', function(e) {
+            if (e.target === this || e.target === this.firstElementChild) closeResultPopup();
+        });
+
+        window.copySummaryText = function() {
+            if (!state.activeSummaryMarkdown) return;
+            navigator.clipboard.writeText(state.activeSummaryMarkdown).then(() => {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Paket Soal Berhasil Dibuat!',
-                    text: `AI telah berhasil merangkum materi dan merancang butir-butir soal latihan.`,
-                    timer: 2500,
+                    title: 'Teks Berhasil Disalin!',
+                    timer: 1500,
                     showConfirmButton: false
                 });
+            });
+        };
 
-            } catch (error) {
-                console.error(error);
-                const isTimeout = error.name === 'AbortError';
+        window.downloadCurrentSummary = function() {
+            if (!state.activeSummaryMarkdown) return;
+            const blob = new Blob([state.activeSummaryMarkdown], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const safeTitle = (state.activeSummaryTitle || 'Ringkasan_Dokumen').replace(/[^a-zA-Z0-9_-]/g, '_');
+            a.href = url;
+            a.download = `Ringkasan_RoboMath_${safeTitle}.md`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
+        window.viewSummaryModal = async function(summaryId) {
+            try {
+                const response = await fetch(`{{ url('admin/document-summarizer') }}/${summaryId}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await response.json();
+
+                state.modalMarkdownCache = data.summary;
+                const titleElem = document.getElementById('modal-title');
+                const styleElem = document.getElementById('modal-badge-style');
+                const metaElem = document.getElementById('modal-meta');
+                const modalBody = document.getElementById('modal-markdown-body');
+
+                if (titleElem) titleElem.textContent = data.title;
+                if (styleElem) styleElem.textContent = data.summary_style;
+                if (metaElem) metaElem.textContent = `Berkas: ${data.original_filename} (${data.file_size}) • Hemat: ${data.compression_ratio}% kata • ${data.created_at}`;
+
+                if (modalBody) {
+                    modalBody.innerHTML = parseMarkdownToHtml(data.summary);
+                }
+
+                const pointsList = document.getElementById('modal-key-points-list');
+                const pointsBox = document.getElementById('modal-key-points-box');
+
+                if (pointsList) {
+                    pointsList.innerHTML = '';
+                    if (data.key_points && data.key_points.length > 0) {
+                        if (pointsBox) pointsBox.classList.remove('hidden');
+                        data.key_points.forEach(point => {
+                            const li = document.createElement('li');
+                            li.textContent = point;
+                            pointsList.appendChild(li);
+                        });
+                    } else {
+                        if (pointsBox) pointsBox.classList.add('hidden');
+                    }
+                }
+
+                const modal = document.getElementById('summary-modal');
+                if (modal) modal.classList.remove('hidden');
+            } catch (err) {
+                console.error(err);
                 Swal.fire({
                     icon: 'error',
-                    title: isTimeout ? 'Waktu Habis (Timeout)' : 'Gagal Membuat Soal',
-                    text: isTimeout
-                        ? 'Model AI lokal terlalu lama merespons. Pastikan LM Studio aktif dan model sudah dimuat, lalu coba lagi.'
-                        : (error.message || 'Terjadi gangguan koneksi pada server AI.'),
-                    confirmButtonColor: '#7C3AED'
+                    title: 'Gagal Membuka Detail',
+                    confirmButtonColor: '#2563EB'
                 });
-            } finally {
-                showLoadingState(false);
             }
-        });
-    }
+        };
 
-    // Toggle Loading State
-    function showLoadingState(isLoading) {
-        const placeholder = document.getElementById('result-placeholder');
-        const loading = document.getElementById('result-loading');
-        const container = document.getElementById('result-container');
-        const submitBtn = document.getElementById('btn-submit-summarize');
-
-        if (isLoading) {
-            if (placeholder) { placeholder.style.display = 'none'; placeholder.classList.add('hidden'); }
-            if (container) { container.style.display = 'none'; container.classList.add('hidden'); }
-            if (loading) { loading.style.display = 'flex'; loading.classList.remove('hidden'); }
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
-            }
-
-            const messages = [
-                'Membaca berkas dokumen...',
-                'Mengekstrak materi dokumen...',
-                'Mengirim materi ke model AI...',
-                'AI sedang menganalisis materi dan merancang butir soal... (1-3 menit untuk AI lokal)',
-                'Menyusun opsi jawaban, kunci, dan pembahasan...',
-                'Hampir selesai, memformat paket soal...'
-            ];
-            let step = 0;
-            const textElem = document.getElementById('loading-stage-text');
-            window.loadingInterval = setInterval(() => {
-                step = (step + 1) % messages.length;
-                if (textElem) textElem.textContent = messages[step];
-            }, 2000);
-
-        } else {
-            if (loading) { loading.style.display = 'none'; loading.classList.add('hidden'); }
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
-            }
-            if (window.loadingInterval) clearInterval(window.loadingInterval);
-        }
-    }
-
-    // Render Summary Result into UI — shows compact card + opens popup automatically
-    function renderSummaryResult(data) {
-        const placeholder = document.getElementById('result-placeholder');
-        const loading = document.getElementById('result-loading');
-        const container = document.getElementById('result-container');
-
-        if (placeholder) { placeholder.style.display = 'none'; placeholder.classList.add('hidden'); }
-        if (loading) { loading.style.display = 'none'; loading.classList.add('hidden'); }
-        if (container) { container.style.display = 'block'; container.classList.remove('hidden'); }
-
-        state.activeSummaryMarkdown = data.summary_markdown;
-        state.activeSummaryTitle = data.title;
-
-        // Populate compact card fields
-        const badgeType = document.getElementById('res-badge-type');
-        const resTitle = document.getElementById('res-title');
-        const resDate = document.getElementById('res-date');
-        const resProvider = document.getElementById('res-provider');
-        const resCompression = document.getElementById('res-compression');
-        const resWordsOrig = document.getElementById('res-words-original');
-        const resWordsSum = document.getElementById('res-words-summary');
-        const markdownBody = document.getElementById('res-markdown-body');
-
-        if (badgeType) badgeType.textContent = `${data.file_type} • ${data.file_size_formatted}`;
-        if (resTitle) resTitle.textContent = data.title;
-        if (resDate) resDate.textContent = data.created_at;
-        if (resProvider) resProvider.textContent = data.provider;
-        if (resCompression) resCompression.textContent = `${data.compression_ratio}%`;
-        if (resWordsOrig) resWordsOrig.textContent = `${(data.word_count_original || 0).toLocaleString()} Kata`;
-        if (resWordsSum) resWordsSum.textContent = `${(data.word_count_summary || 0).toLocaleString()} Kata`;
-
-        // Store rendered HTML in hidden container
-        if (markdownBody) {
-            markdownBody.innerHTML = parseMarkdownToHtml(data.summary_markdown);
-        }
-
-        // Render Key Points (hidden compact version)
-        const keyPointsBox = document.getElementById('res-key-points-box');
-        const keyPointsList = document.getElementById('res-key-points-list');
-        if (keyPointsList) {
-            keyPointsList.innerHTML = '';
-            if (data.key_points && data.key_points.length > 0) {
-                if (keyPointsBox) keyPointsBox.classList.remove('hidden');
-                data.key_points.forEach(point => {
-                    const li = document.createElement('li');
-                    li.className = 'flex items-start gap-2 text-xs font-medium text-slate-700';
-                    li.innerHTML = `<span class="text-indigo-600 font-black flex-shrink-0">•</span><span>${point}</span>`;
-                    keyPointsList.appendChild(li);
-                });
-            } else {
-                if (keyPointsBox) keyPointsBox.classList.add('hidden');
-            }
-        }
-
-        // Scroll compact card into view then auto-open popup
-        if (container) {
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        setTimeout(() => openResultPopup(), 400);
-    }
-
-    // Open the large AI result popup modal
-    window.openResultPopup = function() {
-        const popupModal = document.getElementById('result-popup-modal');
-        if (!popupModal) return;
-
-        // Sync header data from compact card
-        const fields = [
-            ['popup-res-title',          'res-title'],
-            ['popup-res-badge-type',     'res-badge-type'],
-            ['popup-res-provider',       'res-provider'],
-            ['popup-res-date',           'res-date'],
-            ['popup-res-compression',    'res-compression'],
-            ['popup-res-words-original', 'res-words-original'],
-            ['popup-res-words-summary',  'res-words-summary'],
-        ];
-        fields.forEach(([popupId, srcId]) => {
-            const src = document.getElementById(srcId);
-            const dst = document.getElementById(popupId);
-            if (src && dst) dst.textContent = src.textContent;
-        });
-
-        // Clone rendered question cards into popup body
-        const srcBody = document.getElementById('res-markdown-body');
-        const dstBody = document.getElementById('popup-res-markdown-body');
-        if (srcBody && dstBody) {
-            dstBody.innerHTML = srcBody.innerHTML;
-        }
-
-        // Clone key points
-        const srcKpList = document.getElementById('res-key-points-list');
-        const dstKpList = document.getElementById('popup-res-key-points-list');
-        const dstKpBox  = document.getElementById('popup-res-key-points-box');
-        if (dstKpList && srcKpList) {
-            dstKpList.innerHTML = srcKpList.innerHTML;
-            if (dstKpBox) {
-                if (srcKpList.children.length > 0) dstKpBox.classList.remove('hidden');
-                else dstKpBox.classList.add('hidden');
-            }
-        }
-
-        popupModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    };
-
-    // Close the large result popup
-    window.closeResultPopup = function() {
-        const popupModal = document.getElementById('result-popup-modal');
-        if (popupModal) popupModal.classList.add('hidden');
-        document.body.style.overflow = '';
-    };
-
-    // Close popup when clicking backdrop
-    document.getElementById('result-popup-modal')?.addEventListener('click', function(e) {
-        if (e.target === this || e.target === this.firstElementChild) closeResultPopup();
-    });
-
-    // Copy Summary Text
-    window.copySummaryText = function() {
-        if (!state.activeSummaryMarkdown) return;
-        navigator.clipboard.writeText(state.activeSummaryMarkdown).then(() => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Teks Berhasil Disalin!',
-                text: 'Ringkasan dokumen telah disalin ke papan klip Anda.',
-                timer: 1800,
-                showConfirmButton: false
-            });
-        });
-    };
-
-    // Download Current Summary as Markdown
-    window.downloadCurrentSummary = function() {
-        if (!state.activeSummaryMarkdown) return;
-        const blob = new Blob([state.activeSummaryMarkdown], { type: 'text/markdown;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        const safeTitle = (state.activeSummaryTitle || 'Ringkasan_Dokumen').replace(/[^a-zA-Z0-9_-]/g, '_');
-        a.href = url;
-        a.download = `Ringkasan_RoboMath_${safeTitle}.md`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    };
-
-    // Print Summary
-    window.printSummary = function() {
-        const bodyElem = document.getElementById('res-markdown-body');
-        const printContent = bodyElem ? bodyElem.innerHTML : '';
-        const title = state.activeSummaryTitle || 'Ringkasan Dokumen RoboMath';
-        const win = window.open('', '_blank', 'height=700,width=900');
-        if (!win) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Pop-up Diblokir',
-                text: 'Harap izinkan pop-up di peramban Anda untuk mencetak dokumen.',
-                confirmButtonColor: '#7C3AED'
-            });
-            return;
-        }
-
-        win.document.title = title;
-        
-        const style = win.document.createElement('style');
-        style.textContent = `
-            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1e293b; line-height: 1.6; }
-            h1, h2, h3 { color: #4338ca; }
-            blockquote { border-left: 4px solid #6366f1; padding-left: 15px; color: #475569; font-style: italic; background: #f8fafc; padding: 10px 15px; border-radius: 4px; }
-            hr { border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0; }
-        `;
-        win.document.head.appendChild(style);
-
-        const container = win.document.createElement('div');
-        const headerTitle = win.document.createElement('h1');
-        headerTitle.textContent = title;
-        
-        const subtitle = win.document.createElement('p');
-        subtitle.style.color = '#64748b';
-        subtitle.style.fontSize = '12px';
-        subtitle.textContent = 'Diringkas oleh RoboMath AI Document Summarizer';
-        
-        const divider = win.document.createElement('hr');
-        const contentDiv = win.document.createElement('div');
-        contentDiv.innerHTML = printContent;
-        
-        container.appendChild(headerTitle);
-        container.appendChild(subtitle);
-        container.appendChild(divider);
-        container.appendChild(contentDiv);
-        
-        win.document.body.appendChild(container);
-        
-        win.focus();
-        setTimeout(() => {
-            win.print();
-        }, 300);
-    };
-
-    // View Summary Modal (from History Table)
-    window.viewSummaryModal = async function(summaryId) {
-        try {
-            const response = await fetch(`{{ url('admin/document-summarizer') }}/${summaryId}`, {
-                headers: { 'Accept': 'application/json' }
-            });
-            const data = await response.json();
-
-            state.modalMarkdownCache = data.summary;
-            const titleElem = document.getElementById('modal-title');
-            const styleElem = document.getElementById('modal-badge-style');
-            const metaElem = document.getElementById('modal-meta');
-            const modalBody = document.getElementById('modal-markdown-body');
-
-            if (titleElem) titleElem.textContent = data.title;
-            if (styleElem) styleElem.textContent = data.summary_style;
-            if (metaElem) metaElem.textContent = `Berkas: ${data.original_filename} (${data.file_size}) • Hemat: ${data.compression_ratio}% kata • Oleh: ${data.user_name} • ${data.created_at}`;
-
-            if (modalBody) {
-                modalBody.innerHTML = parseMarkdownToHtml(data.summary);
-            }
-
-            const pointsList = document.getElementById('modal-key-points-list');
-            const pointsBox = document.getElementById('modal-key-points-box');
-
-            if (pointsList) {
-                pointsList.innerHTML = '';
-                if (data.key_points && data.key_points.length > 0) {
-                    if (pointsBox) pointsBox.classList.remove('hidden');
-                    data.key_points.forEach(point => {
-                        const li = document.createElement('li');
-                        li.textContent = point;
-                        pointsList.appendChild(li);
-                    });
-                } else {
-                    if (pointsBox) pointsBox.classList.add('hidden');
-                }
-            }
-
+        window.closeSummaryModal = function() {
             const modal = document.getElementById('summary-modal');
-            if (modal) modal.classList.remove('hidden');
-        } catch (err) {
-            console.error(err);
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal Membuka Ringkasan',
-                text: 'Tidak dapat memuat detail dokumen.',
-                confirmButtonColor: '#7C3AED'
-            });
-        }
-    };
+            if (modal) modal.classList.add('hidden');
+        };
 
-    window.closeSummaryModal = function() {
-        const modal = document.getElementById('summary-modal');
-        if (modal) modal.classList.add('hidden');
-    };
-
-    window.copyModalContent = function() {
-        if (!state.modalMarkdownCache) return;
-        navigator.clipboard.writeText(state.modalMarkdownCache).then(() => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Teks Berhasil Disalin!',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        });
-    };
-
-    // ============================================================
-    // PUBLISH TO STUDENTS
-    // ============================================================
-
-    window.openPublishModal = function() {
-        if (!state.activeSummaryMarkdown) {
-            Swal.fire({ icon: 'warning', title: 'Belum Ada Soal', text: 'Buat soal terlebih dahulu sebelum mengirim ke siswa.', confirmButtonColor: '#059669' });
-            return;
-        }
-
-        // Check if markdown has MCQ options or is essay
-        const hasOptions = /(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i.test(state.activeSummaryMarkdown);
-        const questionBlocks = (state.activeSummaryMarkdown.match(/###\s*(?:📝|🌟)?\s*Soal\s*\d+/gi) || []).length;
-        
-        const radioEssay = document.getElementById('publish-type-essay');
-        const radioMcq = document.getElementById('publish-type-mcq');
-        if (hasOptions) {
-            if (radioMcq) radioMcq.checked = true;
-        } else {
-            if (radioEssay) radioEssay.checked = true;
-        }
-
-        const previewEl = document.getElementById('publish-preview');
-        const previewText = document.getElementById('publish-preview-text');
-        if (previewEl && previewText) {
-            if (questionBlocks > 0) {
-                if (hasOptions) {
-                    previewText.textContent = `${questionBlocks} butir soal pilihan ganda siap dikirim ke bank soal siswa.`;
-                } else {
-                    previewText.textContent = `${questionBlocks} butir soal essay/uraian terdeteksi dengan kunci jawaban lengkap siap dikirim ke akun siswa.`;
-                }
-                previewEl.classList.remove('hidden');
-            } else {
-                previewEl.classList.add('hidden');
-            }
-        }
-
-        const modal = document.getElementById('publish-modal');
-        if (modal) modal.classList.remove('hidden');
-    };
-
-    window.closePublishModal = function() {
-        const modal = document.getElementById('publish-modal');
-        if (modal) modal.classList.add('hidden');
-    };
-
-    window.submitPublishToStudents = async function() {
-        const topicId = document.getElementById('publish-topic-id')?.value;
-        const difficulty = document.querySelector('input[name="publish-difficulty"]:checked')?.value || 'sedang';
-        const points = document.getElementById('publish-points')?.value || '10';
-        const selectedType = document.querySelector('input[name="publish-type"]:checked')?.value || 'essay';
-
-        if (!topicId) {
-            Swal.fire({ icon: 'warning', title: 'Pilih Topik', text: 'Silakan pilih topik tujuan untuk soal-soal ini.', confirmButtonColor: '#4F46E5' });
-            return;
-        }
-
-        const confirmBtn = document.getElementById('btn-publish-confirm');
-        if (confirmBtn) {
-            confirmBtn.disabled = true;
-            confirmBtn.innerHTML = '<span class="animate-spin mr-2">⏳</span> Mengajukan ke Review AI...';
-        }
-
-        try {
-            const res = await fetch("{{ route('admin.document-summarizer.publish-to-students') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    topic_id: topicId,
-                    summary_id: state.activeSummaryId,
-                    markdown: state.activeSummaryMarkdown,
-                    difficulty: difficulty,
-                    points: parseInt(points),
-                    as_essay: (selectedType === 'essay'),
-                    type: selectedType,
-                })
-            });
-
-            const data = await res.json();
-
-            closePublishModal();
-
-            if (data.success) {
+        window.copyModalContent = function() {
+            if (!state.modalMarkdownCache) return;
+            navigator.clipboard.writeText(state.modalMarkdownCache).then(() => {
                 Swal.fire({
                     icon: 'success',
-                    title: `🎉 ${data.count} Soal Berhasil Diajukan!`,
-                    html: `<div style="font-size:14px; line-height: 1.6;">${data.message}<br><br><span class="text-slate-500 font-normal">Soal tersimpan dengan status <strong>"Menunggu Tinjauan"</strong> di halaman Review AI. Buka halaman Review AI untuk memeriksa dan menyetujui soal agar dapat dikerjakan siswa.</span></div>`,
-                    confirmButtonColor: '#4F46E5',
-                    confirmButtonText: 'Buka Halaman Review AI →',
-                    showCancelButton: true,
-                    cancelButtonText: 'Tetap di Sini',
-                    cancelButtonColor: '#94a3b8',
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = data.review_url || "{{ route('admin.ai-recommendations.index') }}";
-                    }
+                    title: 'Teks Berhasil Disalin!',
+                    timer: 1500,
+                    showConfirmButton: false
                 });
+            });
+        };
+
+        // Publish to Review AI
+        window.openPublishModal = function() {
+            if (!state.activeSummaryMarkdown) {
+                Swal.fire({ icon: 'warning', title: 'Belum Ada Soal', text: 'Buat soal terlebih dahulu.', confirmButtonColor: '#2563EB' });
+                return;
+            }
+
+            const hasOptions = /(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i.test(state.activeSummaryMarkdown);
+            const questionBlocks = (state.activeSummaryMarkdown.match(/###\s*(?:📝|🌟)?\s*Soal\s*\d+/gi) || []).length;
+            
+            const radioEssay = document.getElementById('publish-type-essay');
+            const radioMcq = document.getElementById('publish-type-mcq');
+            if (hasOptions) {
+                if (radioMcq) radioMcq.checked = true;
             } else {
-                Swal.fire({ icon: 'error', title: 'Gagal Mengajukan', text: data.message || 'Terjadi kesalahan.', confirmButtonColor: '#4F46E5' });
+                if (radioEssay) radioEssay.checked = true;
             }
-        } catch (err) {
-            console.error(err);
-            Swal.fire({ icon: 'error', title: 'Gagal Mengajukan', text: 'Terjadi gangguan koneksi.', confirmButtonColor: '#4F46E5' });
-        } finally {
+
+            const previewEl = document.getElementById('publish-preview');
+            const previewText = document.getElementById('publish-preview-text');
+            if (previewEl && previewText) {
+                if (questionBlocks > 0) {
+                    previewText.textContent = hasOptions 
+                        ? `${questionBlocks} butir soal pilihan ganda siap diajukan ke review.`
+                        : `${questionBlocks} butir soal essay terdeteksi siap diajukan ke review.`;
+                    previewEl.classList.remove('hidden');
+                } else {
+                    previewEl.classList.add('hidden');
+                }
+            }
+
+            const modal = document.getElementById('publish-modal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closePublishModal = function() {
+            const modal = document.getElementById('publish-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.submitPublishToStudents = async function() {
+            const topicId = document.getElementById('publish-topic-id')?.value;
+            const difficulty = document.querySelector('input[name="publish-difficulty"]:checked')?.value || 'sedang';
+            const points = document.getElementById('publish-points')?.value || '10';
+            const selectedType = document.querySelector('input[name="publish-type"]:checked')?.value || 'essay';
+
+            if (!topicId) {
+                Swal.fire({ icon: 'warning', title: 'Pilih Topik', text: 'Silakan pilih topik tujuan untuk soal-soal ini.', confirmButtonColor: '#2563EB' });
+                return;
+            }
+
+            const confirmBtn = document.getElementById('btn-publish-confirm');
             if (confirmBtn) {
-                confirmBtn.disabled = false;
-                confirmBtn.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg><span>Ajukan ke Review AI</span>';
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Mengajukan ke Review AI...';
             }
-        }
-    };
 
-    // Close publish modal when clicking outside
-    document.getElementById('publish-modal')?.addEventListener('click', function(e) {
-        if (e.target === this) closePublishModal();
-    });
+            try {
+                const res = await fetch("{{ route('admin.document-summarizer.publish-to-students') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        topic_id: topicId,
+                        summary_id: state.activeSummaryId,
+                        markdown: state.activeSummaryMarkdown,
+                        difficulty: difficulty,
+                        points: parseInt(points),
+                        as_essay: (selectedType === 'essay'),
+                        type: selectedType,
+                    })
+                });
 
-    } // end initSummarizerPage()
+                const data = await res.json();
+                closePublishModal();
 
-    // Run on first load
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: `🎉 ${data.count} Soal Berhasil Diajukan!`,
+                        text: 'Soal tersimpan dengan status Menunggu Tinjauan di halaman Review AI.',
+                        confirmButtonColor: '#2563EB',
+                        confirmButtonText: 'Buka Halaman Review AI →',
+                        showCancelButton: true,
+                        cancelButtonText: 'Tetap di Sini',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = data.review_url || "{{ route('admin.ai-recommendations.index') }}";
+                        }
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal Mengajukan', text: data.message || 'Terjadi kesalahan.', confirmButtonColor: '#2563EB' });
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire({ icon: 'error', title: 'Gagal Mengajukan', text: 'Terjadi gangguan koneksi.', confirmButtonColor: '#2563EB' });
+            } finally {
+                if (confirmBtn) {
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = 'Ajukan ke Review AI';
+                }
+            }
+        };
+
+        document.getElementById('publish-modal')?.addEventListener('click', function(e) {
+            if (e.target === this) closePublishModal();
+        });
+
+    } // end initSummarizerPage
+
     initSummarizerPage();
 
-    // Re-run after every SPA navigation (SPA replaces DOM content)
     document.addEventListener('robomath:spa-loaded', function() {
         if (document.getElementById('summarizer-form')) {
             initSummarizerPage();

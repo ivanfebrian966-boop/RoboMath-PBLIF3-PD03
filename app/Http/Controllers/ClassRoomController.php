@@ -47,13 +47,14 @@ class ClassRoomController extends Controller
             $code = strtoupper(Str::random(6));
         }
 
-        ClassRoom::create([
+        $classRoom = ClassRoom::create([
             'teacher_id' => Auth::id(),
             'name' => $request->name,
             'code' => $code,
             'kelas_level' => $request->kelas_level,
-            'topic_ids' => $request->topic_ids ?? [],
         ]);
+
+        $classRoom->topics()->sync($request->topic_ids ?? []);
 
         return redirect()->route('guru.classes.index')
             ->with('success', "Kelas \"{$request->name}\" berhasil dibuat! Kode kelas: {$code} 🎉");
@@ -64,8 +65,8 @@ class ClassRoomController extends Controller
         if ($classRoom->teacher_id !== Auth::id()) {
             abort(403);
         }
-        $classRoom->load(['students' => fn ($q) => $q->orderBy('name'), 'teacher']);
-        $topics = Topic::whereIn('id', $classRoom->topic_ids ?? [])->get();
+        $classRoom->load(['students' => fn ($q) => $q->orderBy('name'), 'teacher', 'topics']);
+        $topics = $classRoom->topics;
 
         return view('teacher.classes.show', compact('classRoom', 'topics'));
     }

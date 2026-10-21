@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['teacher_id', 'school_id', 'name', 'code', 'kelas_level', 'topic_ids', 'is_active', 'nilai_lulus'])]
+#[Fillable(['teacher_id', 'school_id', 'name', 'code', 'kelas_level', 'is_active', 'nilai_lulus'])]
 class ClassRoom extends Model
 {
     use HasFactory;
@@ -20,7 +21,6 @@ class ClassRoom extends Model
     protected function casts(): array
     {
         return [
-            'topic_ids' => 'array',
             'kelas_level' => 'integer',
             'is_active' => 'boolean',
             'nilai_lulus' => 'float',
@@ -47,5 +47,24 @@ class ClassRoom extends Model
     public function tugas(): HasMany
     {
         return $this->hasMany(Tugas::class, 'class_room_id');
+    }
+
+    /**
+     * Topik yang diaktifkan guru untuk kelas ini (Bank Soal Global → Kelas)
+     */
+    public function topics(): BelongsToMany
+    {
+        return $this->belongsToMany(Topic::class, 'class_room_topic')
+            ->withTimestamps();
+    }
+
+    /**
+     * Ambil semua soal yang tersedia untuk kelas ini
+     * (soal dari topik yang dipilih guru)
+     */
+    public function availableQuizzes(): Builder
+    {
+        return Quiz::whereIn('topic_id', $this->topics()->pluck('topics.id'))
+            ->where('is_active', true);
     }
 }

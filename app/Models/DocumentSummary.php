@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DocumentSummary extends Model
 {
@@ -41,11 +43,27 @@ class DocumentSummary extends Model
     ];
 
     /**
-     * Get the user that owns the document summary.
+     * Admin yang mengunggah dokumen
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Topik-topik yang dihasilkan AI dari dokumen ini
+     */
+    public function topics(): HasMany
+    {
+        return $this->hasMany(Topic::class);
+    }
+
+    /**
+     * Soal-soal yang dihasilkan AI dari dokumen ini (Bank Soal Global)
+     */
+    public function quizzes(): HasMany
+    {
+        return $this->hasMany(Quiz::class);
     }
 
     /**
