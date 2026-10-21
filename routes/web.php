@@ -127,10 +127,14 @@ Route::middleware(['auth', RoleMiddleware::class.':admin'])->prefix('admin')->na
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
 
-    // Rekomendasi AI
+    // Rekomendasi & Review AI
     Route::get('/ai-recommendations', [AiRecommendationController::class, 'index'])->name('ai-recommendations.index');
     Route::post('/ai-recommendations/{aiRecommendation}/approve', [AiRecommendationController::class, 'approve'])->name('ai-recommendations.approve');
     Route::post('/ai-recommendations/{aiRecommendation}/reject', [AiRecommendationController::class, 'reject'])->name('ai-recommendations.reject');
+    Route::post('/ai-recommendations/quizzes/{quiz}/approve', [AiRecommendationController::class, 'approveQuiz'])->name('ai-recommendations.quizzes.approve');
+    Route::post('/ai-recommendations/quizzes/{quiz}/reject', [AiRecommendationController::class, 'rejectQuiz'])->name('ai-recommendations.quizzes.reject');
+    Route::post('/ai-recommendations/topics/{topic}/approve-all', [AiRecommendationController::class, 'approveTopicQuizzes'])->name('ai-recommendations.topics.approve-all');
+    Route::post('/ai-recommendations/topics/{topic}/reject-all', [AiRecommendationController::class, 'rejectTopicQuizzes'])->name('ai-recommendations.topics.reject-all');
 
     // Manajemen Pengguna
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');

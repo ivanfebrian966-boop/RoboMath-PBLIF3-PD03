@@ -336,5 +336,101 @@ MD;
         $this->assertEquals('essay', $quiz->type);
         $this->assertNull($quiz->options);
         $this->assertStringContainsString('Total siswa adalah 50 anak', $quiz->correct_answer);
+        $this->assertEquals('pending', $quiz->review_status);
+        $this->assertFalse($quiz->is_active);
+    }
+
+    public function test_admin_can_approve_and_reject_ai_quizzes_in_review_ai(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $topic = Topic::create([
+            'title' => 'Geometri Dasar',
+            'slug' => 'geometri-dasar',
+            'description' => 'Materi bangun datar',
+            'icon' => '📐',
+            'color' => '#3B82F6',
+            'kelas_level' => 3,
+            'order' => 1,
+            'category' => 'pola',
+            'is_active' => true,
+        ]);
+
+        $quiz = Quiz::create([
+            'topic_id' => $topic->id,
+            'type' => 'pilihan_ganda',
+            'question' => 'Berapa jumlah sisi pada segitiga sama sisi?',
+            'options' => ['A' => '2', 'B' => '3', 'C' => '4', 'D' => '5'],
+            'correct_answer' => 'B',
+            'explanation' => 'Segitiga memiliki 3 sisi.',
+            'difficulty' => 'mudah',
+            'points' => 10,
+            'is_active' => false,
+            'review_status' => 'pending',
+        ]);
+
+        // 1. Visit Review AI page
+        $resIndex = $this->actingAs($admin)->get(route('admin.ai-recommendations.index', ['tab' => 'quiz']));
+        $resIndex->assertStatus(200);
+        $resIndex->assertSee('Berapa jumlah sisi pada segitiga sama sisi?');
+
+        // 2. Approve Quiz
+        $resApprove = $this->actingAs($admin)->post(route('admin.ai-recommendations.quizzes.approve', $quiz));
+        $resApprove->assertSessionHas('success');
+        $quiz->refresh();
+        $this->assertEquals('approved', $quiz->review_status);
+        $this->assertTrue($quiz->is_active);
+        $this->assertEquals($admin->id, $quiz->reviewed_by);
+
+        // 3. Reject Quiz
+        $resReject = $this->actingAs($admin)->post(route('admin.ai-recommendations.quizzes.reject', $quiz), [
+            'admin_notes' => 'Perlu revisi redaksi soal.',
+        ]);
+        $resReject->assertSessionHas('success');
+        $quiz->refresh();
+        $this->assertEquals('rejected', $quiz->review_status);
+        $this->assertFalse($quiz->is_active);
+        $this->assertEquals('Perlu revisi redaksi soal.', $quiz->admin_notes);
+    }
+
+    public function test_admin_can_bulk_approve_topic_quizzes(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $topic = Topic::create([
+            'title' => 'Pengukuran Sudut',
+            'slug' => 'pengukuran-sudut',
+            'description' => 'Materi sudut',
+            'icon' => '📐',
+            'color' => '#10B981',
+            'kelas_level' => 4,
+            'order' => 1,
+            'category' => 'dekomposisi',
+            'is_active' => true,
+        ]);
+
+        Quiz::create([
+            'topic_id' => $topic->id,
+            'type' => 'essay',
+            'question' => 'Apa itu sudut siku-siku?',
+            'correct_answer' => 'Sudut yang berukuran 90 derajat.',
+            'is_active' => false,
+            'review_status' => 'pending',
+        ]);
+
+        Quiz::create([
+            'topic_id' => $topic->id,
+            'type' => 'essay',
+            'question' => 'Apa itu sudut lancip?',
+            'correct_answer' => 'Sudut yang berukuran kurang dari 90 derajat.',
+            'is_active' => false,
+            'review_status' => 'pending',
+        ]);
+
+        $this->assertEquals(2, Quiz::where('topic_id', $topic->id)->where('review_status', 'pending')->count());
+
+        $res = $this->actingAs($admin)->post(route('admin.ai-recommendations.topics.approve-all', $topic));
+        $res->assertSessionHas('success');
+
+        $this->assertEquals(0, Quiz::where('topic_id', $topic->id)->where('review_status', 'pending')->count());
+        $this->assertEquals(2, Quiz::where('topic_id', $topic->id)->where('review_status', 'approved')->where('is_active', true)->count());
     }
 }

@@ -266,12 +266,14 @@ class DocumentSummarizerController extends Controller
     {
         $request->validate([
             'topic_id' => ['required', 'exists:topics,id'],
+            'summary_id' => ['nullable', 'exists:document_summaries,id'],
             'markdown' => ['required', 'string', 'min:20'],
             'difficulty' => ['nullable', 'in:mudah,sedang,sulit'],
             'points' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
         $topic = Topic::findOrFail($request->topic_id);
+        $summaryId = $request->input('summary_id');
         $markdown = $request->input('markdown');
         $difficulty = $request->input('difficulty', 'sedang');
         $defaultPoints = (int) $request->input('points', 10);
@@ -295,6 +297,7 @@ class DocumentSummarizerController extends Controller
             Quiz::create([
                 'topic_id' => $topic->id,
                 'lesson_id' => null,
+                'document_summary_id' => $summaryId,
                 'type' => $q['type'] ?? (empty($q['options']) ? 'essay' : 'pilihan_ganda'),
                 'question' => $q['question'],
                 'options' => $q['options'] ?? null,
@@ -302,16 +305,24 @@ class DocumentSummarizerController extends Controller
                 'explanation' => $q['explanation'],
                 'difficulty' => $q['difficulty'],
                 'points' => $q['points'],
-                'is_active' => true,
+                'is_active' => false, // Belum aktif sebelum disetujui di Review AI
+                'review_status' => 'pending',
             ]);
             $created++;
         }
+
+        $reviewUrl = route('admin.ai-recommendations.index', [
+            'tab' => 'quiz',
+            'topic_id' => $topic->id,
+            'status' => 'pending',
+        ]);
 
         return response()->json([
             'success' => true,
             'count' => $created,
             'topic' => $topic->title,
-            'message' => "{$created} butir soal berhasil dikirim ke bank soal topik \"{$topic->title}\" dan langsung dapat dimainkan siswa!",
+            'review_url' => $reviewUrl,
+            'message' => "{$created} butir soal dari modul berhasil diajukan ke halaman Review AI untuk topik \"{$topic->title}\". Silakan tinjau dan setujui agar soal dapat dikirim ke siswa!",
         ]);
     }
 

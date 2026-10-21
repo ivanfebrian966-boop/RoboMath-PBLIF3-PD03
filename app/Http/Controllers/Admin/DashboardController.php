@@ -26,7 +26,7 @@ class DashboardController extends Controller
         $totalAttempts = QuizAttempt::count();
         $correctAttempts = QuizAttempt::where('is_correct', true)->count();
         $overallAccuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100) : 0;
-        $pendingAiRecommendations = AiRecommendation::where('status', 'pending')->count();
+        $pendingAiRecommendations = AiRecommendation::where('status', 'pending')->count() + Quiz::where('review_status', 'pending')->count();
         $inactiveUsers = User::where('is_active', false)->count();
 
         // 2. Statistik Pengguna

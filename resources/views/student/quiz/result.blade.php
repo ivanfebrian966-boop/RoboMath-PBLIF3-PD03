@@ -102,15 +102,15 @@
 
     <!-- Navigation Buttons -->
     <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-        <a href="{{ route('siswa.quiz') }}" class="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-sm rounded-2xl text-center transition">
-            &larr; Pilih Topik Lain
+        <a href="{{ route('siswa.quiz') }}" class="w-full sm:w-auto px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm rounded-2xl text-center shadow-md transition">
+            &larr; Kembali ke Latihan Soal
         </a>
         <div class="flex items-center gap-3 w-full sm:w-auto">
             <a href="{{ route('siswa.leaderboard') }}" class="flex-1 sm:flex-none px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-black text-sm rounded-2xl text-center shadow-md transition">
                 🏆 Lihat Peringkat
             </a>
-            <a href="{{ route('siswa.quiz.play', $topic) }}" class="flex-1 sm:flex-none px-6 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-sm rounded-2xl text-center shadow-md transition">
-                🔄 Coba Lagi
+            <a href="{{ route('siswa.dashboard') }}" class="flex-1 sm:flex-none px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-sm rounded-2xl text-center transition">
+                Dashboard 🏠
             </a>
         </div>
     </div>

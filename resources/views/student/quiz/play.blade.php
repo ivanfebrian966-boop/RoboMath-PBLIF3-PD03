@@ -194,13 +194,6 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <button type="button" 
-                        x-show="isAnswered" 
-                        @click="retryCurrentQuiz()" 
-                        class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-black px-4 py-3 rounded-2xl text-xs sm:text-sm transition-all">
-                    Coba Ulang 🔄
-                </button>
-
                 <button x-show="isAnswered && currentIndex < quizzes.length - 1" 
                         @click="nextQuestion()" 
                         class="bg-indigo-600 hover:bg-indigo-700 text-white font-black px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all text-xs sm:text-sm flex items-center gap-2">

@@ -360,9 +360,9 @@
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="openPublishModal()"
                             id="btn-publish-to-students"
-                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-md shadow-emerald-500/20 transition-all duration-200">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                        <span>Kirim ke Siswa 🚀</span>
+                            class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md shadow-indigo-500/20 transition-all duration-200">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
+                        <span>Ajukan ke Review AI 🤖</span>
                     </button>
                     <button type="button" onclick="copySummaryText()"
                             class="p-2.5 rounded-xl text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all cursor-pointer" title="Salin Semua Soal">
@@ -648,19 +648,25 @@
 <!-- MODAL: PUBLISH SOAL KE SISWA -->
 <!-- ============================================================ -->
 <div id="publish-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);">
-    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 space-y-6 relative border-2 border-emerald-200">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 space-y-6 relative border-2 border-indigo-200">
         <!-- Modal Header -->
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-emerald-100 flex items-center justify-center text-2xl flex-shrink-0">
-                    🚀
+                <div class="w-11 h-11 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl flex-shrink-0">
+                    🤖
                 </div>
                 <div>
-                    <h3 class="text-lg font-black text-slate-900">Kirim Soal ke Siswa</h3>
-                    <p class="text-xs text-slate-500 font-medium">Pilih topik tujuan dan konfigurasi soal</p>
+                    <h3 class="text-lg font-black text-slate-900">Ajukan Soal ke Review AI</h3>
+                    <p class="text-xs text-slate-500 font-medium">Tinjau & verifikasi soal sebelum diterbitkan ke siswa</p>
                 </div>
             </div>
             <button type="button" onclick="closePublishModal()" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-black text-lg transition-all">&times;</button>
+        </div>
+
+        <!-- Info Card: Alur Verifikasi -->
+        <div class="p-3.5 rounded-2xl bg-indigo-50/80 border border-indigo-200/80 text-xs font-semibold text-indigo-900 flex items-start gap-2.5">
+            <span class="text-base flex-shrink-0 mt-0.5">💡</span>
+            <span>Soal akan disimpan dengan status <strong>"Menunggu Tinjauan"</strong> di halaman Review AI. Soal baru aktif dan dapat dikerjakan siswa setelah Anda menyetujuinya.</span>
         </div>
 
         <!-- Preview: jumlah soal yang terdeteksi -->
@@ -674,7 +680,7 @@
             <!-- Pilih Topik -->
             <div>
                 <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase tracking-wider">Topik Tujuan <span class="text-rose-500">*</span></label>
-                <select id="publish-topic-id" class="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 font-bold text-slate-800 text-sm outline-none transition-all">
+                <select id="publish-topic-id" class="w-full px-4 py-2.5 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 font-bold text-slate-800 text-sm outline-none transition-all">
                     <option value="">-- Pilih Topik --</option>
                     @foreach(\App\Models\Topic::where('is_active', true)->orderBy('kelas_level')->orderBy('order')->get() as $t)
                         <option value="{{ $t->id }}">{{ $t->icon }} {{ $t->title }} (Kelas {{ $t->kelas_level }})</option>
@@ -719,8 +725,8 @@
                 <div class="flex items-center gap-3">
                     <input type="range" id="publish-points" min="5" max="50" step="5" value="10"
                            oninput="document.getElementById('publish-points-label').textContent = this.value"
-                           class="flex-1 accent-emerald-500">
-                    <span class="w-14 text-center font-black text-emerald-700 text-sm bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-xl">
+                           class="flex-1 accent-indigo-600">
+                    <span class="w-14 text-center font-black text-indigo-700 text-sm bg-indigo-50 border border-indigo-200 px-2 py-1 rounded-xl">
                         <span id="publish-points-label">10</span> Poin
                     </span>
                 </div>
@@ -733,9 +739,9 @@
                 Batal
             </button>
             <button type="button" onclick="submitPublishToStudents()" id="btn-publish-confirm"
-                    class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-black text-sm shadow-md transition-all">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                <span>Kirim ke Siswa!</span>
+                    class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-sm shadow-md transition-all">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
+                <span>Ajukan ke Review AI</span>
             </button>
         </div>
     </div>
@@ -1631,14 +1637,14 @@
         const selectedType = document.querySelector('input[name="publish-type"]:checked')?.value || 'essay';
 
         if (!topicId) {
-            Swal.fire({ icon: 'warning', title: 'Pilih Topik', text: 'Silakan pilih topik tujuan untuk soal-soal ini.', confirmButtonColor: '#059669' });
+            Swal.fire({ icon: 'warning', title: 'Pilih Topik', text: 'Silakan pilih topik tujuan untuk soal-soal ini.', confirmButtonColor: '#4F46E5' });
             return;
         }
 
         const confirmBtn = document.getElementById('btn-publish-confirm');
         if (confirmBtn) {
             confirmBtn.disabled = true;
-            confirmBtn.innerHTML = '<span class="animate-spin mr-2">⏳</span> Mengirim...';
+            confirmBtn.innerHTML = '<span class="animate-spin mr-2">⏳</span> Mengajukan ke Review AI...';
         }
 
         try {
@@ -1651,6 +1657,7 @@
                 },
                 body: JSON.stringify({
                     topic_id: topicId,
+                    summary_id: state.activeSummaryId,
                     markdown: state.activeSummaryMarkdown,
                     difficulty: difficulty,
                     points: parseInt(points),
@@ -1666,28 +1673,28 @@
             if (data.success) {
                 Swal.fire({
                     icon: 'success',
-                    title: `🎉 ${data.count} Soal Terkirim!`,
-                    html: `<div style="font-size:14px;">${data.message}<br><br><strong>Siswa sudah bisa mengerjakan soal baru ini sekarang.</strong></div>`,
-                    confirmButtonColor: '#059669',
-                    confirmButtonText: 'Lihat Bank Soal →',
+                    title: `🎉 ${data.count} Soal Berhasil Diajukan!`,
+                    html: `<div style="font-size:14px; line-height: 1.6;">${data.message}<br><br><span class="text-slate-500 font-normal">Soal tersimpan dengan status <strong>"Menunggu Tinjauan"</strong> di halaman Review AI. Buka halaman Review AI untuk memeriksa dan menyetujui soal agar dapat dikerjakan siswa.</span></div>`,
+                    confirmButtonColor: '#4F46E5',
+                    confirmButtonText: 'Buka Halaman Review AI →',
                     showCancelButton: true,
-                    cancelButtonText: 'Tutup',
+                    cancelButtonText: 'Tetap di Sini',
                     cancelButtonColor: '#94a3b8',
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = "{{ route('admin.quizzes.index') }}";
+                        window.location.href = data.review_url || "{{ route('admin.ai-recommendations.index') }}";
                     }
                 });
             } else {
-                Swal.fire({ icon: 'error', title: 'Gagal Mengirim', text: data.message || 'Terjadi kesalahan.', confirmButtonColor: '#059669' });
+                Swal.fire({ icon: 'error', title: 'Gagal Mengajukan', text: data.message || 'Terjadi kesalahan.', confirmButtonColor: '#4F46E5' });
             }
         } catch (err) {
             console.error(err);
-            Swal.fire({ icon: 'error', title: 'Gagal Mengirim', text: 'Terjadi gangguan koneksi.', confirmButtonColor: '#059669' });
+            Swal.fire({ icon: 'error', title: 'Gagal Mengajukan', text: 'Terjadi gangguan koneksi.', confirmButtonColor: '#4F46E5' });
         } finally {
             if (confirmBtn) {
                 confirmBtn.disabled = false;
-                confirmBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg><span>Kirim ke Siswa!</span>';
+                confirmBtn.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg><span>Ajukan ke Review AI</span>';
             }
         }
     };

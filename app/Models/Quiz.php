@@ -7,7 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['lesson_id', 'topic_id', 'type', 'question', 'options', 'correct_answer', 'explanation', 'difficulty', 'points', 'is_active'])]
+#[Fillable([
+    'lesson_id',
+    'topic_id',
+    'document_summary_id',
+    'type',
+    'question',
+    'options',
+    'correct_answer',
+    'explanation',
+    'difficulty',
+    'points',
+    'is_active',
+    'review_status',
+    'admin_notes',
+    'reviewed_by',
+    'reviewed_at',
+])]
 class Quiz extends Model
 {
     protected function casts(): array
@@ -16,6 +32,7 @@ class Quiz extends Model
             'options' => 'array',
             'points' => 'integer',
             'is_active' => 'boolean',
+            'reviewed_at' => 'datetime',
         ];
     }
 
@@ -27,6 +44,16 @@ class Quiz extends Model
     public function topic(): BelongsTo
     {
         return $this->belongsTo(Topic::class);
+    }
+
+    public function documentSummary(): BelongsTo
+    {
+        return $this->belongsTo(DocumentSummary::class);
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     public function attempts(): HasMany

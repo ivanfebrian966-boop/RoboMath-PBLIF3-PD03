@@ -157,7 +157,9 @@
                                 </svg>
                             </span>
                             <span>Review AI</span>
-                            @php $pendingCount = \App\Models\AiRecommendation::where('status', 'pending')->count(); @endphp
+                            @php
+                                $pendingCount = \App\Models\Quiz::where('review_status', 'pending')->count() + \App\Models\AiRecommendation::where('status', 'pending')->count();
+                            @endphp
                             @if($pendingCount > 0 && !$isActive)
                                 <span class="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-rose-500 text-white">{{ $pendingCount }}</span>
                             @endif
