@@ -6,6 +6,7 @@ use App\Models\AnggotaKelas;
 use App\Models\ClassRoom;
 use App\Models\Dokumen;
 use App\Models\Kelas;
+use App\Models\Lesson;
 use App\Models\Misi;
 use App\Models\MisiPengguna;
 use App\Models\Pencapaian;
@@ -52,6 +53,23 @@ class BusinessWorkflowTest extends TestCase
         foreach ($models as $model => $table) {
             $this->assertSame($table, (new $model)->getTable());
         }
+    }
+
+    public function test_database_seeder_populates_demo_data_without_duplicating_quizzes(): void
+    {
+        $this->seed();
+        $quizCount = Soal::count();
+
+        $this->seed();
+
+        $this->assertSame(5, Topik::count());
+        $this->assertSame(6, Lesson::count());
+        $this->assertSame(8, Soal::count());
+        $this->assertSame($quizCount, Soal::count());
+        $this->assertSame(5, Pencapaian::count());
+        $this->assertSame(3, Misi::count());
+        $this->assertSame(1, Kelas::where('code', 'MATH101')->count());
+        $this->assertSame(3, AnggotaKelas::count());
     }
 
     public function test_teacher_can_only_assign_approved_topics_at_the_class_grade(): void
@@ -130,6 +148,27 @@ class BusinessWorkflowTest extends TestCase
 
         $this->assertSame($mission->id, $userMission->misi->id);
         $this->assertTrue($mission->penggunaMisi()->whereKey($userMission->id)->exists());
+    }
+
+    public function test_user_achievements_use_the_named_pivot_model_and_table(): void
+    {
+        $student = User::factory()->create(['role' => 'siswa']);
+        $achievement = Pencapaian::create([
+            'name' => 'Langkah Pertama',
+            'slug' => 'langkah-pertama',
+            'description' => 'Menyelesaikan latihan pertama.',
+            'icon' => 'star',
+            'requirement_type' => 'score',
+            'requirement_value' => 10,
+        ]);
+
+        $student->badges()->attach($achievement->id, ['earned_at' => now()]);
+
+        $this->assertTrue($student->badges()->whereKey($achievement->id)->exists());
+        $this->assertDatabaseHas('pencapaian_pengguna', [
+            'user_id' => $student->id,
+            'badge_id' => $achievement->id,
+        ]);
     }
 
     public function test_teacher_dashboard_only_shows_sessions_from_students_in_their_classes(): void

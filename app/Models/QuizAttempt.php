@@ -22,7 +22,7 @@ class QuizAttempt extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(Pengguna::class);
+        return $this->belongsTo(Pengguna::class, 'user_id');
     }
 
     public function quiz(): BelongsTo

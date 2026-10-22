@@ -42,7 +42,7 @@ class Topic extends Model
 
     public function quizzes(): HasMany
     {
-        return $this->hasMany(Soal::class);
+        return $this->hasMany(Soal::class, 'topic_id');
     }
 
     /**
