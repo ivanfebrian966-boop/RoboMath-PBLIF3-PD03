@@ -33,6 +33,45 @@
         </div>
     </div>
 
+    @if($pendingTopics->isNotEmpty())
+    <section class="space-y-3">
+        <div class="flex items-center justify-between">
+            <h2 class="font-black text-slate-800">Topik dari dokumen yang menunggu persetujuan</h2>
+            <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-900">{{ $pendingTopics->count() }} topik</span>
+        </div>
+        <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            @foreach($pendingTopics as $topic)
+            <article class="flex flex-col justify-between gap-4 rounded-2xl border-2 border-amber-200 bg-white p-4 sm:flex-row sm:items-center">
+                <div>
+                    <h3 class="font-black text-slate-900">{{ $topic->title }}</h3>
+                    <p class="mt-1 text-xs font-semibold text-slate-500">
+                        Kelas {{ $topic->kelas_level }} · {{ $topic->category_label }}
+                        @if($topic->documentSummary)
+                            · Sumber: {{ $topic->documentSummary->original_filename }}
+                        @endif
+                    </p>
+                    <p class="mt-2 text-sm text-slate-600">{{ $topic->description }}</p>
+                </div>
+                <div class="flex shrink-0 gap-2">
+                    <form action="{{ route('admin.ai-recommendations.topics.approve', $topic) }}" method="POST">
+                        @csrf
+                        <button class="rounded-full bg-emerald-700 px-4 py-2 text-xs font-black text-white hover:bg-emerald-800">
+                            Setujui topik
+                        </button>
+                    </form>
+                    <form action="{{ route('admin.ai-recommendations.topics.reject', $topic) }}" method="POST">
+                        @csrf
+                        <button class="rounded-full border border-rose-300 bg-rose-50 px-4 py-2 text-xs font-black text-rose-700 hover:bg-rose-100">
+                            Tolak
+                        </button>
+                    </form>
+                </div>
+            </article>
+            @endforeach
+        </div>
+    </section>
+    @endif
+
     <!-- Navigasi Tab Utama -->
     <div class="flex flex-wrap items-center gap-2">
         <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => $statusFilter, 'topic_id' => $topicFilter]) }}"

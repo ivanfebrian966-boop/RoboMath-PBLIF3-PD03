@@ -14,6 +14,31 @@ class DocumentSummarizerService
     public function __construct(protected AIManager $aiManager) {}
 
     /**
+     * @return list<string>
+     */
+    public function chunkText(string $text, int $maxCharacters = 3000): array
+    {
+        $words = preg_split('/\s+/u', trim($text), -1, PREG_SPLIT_NO_EMPTY);
+        $chunks = [];
+        $chunk = '';
+
+        foreach ($words ?: [] as $word) {
+            if ($chunk !== '' && mb_strlen($chunk) + mb_strlen($word) + 1 > $maxCharacters) {
+                $chunks[] = $chunk;
+                $chunk = '';
+            }
+
+            $chunk = $chunk === '' ? $word : $chunk.' '.$word;
+        }
+
+        if ($chunk !== '') {
+            $chunks[] = $chunk;
+        }
+
+        return $chunks;
+    }
+
+    /**
      * Extract text, metadata, and properties from an uploaded file.
      *
      * @return array{

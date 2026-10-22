@@ -243,7 +243,9 @@
         return {
             quizzes: @json($quizzes),
             quizStatuses: @json($quizStatuses),
+            sessionId: @json($session->id),
             currentIndex: {{ $startIndex ?? 0 }},
+            questionStartedAt: Date.now(),
             selectedKey: null,
             essayInput: '',
             isAnswered: false,
@@ -283,6 +285,7 @@
             syncCurrentState() {
                 const q = this.currentQuiz;
                 if (!q || !q.id) return;
+                this.questionStartedAt = Date.now();
 
                 if (this.submittedAnswers[q.id]) {
                     this.essayInput = this.submittedAnswers[q.id];
@@ -331,7 +334,9 @@
                         },
                         body: JSON.stringify({
                             quiz_id: this.currentQuiz.id,
-                            answer: key
+                            answer: key,
+                            session_id: this.sessionId,
+                            time_spent: Math.floor((Date.now() - this.questionStartedAt) / 1000)
                         })
                     });
                     const data = await res.json();
@@ -394,7 +399,9 @@
                         },
                         body: JSON.stringify({
                             quiz_id: this.currentQuiz.id,
-                            answer: answerText
+                            answer: answerText,
+                            session_id: this.sessionId,
+                            time_spent: Math.floor((Date.now() - this.questionStartedAt) / 1000)
                         })
                     });
                     const data = await res.json();

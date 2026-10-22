@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AiRecommendation;
 use App\Models\Quiz;
 use App\Models\Topic;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,9 +18,14 @@ class AiRecommendationController extends Controller
         $statusFilter = $request->query('status', 'pending');
         $topicFilter = $request->query('topic_id');
 
-        $topics = Topic::where('is_active', true)
+        $topics = Topic::query()
             ->orderBy('kelas_level')
             ->orderBy('order')
+            ->get();
+        $pendingTopics = Topic::with('documentSummary')
+            ->where('review_status', 'pending')
+            ->latest()
+            ->take(10)
             ->get();
 
         // Query Soal AI dari Modul / Kelola Materi
@@ -53,6 +59,7 @@ class AiRecommendationController extends Controller
             'quizzes',
             'recommendations',
             'topics',
+            'pendingTopics',
             'activeTab',
             'statusFilter',
             'topicFilter',
@@ -68,6 +75,12 @@ class AiRecommendationController extends Controller
      */
     public function approveQuiz(Quiz $quiz, Request $request)
     {
+        if ($quiz->topic->review_status !== 'approved' || ! $quiz->topic->is_active) {
+            return back()->withErrors([
+                'topic' => 'Setujui topik terlebih dahulu sebelum menerbitkan soal.',
+            ]);
+        }
+
         $request->validate([
             'admin_notes' => ['nullable', 'string', 'max:500'],
         ]);
@@ -110,6 +123,12 @@ class AiRecommendationController extends Controller
      */
     public function approveTopicQuizzes(Topic $topic, Request $request)
     {
+        if ($topic->review_status !== 'approved' || ! $topic->is_active) {
+            return back()->withErrors([
+                'topic' => 'Setujui topik terlebih dahulu sebelum menerbitkan soal.',
+            ]);
+        }
+
         $count = Quiz::where('topic_id', $topic->id)
             ->where('review_status', 'pending')
             ->update([
@@ -138,6 +157,40 @@ class AiRecommendationController extends Controller
             ]);
 
         return back()->with('success', "Seluruh ({$count}) butir soal pending pada topik \"{$topic->title}\" telah ditolak. ❌");
+    }
+
+    public function approveTopic(Topic $topic): RedirectResponse
+    {
+        $topic->update([
+            'is_active' => true,
+            'review_status' => 'approved',
+            'reviewed_by' => Auth::id(),
+            'reviewed_at' => now(),
+        ]);
+
+        return back()->with('success', "Topik \"{$topic->title}\" berhasil disetujui.");
+    }
+
+    public function rejectTopic(Topic $topic): RedirectResponse
+    {
+        $topic->update([
+            'is_active' => false,
+            'review_status' => 'rejected',
+            'reviewed_by' => Auth::id(),
+            'reviewed_at' => now(),
+        ]);
+
+        Quiz::where('topic_id', $topic->id)
+            ->where('review_status', 'pending')
+            ->update([
+                'is_active' => false,
+                'review_status' => 'rejected',
+                'reviewed_by' => Auth::id(),
+                'reviewed_at' => now(),
+                'admin_notes' => 'Topik sumber ditolak oleh admin.',
+            ]);
+
+        return back()->with('success', "Topik \"{$topic->title}\" dan soal pending-nya ditolak.");
     }
 
     /**

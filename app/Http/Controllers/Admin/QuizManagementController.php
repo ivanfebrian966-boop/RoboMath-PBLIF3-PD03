@@ -46,7 +46,7 @@ class QuizManagementController extends Controller
         $isEssay = in_array($request->input('type'), ['essay', 'uraian']);
 
         $rules = [
-            'topic_id' => ['required', 'exists:topics,id'],
+            'topic_id' => ['required', 'exists:topik,id'],
             'lesson_id' => ['nullable', 'exists:lessons,id'],
             'type' => ['required', 'in:pilihan_ganda,drag_drop,cerita_logika,essay'],
             'question' => ['required', 'string'],
@@ -89,7 +89,7 @@ class QuizManagementController extends Controller
         $isEssay = in_array($request->input('type'), ['essay', 'uraian']);
 
         $rules = [
-            'topic_id' => ['required', 'exists:topics,id'],
+            'topic_id' => ['required', 'exists:topik,id'],
             'lesson_id' => ['nullable', 'exists:lessons,id'],
             'type' => ['required', 'in:pilihan_ganda,drag_drop,cerita_logika,essay'],
             'question' => ['required', 'string'],
@@ -133,7 +133,7 @@ class QuizManagementController extends Controller
     public function generateAi(Request $request, AIManager $aiManager): JsonResponse
     {
         $validated = $request->validate([
-            'topic_id' => ['required', 'exists:topics,id'],
+            'topic_id' => ['required', 'exists:topik,id'],
             'type' => ['required', 'in:essay,pilihan_ganda,campuran'],
             'count' => ['required', 'integer', 'min:1', 'max:10'],
             'difficulty' => ['required', 'in:mudah,sedang,sulit'],
@@ -199,7 +199,8 @@ PROMPT;
                             'explanation' => $item['explanation'] ?? '',
                             'difficulty' => in_array($item['difficulty'] ?? '', ['mudah', 'sedang', 'sulit']) ? $item['difficulty'] : $difficulty,
                             'points' => (int) ($item['points'] ?? 10),
-                            'is_active' => true,
+                            'is_active' => false,
+                            'review_status' => 'pending',
                         ];
                     }
                 }
@@ -230,7 +231,7 @@ PROMPT;
             'count' => count($questions),
             'questions' => $questions,
             'message' => $request->boolean('auto_save', false)
-                ? "Berhasil men-generate {$savedCount} butir soal dan langsung disimpan ke topik \"{$topic->title}\"! 🎉"
+                ? "{$savedCount} soal berhasil disimpan dengan status menunggu tinjauan admin pada topik \"{$topic->title}\"."
                 : 'Berhasil men-generate '.count($questions)." butir soal untuk topik \"{$topic->title}\". Silakan tinjau sebelum disimpan.",
         ]);
     }
@@ -241,7 +242,7 @@ PROMPT;
     public function saveBatch(Request $request): JsonResponse
     {
         $request->validate([
-            'topic_id' => ['required', 'exists:topics,id'],
+            'topic_id' => ['required', 'exists:topik,id'],
             'questions' => ['required', 'array', 'min:1'],
             'questions.*.question' => ['required', 'string'],
             'questions.*.type' => ['required', 'in:essay,pilihan_ganda,drag_drop,cerita_logika'],
@@ -263,7 +264,8 @@ PROMPT;
                 'explanation' => $item['explanation'] ?? '',
                 'difficulty' => in_array($item['difficulty'] ?? '', ['mudah', 'sedang', 'sulit']) ? $item['difficulty'] : 'sedang',
                 'points' => (int) ($item['points'] ?? 10),
-                'is_active' => true,
+                'is_active' => false,
+                'review_status' => 'pending',
             ]);
             $created++;
         }

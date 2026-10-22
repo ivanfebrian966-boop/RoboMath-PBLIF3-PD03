@@ -6,6 +6,7 @@ use App\Models\DocumentSummary;
 use App\Models\Quiz;
 use App\Models\Topic;
 use App\Models\User;
+use App\Services\DocumentSummarizerService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
@@ -42,7 +43,7 @@ class DocumentSummarizerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Ringkas Dokumen Jadi Soal AI');
-        $response->assertSee('Mulai Buat Soal dari Dokumen dengan AI');
+        $response->assertSee('Unggah modul, silabus, lembar kerja');
     }
 
     public function test_admin_can_summarize_direct_text_content(): void
@@ -63,10 +64,133 @@ class DocumentSummarizerTest extends TestCase
             'title' => 'Konsep Dasar Pecahan',
         ]);
 
-        $this->assertDatabaseHas('document_summaries', [
+        $this->assertDatabaseHas('dokumen', [
             'title' => 'Konsep Dasar Pecahan',
             'user_id' => $admin->id,
             'summary_style' => 'kuis_latihan',
+        ]);
+    }
+
+    public function test_document_processing_creates_chunks_and_pending_review_content(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
+            'direct_text' => 'Pecahan merupakan bagian dari keseluruhan. Pembilang menunjukkan jumlah bagian yang diambil. Penyebut menunjukkan jumlah seluruh bagian yang sama besar. Contohnya satu per dua.',
+            'custom_title' => 'Konsep Pecahan',
+            'kelas_level' => 4,
+            'topic_category' => 'pola',
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('status', 'selesai');
+        $response->assertJsonPath('topic_title', 'Konsep Pecahan');
+        $quizCount = $response->json('quiz_count');
+        $this->assertGreaterThan(0, $quizCount);
+
+        $summary = DocumentSummary::firstOrFail();
+        $topic = $summary->topics()->firstOrFail();
+
+        $this->assertSame('selesai', $summary->status);
+        $this->assertGreaterThan(0, $summary->chunks()->count());
+        $this->assertSame('pending', $topic->review_status);
+        $this->assertFalse($topic->is_active);
+        $this->assertSame(4, $topic->kelas_level);
+        $this->assertSame($quizCount, $topic->quizzes()->count());
+        $this->assertSame($quizCount, $topic->quizzes()->where('review_status', 'pending')->count());
+        $this->assertSame(0, $topic->quizzes()->where('is_active', true)->count());
+    }
+
+    public function test_document_with_insufficient_text_is_recorded_as_failed(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
+            'direct_text' => 'Too short',
+            'custom_title' => 'Dokumen Tidak Lengkap',
+        ]);
+
+        $response->assertUnprocessable();
+        $this->assertDatabaseHas('dokumen', [
+            'user_id' => $admin->id,
+            'title' => 'Dokumen Tidak Lengkap',
+            'status' => 'gagal',
+            'error_message' => 'Dokumen tidak memuat teks yang cukup untuk dianalisis oleh AI.',
+        ]);
+    }
+
+    public function test_ai_processing_failure_marks_document_as_failed(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $this->mock(DocumentSummarizerService::class)
+            ->shouldReceive('summarize')
+            ->once()
+            ->andThrow(new \RuntimeException('AI provider unavailable.'));
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
+            'direct_text' => 'Pecahan merupakan bagian dari keseluruhan. Pembilang menunjukkan jumlah bagian yang diambil sedangkan penyebut menunjukkan jumlah seluruh bagian yang sama besar.',
+            'custom_title' => 'Materi Pecahan',
+        ]);
+
+        $response->assertServerError();
+        $this->assertDatabaseHas('dokumen', [
+            'user_id' => $admin->id,
+            'title' => 'Materi Pecahan',
+            'status' => 'gagal',
+            'error_message' => 'Gagal memproses dokumen.',
+        ]);
+    }
+
+    public function test_admin_must_approve_topic_before_ai_quizzes_can_be_published(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $topic = Topic::create([
+            'title' => 'Topik Tinjauan',
+            'slug' => 'topik-tinjauan',
+            'description' => 'Topik untuk menguji proses persetujuan.',
+            'kelas_level' => 2,
+            'order' => 1,
+            'category' => 'pola',
+            'is_active' => false,
+            'review_status' => 'pending',
+        ]);
+        $quiz = Quiz::create([
+            'topic_id' => $topic->id,
+            'type' => 'pilihan_ganda',
+            'question' => 'Berapakah 2 + 2?',
+            'options' => ['A' => '3', 'B' => '4'],
+            'correct_answer' => 'B',
+            'difficulty' => 'mudah',
+            'points' => 10,
+            'is_active' => false,
+            'review_status' => 'pending',
+        ]);
+
+        $blockedResponse = $this->actingAs($admin)
+            ->post(route('admin.ai-recommendations.quizzes.approve', $quiz));
+
+        $blockedResponse->assertSessionHasErrors('topic');
+        $this->assertDatabaseHas('soal', [
+            'id' => $quiz->id,
+            'review_status' => 'pending',
+            'is_active' => false,
+        ]);
+
+        $this->post(route('admin.ai-recommendations.topics.approve', $topic))
+            ->assertRedirect();
+        $this->post(route('admin.ai-recommendations.quizzes.approve', $quiz))
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('topik', [
+            'id' => $topic->id,
+            'review_status' => 'approved',
+            'is_active' => true,
+            'reviewed_by' => $admin->id,
+        ]);
+        $this->assertDatabaseHas('soal', [
+            'id' => $quiz->id,
+            'review_status' => 'approved',
+            'is_active' => true,
         ]);
     }
 
@@ -89,7 +213,7 @@ class DocumentSummarizerTest extends TestCase
             'title' => 'Soal HOTS Pecahan',
         ]);
 
-        $this->assertDatabaseHas('document_summaries', [
+        $this->assertDatabaseHas('dokumen', [
             'title' => 'Soal HOTS Pecahan',
             'user_id' => $admin->id,
         ]);
@@ -114,7 +238,7 @@ class DocumentSummarizerTest extends TestCase
             'title' => 'Soal Uraian Pecahan',
         ]);
 
-        $this->assertDatabaseHas('document_summaries', [
+        $this->assertDatabaseHas('dokumen', [
             'title' => 'Soal Uraian Pecahan',
             'user_id' => $admin->id,
         ]);
@@ -162,7 +286,7 @@ class DocumentSummarizerTest extends TestCase
             'success' => true,
         ]);
 
-        $this->assertDatabaseHas('document_summaries', [
+        $this->assertDatabaseHas('dokumen', [
             'original_filename' => 'matematika_dasar.txt',
             'user_id' => $admin->id,
             'file_type' => 'txt',
@@ -198,7 +322,7 @@ class DocumentSummarizerTest extends TestCase
         $deleteResponse = $this->actingAs($admin)->delete(route('admin.document-summarizer.destroy', $summary->id));
         $deleteResponse->assertRedirect();
 
-        $this->assertDatabaseMissing('document_summaries', [
+        $this->assertDatabaseMissing('dokumen', [
             'id' => $summary->id,
         ]);
     }
@@ -245,7 +369,7 @@ MD;
             'count' => 1,
         ]);
 
-        $this->assertDatabaseHas('quizzes', [
+        $this->assertDatabaseHas('soal', [
             'topic_id' => $topic->id,
             'correct_answer' => 'C',
         ]);

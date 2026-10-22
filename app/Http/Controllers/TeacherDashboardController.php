@@ -4,21 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Progress;
 use App\Models\QuizAttempt;
+use App\Models\SesiBelajar;
 use App\Models\Topic;
 use App\Models\User;
 use App\Services\SimpleXlsxExporter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TeacherDashboardController extends Controller
 {
-    public function dashboard()
+    public function dashboard(): View
     {
         $user = Auth::user();
 
-        // Get students in teacher's classes
-        $students = User::where('role', 'siswa')->orderBy('kelas')->orderBy('name')->get();
+        $studentsQuery = User::where('role', 'siswa');
+        if (! $user->isAdmin()) {
+            $studentsQuery->whereHas('classRooms', fn ($query) => $query->where('kelas.teacher_id', $user->id));
+        }
+
+        $students = $studentsQuery->orderBy('kelas')->orderBy('name')->get();
+        $studentIds = $students->modelKeys();
         $totalStudents = $students->count();
 
         // Overall stats
@@ -45,18 +52,36 @@ class TeacherDashboardController extends Controller
         $topStudents = $students->sortByDesc('total_score')->take(10)->values();
 
         // Recent student activities
-        $recentActivities = QuizAttempt::with(['user', 'quiz.topic'])->latest()->take(6)->get();
+        $recentActivities = QuizAttempt::with(['user', 'quiz.topic'])
+            ->whereIn('user_id', $studentIds)
+            ->latest()
+            ->take(6)
+            ->get();
+        $recentSessions = SesiBelajar::with(['user', 'topic'])
+            ->whereIn('user_id', $studentIds)
+            ->latest('dimulai_pada')
+            ->take(6)
+            ->get();
 
         return view('teacher.dashboard', compact(
             'user', 'totalStudents', 'avgScore', 'overallAccuracy',
-            'classStats', 'topStudents', 'students', 'recentActivities'
+            'classStats', 'topStudents', 'students', 'recentActivities', 'recentSessions'
         ));
     }
 
-    public function studentDetail(User $student)
+    public function studentDetail(User $student): View
     {
+        $user = Auth::user();
+        if ($user->isGuru() && ! $student->classRooms()->where('kelas.teacher_id', $user->id)->exists()) {
+            abort(404);
+        }
+
         $topics = Topic::where('kelas_level', $student->kelas)
             ->where('is_active', true)
+            ->where('review_status', 'approved')
+            ->when($user->isGuru(), fn ($query) => $query->whereHas('classRooms', fn ($classRooms) => $classRooms
+                ->where('kelas.teacher_id', $user->id)
+                ->whereHas('students', fn ($students) => $students->whereKey($student->id))))
             ->get()
             ->map(function ($topic) use ($student) {
                 $attempts = QuizAttempt::where('user_id', $student->id)
@@ -83,10 +108,15 @@ class TeacherDashboardController extends Controller
             ->latest()
             ->take(10)
             ->get();
+        $recentSessions = SesiBelajar::where('user_id', $student->id)
+            ->with('topic')
+            ->latest('dimulai_pada')
+            ->take(10)
+            ->get();
 
         $badges = $student->badges;
 
-        return view('teacher.students.show', compact('student', 'topics', 'recentAttempts', 'badges'));
+        return view('teacher.students.show', compact('student', 'topics', 'recentAttempts', 'recentSessions', 'badges'));
     }
 
     /**
@@ -97,6 +127,11 @@ class TeacherDashboardController extends Controller
         $kelasFilter = $request->query('kelas', 'all');
 
         $query = User::where('role', 'siswa')->where('is_active', true)->orderBy('kelas')->orderBy('name');
+        $user = Auth::user();
+
+        if ($user->isGuru()) {
+            $query->whereHas('classRooms', fn ($classRooms) => $classRooms->where('kelas.teacher_id', $user->id));
+        }
 
         if ($kelasFilter !== 'all') {
             $query->where('kelas', (int) $kelasFilter);

@@ -16,9 +16,10 @@ class StudentDashboardController extends Controller
     {
         $user = Auth::user();
 
-        $totalTopics = Topic::where('kelas_level', $user->kelas)->where('is_active', true)->count();
+        $availableTopics = Topic::availableToStudent($user);
+        $totalTopics = (clone $availableTopics)->count();
         $completedLessons = Progress::where('user_id', $user->id)->where('status', 'selesai')->count();
-        $totalLessons = Lesson::whereHas('topic', fn ($q) => $q->where('kelas_level', $user->kelas))->count();
+        $totalLessons = Lesson::whereHas('topic', fn ($query) => $query->availableToStudent($user))->count();
         $totalAttempts = QuizAttempt::where('user_id', $user->id)->count();
         $correctAttempts = QuizAttempt::where('user_id', $user->id)->where('is_correct', true)->count();
         $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100) : 0;
@@ -30,9 +31,11 @@ class StudentDashboardController extends Controller
         $totalBadges = $earnedBadges->count();
 
         // Progress per topic
-        $topics = Topic::where('kelas_level', $user->kelas)
-            ->where('is_active', true)
-            ->withCount(['lessons', 'quizzes'])
+        $topics = Topic::availableToStudent($user)
+            ->withCount([
+                'lessons',
+                'quizzes' => fn ($query) => $query->where('is_active', true)->where('review_status', 'approved'),
+            ])
             ->orderBy('order')
             ->get()
             ->map(function ($topic) use ($user) {
@@ -55,8 +58,7 @@ class StudentDashboardController extends Controller
             ->get();
 
         // Weak topics (accuracy < 60%)
-        $weakTopics = Topic::where('kelas_level', $user->kelas)
-            ->where('is_active', true)
+        $weakTopics = Topic::availableToStudent($user)
             ->get()
             ->map(function ($topic) use ($user) {
                 $attempts = QuizAttempt::where('user_id', $user->id)

@@ -3,20 +3,35 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['title', 'slug', 'description', 'icon', 'color', 'kelas_level', 'order', 'category', 'is_active', 'document_summary_id'])]
+#[Fillable(['title', 'slug', 'description', 'icon', 'color', 'kelas_level', 'order', 'category', 'is_active', 'document_summary_id', 'review_status', 'reviewed_by', 'reviewed_at'])]
 class Topic extends Model
 {
+    protected $table = 'topik';
+
+    public function scopeAvailableToStudent(Builder $query, User $student): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('review_status', 'approved')
+            ->where('kelas_level', $student->kelas)
+            ->whereHas('classRooms', fn (Builder $classRooms) => $classRooms
+                ->where('kelas.is_active', true)
+                ->whereHas('students', fn (Builder $students) => $students->whereKey($student->id)));
+    }
+
     protected function casts(): array
     {
         return [
             'kelas_level' => 'integer',
             'order' => 'integer',
             'is_active' => 'boolean',
+            'reviewed_at' => 'datetime',
         ];
     }
 
@@ -27,7 +42,7 @@ class Topic extends Model
 
     public function quizzes(): HasMany
     {
-        return $this->hasMany(Quiz::class);
+        return $this->hasMany(Soal::class);
     }
 
     /**
@@ -35,7 +50,12 @@ class Topic extends Model
      */
     public function documentSummary(): BelongsTo
     {
-        return $this->belongsTo(DocumentSummary::class);
+        return $this->belongsTo(Dokumen::class, 'document_summary_id');
+    }
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     /**
@@ -43,7 +63,7 @@ class Topic extends Model
      */
     public function classRooms(): BelongsToMany
     {
-        return $this->belongsToMany(ClassRoom::class, 'class_room_topic')
+        return $this->belongsToMany(Kelas::class, 'kelas_topik', 'topic_id', 'class_room_id')
             ->withTimestamps();
     }
 

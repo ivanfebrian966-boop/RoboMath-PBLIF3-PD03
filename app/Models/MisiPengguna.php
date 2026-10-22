@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'judul', 'deskripsi', 'status'])]
+#[Fillable(['user_id', 'misi_id', 'judul', 'deskripsi', 'status'])]
 class MisiPengguna extends Model
 {
     protected $table = 'misi_pengguna';
@@ -23,7 +23,12 @@ class MisiPengguna extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Pengguna::class, 'user_id');
+    }
+
+    public function misi(): BelongsTo
+    {
+        return $this->belongsTo(Misi::class);
     }
 
     public function isSelesai(): bool
