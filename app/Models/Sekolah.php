@@ -28,11 +28,11 @@ class Sekolah extends Model
 
     public function users(): HasMany
     {
-        return $this->hasMany(User::class, 'school_id');
+        return $this->hasMany(Pengguna::class, 'school_id');
     }
 
     public function classRooms(): HasMany
     {
-        return $this->hasMany(ClassRoom::class, 'school_id');
+        return $this->hasMany(Kelas::class, 'school_id');
     }
 }

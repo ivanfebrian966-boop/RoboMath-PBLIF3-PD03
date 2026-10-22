@@ -21,12 +21,12 @@ class Progress extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Pengguna::class, 'user_id');
     }
 
     public function topic(): BelongsTo
     {
-        return $this->belongsTo(Topic::class);
+        return $this->belongsTo(Topik::class, 'topic_id');
     }
 
     public function lesson(): BelongsTo

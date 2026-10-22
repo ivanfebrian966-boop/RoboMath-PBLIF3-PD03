@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['user_id', 'topic_id', 'lesson_id', 'dimulai_pada', 'selesai_pada', 'poin_diperoleh'])]
 class SesiBelajar extends Model
@@ -25,17 +26,22 @@ class SesiBelajar extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Pengguna::class, 'user_id');
     }
 
     public function topic(): BelongsTo
     {
-        return $this->belongsTo(Topic::class);
+        return $this->belongsTo(Topik::class, 'topic_id');
     }
 
     public function lesson(): BelongsTo
     {
         return $this->belongsTo(Lesson::class);
+    }
+
+    public function quizAttempts(): HasMany
+    {
+        return $this->hasMany(PercobaanSoal::class);
     }
 
     /**

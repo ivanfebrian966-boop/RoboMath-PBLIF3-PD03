@@ -28,6 +28,6 @@ class PengumpulanTugas extends Model
 
     public function student(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'student_id');
+        return $this->belongsTo(Pengguna::class, 'student_id');
     }
 }

@@ -181,6 +181,27 @@
                     <input type="text" id="custom_title" name="custom_title" placeholder="Contoh: Modul Pecahan Sederhana Kelas 4 SD"
                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 transition-all">
                 </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label for="kelas_level" class="block text-xs font-bold text-slate-700 mb-1.5">Tingkat kelas topik</label>
+                        <select id="kelas_level" name="kelas_level" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-800">
+                            @for($level = 1; $level <= 6; $level++)
+                                <option value="{{ $level }}">Kelas {{ $level }} SD</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div>
+                        <label for="topic_category" class="block text-xs font-bold text-slate-700 mb-1.5">Kategori topik</label>
+                        <select id="topic_category" name="topic_category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-800">
+                            <option value="urutan">Urutan</option>
+                            <option value="percabangan">Percabangan</option>
+                            <option value="pengulangan">Pengulangan</option>
+                            <option value="pola">Pola</option>
+                            <option value="dekomposisi" selected>Dekomposisi</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <!-- STEP 2: INSTRUKSI SOAL -->
@@ -226,12 +247,11 @@
                 </div>
             </div>
 
-            <!-- FORM FOOTER: CHECKBOX & BUTTON -->
+            <!-- FORM FOOTER -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
-                <label class="flex items-center gap-2.5 text-xs font-bold text-slate-700 cursor-pointer select-none">
-                    <input type="checkbox" id="save_history" name="save_history" value="1" checked class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
-                    <span>Simpan paket soal ke riwayat dokumen</span>
-                </label>
+                <p class="text-xs font-semibold text-slate-600">
+                    Dokumen, potongan teks, topik, dan soal akan disimpan untuk proses tinjauan admin.
+                </p>
 
                 <button type="submit" id="btn-submit-summarize"
                         class="w-full sm:w-auto px-7 py-3 rounded-full font-bold text-white bg-[#FF3B30] hover:bg-[#E0352B] shadow-lg shadow-red-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
@@ -306,6 +326,9 @@
                                             <div class="text-[11px] text-slate-400 truncate max-w-[240px] mt-0.5" title="{{ $item->original_filename }}">
                                                 {{ $item->original_filename }} • {{ $item->formatted_file_size }}
                                             </div>
+                                            <span class="mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-black {{ $item->status === 'selesai' ? 'bg-emerald-100 text-emerald-800' : ($item->status === 'gagal' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800') }}">
+                                                {{ ucfirst($item->status) }}
+                                            </span>
                                         </div>
                                     </div>
                                 </td>
@@ -500,10 +523,10 @@
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <!-- Action buttons in header -->
-                    <button type="button" onclick="openPublishModal()" title="Kirim ke Siswa"
+                    <button type="button" onclick="openPublishModal()" title="Buka antrian tinjauan"
                             class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-all">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                        <span>Ajukan ke Review AI</span>
+                        <span>Buka Review AI</span>
                     </button>
                     <button type="button" onclick="copySummaryText()" title="Salin Semua"
                             class="p-1.5 rounded-full border-2 border-white/70 hover:bg-white/15 text-white transition-all">
@@ -661,6 +684,7 @@
                 inputMode: 'file',
                 activeSummaryMarkdown: '',
                 activeSummaryTitle: '',
+                activeReviewUrl: null,
                 modalMarkdownCache: '',
             };
         }
@@ -1029,9 +1053,15 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Paket Soal Berhasil Dibuat!',
-                        text: 'AI telah berhasil merangkum materi dan merancang butir-butir soal latihan.',
-                        timer: 2000,
-                        showConfirmButton: false
+                        text: `${data.quiz_count} soal untuk topik "${data.topic_title}" tersimpan dan menunggu persetujuan admin.`,
+                        confirmButtonText: 'Tinjau hasil AI',
+                        showCancelButton: true,
+                        cancelButtonText: 'Tetap di sini',
+                        confirmButtonColor: '#2563EB'
+                    }).then((result) => {
+                        if (result.isConfirmed && data.review_url) {
+                            window.location.href = data.review_url;
+                        }
                     });
 
                 } catch (error) {
@@ -1112,6 +1142,7 @@
             state.activeSummaryMarkdown = data.summary_markdown;
             state.activeSummaryTitle = data.title;
             state.activeSummaryId = data.summary_id || null;
+            state.activeReviewUrl = data.review_url || null;
 
             const resTitle = document.getElementById('res-title');
             const badgeType = document.getElementById('res-badge-type');
@@ -1274,37 +1305,11 @@
 
         // Publish to Review AI
         window.openPublishModal = function() {
-            if (!state.activeSummaryMarkdown) {
-                Swal.fire({ icon: 'warning', title: 'Belum Ada Soal', text: 'Buat soal terlebih dahulu.', confirmButtonColor: '#2563EB' });
+            if (!state.activeReviewUrl) {
+                Swal.fire({ icon: 'warning', title: 'Belum Ada Antrian Tinjauan', text: 'Buat paket soal dari dokumen terlebih dahulu.', confirmButtonColor: '#2563EB' });
                 return;
             }
-
-            const hasOptions = /(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i.test(state.activeSummaryMarkdown);
-            const questionBlocks = (state.activeSummaryMarkdown.match(/###\s*(?:📝|🌟)?\s*Soal\s*\d+/gi) || []).length;
-            
-            const radioEssay = document.getElementById('publish-type-essay');
-            const radioMcq = document.getElementById('publish-type-mcq');
-            if (hasOptions) {
-                if (radioMcq) radioMcq.checked = true;
-            } else {
-                if (radioEssay) radioEssay.checked = true;
-            }
-
-            const previewEl = document.getElementById('publish-preview');
-            const previewText = document.getElementById('publish-preview-text');
-            if (previewEl && previewText) {
-                if (questionBlocks > 0) {
-                    previewText.textContent = hasOptions 
-                        ? `${questionBlocks} butir soal pilihan ganda siap diajukan ke review.`
-                        : `${questionBlocks} butir soal essay terdeteksi siap diajukan ke review.`;
-                    previewEl.classList.remove('hidden');
-                } else {
-                    previewEl.classList.add('hidden');
-                }
-            }
-
-            const modal = document.getElementById('publish-modal');
-            if (modal) modal.classList.remove('hidden');
+            window.location.href = state.activeReviewUrl;
         };
 
         window.closePublishModal = function() {

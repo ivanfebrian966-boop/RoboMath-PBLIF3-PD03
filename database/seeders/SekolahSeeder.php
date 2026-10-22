@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\ClassRoom;
 use App\Models\Sekolah;
+use App\Models\Topic;
 use App\Models\Tugas;
 use App\Models\User;
 use Carbon\Carbon;
@@ -47,6 +48,21 @@ class SekolahSeeder extends Seeder
                     'is_active' => true,
                     'nilai_lulus' => 75,
                 ]
+            );
+
+            $approvedTopicIds = Topic::where('kelas_level', 1)
+                ->where('is_active', true)
+                ->where('review_status', 'approved')
+                ->pluck('id');
+            $kelas->topics()->syncWithoutDetaching($approvedTopicIds);
+
+            $studentIds = User::where('role', 'siswa')
+                ->where('kelas', 1)
+                ->pluck('id');
+            $kelas->students()->syncWithoutDetaching(
+                $studentIds->mapWithKeys(fn ($studentId) => [
+                    $studentId => ['joined_at' => now()],
+                ])->all()
             );
 
             // Buat tugas contoh

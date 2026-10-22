@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DocumentSummary extends Model
 {
+    protected $table = 'dokumen';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -28,6 +30,8 @@ class DocumentSummary extends Model
         'word_count_original',
         'word_count_summary',
         'ai_provider',
+        'status',
+        'error_message',
     ];
 
     /**
@@ -47,7 +51,7 @@ class DocumentSummary extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Pengguna::class, 'user_id');
     }
 
     /**
@@ -55,7 +59,7 @@ class DocumentSummary extends Model
      */
     public function topics(): HasMany
     {
-        return $this->hasMany(Topic::class);
+        return $this->hasMany(Topik::class);
     }
 
     /**
@@ -63,7 +67,12 @@ class DocumentSummary extends Model
      */
     public function quizzes(): HasMany
     {
-        return $this->hasMany(Quiz::class);
+        return $this->hasMany(Soal::class);
+    }
+
+    public function chunks(): HasMany
+    {
+        return $this->hasMany(PotonganDokumen::class)->orderBy('position');
     }
 
     /**

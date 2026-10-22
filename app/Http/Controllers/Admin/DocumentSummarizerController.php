@@ -10,7 +10,10 @@ use App\Services\DocumentSummarizerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DocumentSummarizerController extends Controller
@@ -74,7 +77,8 @@ class DocumentSummarizerController extends Controller
             'summary_style' => 'nullable|string|max:50',
             'summary_length' => 'nullable|string|max:50',
             'focus_topic' => 'nullable|string|max:255',
-            'save_history' => 'nullable',
+            'kelas_level' => ['nullable', 'integer', 'between:1,6'],
+            'topic_category' => ['nullable', 'in:urutan,percabangan,pengulangan,pola,dekomposisi'],
         ]);
 
         if (! $request->hasFile('document_file') && empty(trim($request->input('direct_text', '')))) {
@@ -88,77 +92,202 @@ class DocumentSummarizerController extends Controller
         $fileType = 'text';
         $fileSize = 0;
         $originalFilename = 'Input Teks Langsung';
-        $title = $request->input('custom_title') ?: 'Latihan Soal Dokumen';
-        $extractedText = '';
+        $extractedText = trim($request->input('direct_text', ''));
+        $file = $request->file('document_file');
 
-        if ($request->hasFile('document_file')) {
-            $file = $request->file('document_file');
+        if ($file) {
             $originalFilename = $file->getClientOriginalName();
             $fileSize = $file->getSize() ?: 0;
             $fileType = strtolower($file->getClientOriginalExtension());
-
-            // Extract text from file
-            $extracted = $this->summarizerService->extractContent($file);
-            $extractedText = $extracted['text'];
-            $title = $request->input('custom_title') ?: $extracted['title'];
-
-            // Optional: Store original file in private documents storage
-            try {
-                $filePath = $file->store('documents', 'local');
-            } catch (\Throwable $e) {
-                // Ignore storage failure if local disk is constrained
-            }
         } else {
-            $extractedText = trim($request->input('direct_text'));
             $fileSize = strlen($extractedText);
-            $title = $request->input('custom_title') ?: 'Latihan Soal Materi '.now()->format('d M Y');
         }
 
-        $wordCountOriginal = str_word_count(strip_tags($extractedText));
+        $title = $request->input('custom_title')
+            ?: ($file ? pathinfo($originalFilename, PATHINFO_FILENAME) : 'Latihan Soal Materi '.now()->format('d M Y'));
 
-        if (empty($extractedText) || $wordCountOriginal < 5) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dokumen tidak memuat teks yang cukup untuk dianalisis oleh AI. Pastikan dokumen teks dapat dibaca (bukan foto/scan gambar buram).',
-            ], 422);
+        if ($file) {
+            $filePath = $file->store('documents', 'local');
+            if (! $filePath) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Berkas dokumen gagal disimpan. Silakan coba kembali.',
+                ], 500);
+            }
         }
 
-        // Generate AI Question Summary
+        $summaryModel = DocumentSummary::create([
+            'user_id' => Auth::id(),
+            'title' => $title,
+            'original_filename' => $originalFilename,
+            'file_type' => $fileType,
+            'file_size' => $fileSize,
+            'file_path' => $filePath,
+            'extracted_text' => mb_substr($extractedText, 0, 50000),
+            'summary' => 'Dokumen sedang diproses oleh AI.',
+            'summary_style' => $request->input('summary_style', 'kuis_latihan'),
+            'summary_length' => $request->input('summary_length', '5_soal'),
+            'word_count_original' => str_word_count(strip_tags($extractedText)),
+            'word_count_summary' => 0,
+            'status' => 'proses',
+        ]);
+
         $customPrompt = $request->input('custom_prompt');
         $style = $request->input('summary_style', 'kuis_latihan');
         $length = $request->input('summary_length', ! empty($customPrompt) ? 'kustom' : '5_soal');
 
-        $aiResult = $this->summarizerService->summarize(
-            text: $extractedText,
-            title: $title,
-            customPrompt: $customPrompt,
-            style: $style,
-            length: $length,
-            focus: $request->input('focus_topic'),
-            user: Auth::user()
-        );
+        try {
+            if ($file) {
+                $extracted = $this->summarizerService->extractContent($file);
+                $extractedText = $extracted['text'];
+                $title = $request->input('custom_title') ?: $extracted['title'];
+                $fileType = $extracted['file_type'];
+                $fileSize = $extracted['file_size'];
+            }
 
-        $wordCountSummary = $aiResult['word_count'];
-        $saveHistory = $request->boolean('save_history', true);
-        $summaryModel = null;
+            $wordCountOriginal = str_word_count(strip_tags($extractedText));
+            if (empty($extractedText) || $wordCountOriginal < 5) {
+                $summaryModel->update([
+                    'title' => $title,
+                    'file_type' => $fileType,
+                    'file_size' => $fileSize,
+                    'extracted_text' => mb_substr($extractedText, 0, 50000),
+                    'word_count_original' => $wordCountOriginal,
+                    'status' => 'gagal',
+                    'error_message' => 'Dokumen tidak memuat teks yang cukup untuk dianalisis oleh AI.',
+                ]);
 
-        if ($saveHistory) {
-            $summaryModel = DocumentSummary::create([
-                'user_id' => Auth::id() ?? 1,
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Dokumen tidak memuat teks yang cukup untuk dianalisis oleh AI. Pastikan dokumen teks dapat dibaca (bukan foto/scan gambar buram).',
+                ], 422);
+            }
+
+            $summaryModel->update([
                 'title' => $title,
-                'original_filename' => $originalFilename,
                 'file_type' => $fileType,
                 'file_size' => $fileSize,
-                'file_path' => $filePath,
-                'extracted_text' => mb_substr($extractedText, 0, 50000), // retain preview
-                'summary' => $aiResult['summary'],
-                'key_points' => $aiResult['key_points'],
-                'summary_style' => $style,
-                'summary_length' => $length,
+                'extracted_text' => mb_substr($extractedText, 0, 50000),
                 'word_count_original' => $wordCountOriginal,
-                'word_count_summary' => $wordCountSummary,
-                'ai_provider' => $aiResult['provider'],
             ]);
+
+            $aiResult = $this->summarizerService->summarize(
+                text: $extractedText,
+                title: $title,
+                customPrompt: $customPrompt,
+                style: $style,
+                length: $length,
+                focus: $request->input('focus_topic'),
+                user: Auth::user()
+            );
+
+            $wordCountSummary = $aiResult['word_count'];
+            $hasMultipleChoiceOptions = (bool) preg_match('/(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i', $aiResult['summary']);
+            $preserveEssay = ! $hasMultipleChoiceOptions
+                || (bool) preg_match('/(essay|esai|uraian|isian|terbuka|jawaban\s*singkat)/i', (string) $customPrompt);
+            $generatedQuizzes = $this->parseQuizzesFromMarkdown(
+                $aiResult['summary'],
+                'sedang',
+                10,
+                $preserveEssay
+            );
+
+            if ($generatedQuizzes === []) {
+                throw new \UnexpectedValueException('AI did not produce parseable quiz questions.');
+            }
+
+            [$topic, $generatedQuizCount] = DB::transaction(function () use (
+                $summaryModel,
+                $aiResult,
+                $extractedText,
+                $title,
+                $request,
+                $generatedQuizzes
+            ): array {
+                $summaryModel->update([
+                    'summary' => $aiResult['summary'],
+                    'key_points' => $aiResult['key_points'],
+                    'summary_style' => $request->input('summary_style', 'kuis_latihan'),
+                    'summary_length' => $request->input('summary_length', '5_soal'),
+                    'word_count_summary' => $aiResult['word_count'],
+                    'ai_provider' => $aiResult['provider'],
+                    'status' => 'selesai',
+                    'error_message' => null,
+                ]);
+
+                foreach ($this->summarizerService->chunkText($extractedText) as $index => $content) {
+                    $summaryModel->chunks()->create([
+                        'position' => $index + 1,
+                        'content' => $content,
+                    ]);
+                }
+
+                $description = implode(' ', array_slice($aiResult['key_points'], 0, 5));
+                if ($description === '') {
+                    $description = Str::limit(strip_tags($aiResult['summary']), 1000);
+                }
+
+                $topic = Topic::create([
+                    'document_summary_id' => $summaryModel->id,
+                    'title' => $title,
+                    'slug' => Str::slug(mb_substr($title, 0, 180)).'-dokumen-'.$summaryModel->id,
+                    'description' => $description,
+                    'icon' => '📘',
+                    'color' => '#2563EB',
+                    'kelas_level' => (int) $request->input('kelas_level', 1),
+                    'order' => (int) Topic::where('kelas_level', $request->input('kelas_level', 1))->max('order') + 1,
+                    'category' => $request->input('topic_category', 'dekomposisi'),
+                    'is_active' => false,
+                    'review_status' => 'pending',
+                ]);
+
+                foreach ($generatedQuizzes as $generatedQuiz) {
+                    $topic->quizzes()->create([
+                        'document_summary_id' => $summaryModel->id,
+                        'type' => $generatedQuiz['type'],
+                        'question' => $generatedQuiz['question'],
+                        'options' => $generatedQuiz['options'],
+                        'correct_answer' => $generatedQuiz['correct_answer'],
+                        'explanation' => $generatedQuiz['explanation'],
+                        'difficulty' => $generatedQuiz['difficulty'],
+                        'points' => $generatedQuiz['points'],
+                        'is_active' => false,
+                        'review_status' => 'pending',
+                    ]);
+                }
+
+                return [$topic, count($generatedQuizzes)];
+            });
+        } catch (\UnexpectedValueException $exception) {
+            Log::warning('RoboMath document processing produced no quiz questions.', [
+                'document_summary_id' => $summaryModel->id,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            $summaryModel->update([
+                'status' => 'gagal',
+                'error_message' => 'AI tidak menghasilkan soal dengan format yang dapat diproses.',
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'AI belum menghasilkan soal dengan format yang dapat diproses. Silakan coba lagi dengan dokumen atau instruksi yang lebih jelas.',
+            ], 422);
+        } catch (\Exception $exception) {
+            Log::error('RoboMath document workflow failed.', [
+                'document_summary_id' => $summaryModel->id,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            $summaryModel->update([
+                'status' => 'gagal',
+                'error_message' => 'Gagal memproses dokumen.',
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Dokumen gagal diproses oleh sistem. Silakan coba kembali.',
+            ], 500);
         }
 
         $reductionRatio = $wordCountOriginal > 0
@@ -167,7 +296,7 @@ class DocumentSummarizerController extends Controller
 
         return response()->json([
             'success' => true,
-            'summary_id' => $summaryModel?->id,
+            'summary_id' => $summaryModel->id,
             'title' => $title,
             'original_filename' => $originalFilename,
             'file_type' => strtoupper($fileType),
@@ -178,6 +307,15 @@ class DocumentSummarizerController extends Controller
             'summary_markdown' => $aiResult['summary'],
             'key_points' => $aiResult['key_points'],
             'provider' => $aiResult['provider'],
+            'status' => $summaryModel->status,
+            'topic_id' => $topic->id,
+            'topic_title' => $topic->title,
+            'quiz_count' => $generatedQuizCount,
+            'review_url' => route('admin.ai-recommendations.index', [
+                'tab' => 'quiz',
+                'topic_id' => $topic->id,
+                'status' => 'pending',
+            ]),
             'created_at' => now()->translatedFormat('d F Y, H:i'),
         ]);
     }
@@ -200,6 +338,7 @@ class DocumentSummarizerController extends Controller
             'summary' => $summary->summary,
             'key_points' => $summary->key_points ?? [],
             'ai_provider' => $summary->ai_provider,
+            'status' => $summary->status,
             'created_at' => $summary->created_at->translatedFormat('d F Y, H:i'),
             'user_name' => $summary->user?->name ?? 'Admin',
         ]);
@@ -265,8 +404,8 @@ class DocumentSummarizerController extends Controller
     public function publishToStudents(Request $request): JsonResponse
     {
         $request->validate([
-            'topic_id' => ['required', 'exists:topics,id'],
-            'summary_id' => ['nullable', 'exists:document_summaries,id'],
+            'topic_id' => ['required', 'exists:topik,id'],
+            'summary_id' => ['nullable', 'exists:dokumen,id'],
             'markdown' => ['required', 'string', 'min:20'],
             'difficulty' => ['nullable', 'in:mudah,sedang,sulit'],
             'points' => ['nullable', 'integer', 'min:1', 'max:100'],

@@ -6,10 +6,14 @@ use App\AI\AIManager;
 use App\Models\AiRecommendation;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
+use App\Models\SesiBelajar;
 use App\Models\Topic;
+use App\Models\User;
 use App\Services\GamificationService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class QuizController extends Controller
@@ -18,13 +22,14 @@ class QuizController extends Controller
     {
         $user = Auth::user();
 
-        $topics = Topic::where('is_active', true)
-            ->when($user->kelas, fn ($q) => $q->where('kelas_level', $user->kelas))
+        $topics = Topic::availableToStudent($user)
             ->with(['quizzes' => function ($q) {
-                $q->where('is_active', true)->orderBy('id');
+                $q->where('is_active', true)
+                    ->where('review_status', 'approved')
+                    ->orderBy('id');
             }])
             ->withCount(['quizzes' => function ($q) {
-                $q->where('is_active', true);
+                $q->where('is_active', true)->where('review_status', 'approved');
             }])
             ->orderBy('order')
             ->get();
@@ -79,8 +84,11 @@ class QuizController extends Controller
     {
         $user = Auth::user();
 
+        abort_unless($this->studentHasTopic($user, $topic), 404);
+
         $quizzes = Quiz::where('topic_id', $topic->id)
             ->where('is_active', true)
+            ->where('review_status', 'approved')
             ->orderBy('id')
             ->get();
 
@@ -114,54 +122,114 @@ class QuizController extends Controller
             ];
         }
 
-        return view('student.quiz.play', compact('topic', 'quizzes', 'startIndex', 'quizStatuses'));
+        $session = $user->sesiBelajar()
+            ->where('topic_id', $topic->id)
+            ->whereNull('selesai_pada')
+            ->latest('id')
+            ->first();
+
+        if (! $session) {
+            $session = $user->sesiBelajar()->create([
+                'topic_id' => $topic->id,
+                'dimulai_pada' => now(),
+            ]);
+        }
+
+        return view('student.quiz.play', compact('topic', 'quizzes', 'startIndex', 'quizStatuses', 'session'));
     }
 
     public function submit(Request $request)
     {
         $user = Auth::user();
 
-        $request->validate([
-            'quiz_id' => 'required|exists:quizzes,id',
+        $validated = $request->validate([
+            'quiz_id' => 'required|exists:soal,id',
             'answer' => 'required|string',
-            'time_spent' => 'nullable|integer',
+            'time_spent' => 'nullable|integer|min:0|max:36000',
+            'session_id' => ['nullable', 'integer', 'exists:sesi_belajar,id'],
         ]);
 
-        $quiz = Quiz::findOrFail($request->quiz_id);
+        $quiz = Quiz::whereKey($validated['quiz_id'])
+            ->where('is_active', true)
+            ->where('review_status', 'approved')
+            ->whereHas('topic', fn (Builder $topicQuery) => $topicQuery
+                ->where('is_active', true)
+                ->where('review_status', 'approved'))
+            ->with('topic')
+            ->firstOrFail();
+
+        abort_unless($this->studentHasTopic($user, $quiz->topic), 404);
+
         $isEssay = $quiz->isEssay();
         $aiFeedback = null;
 
-        $previouslyCorrect = QuizAttempt::where('user_id', $user->id)
-            ->where('quiz_id', $quiz->id)
-            ->where('is_correct', true)
-            ->exists();
-
         if ($isEssay) {
-            $evaluation = $this->evaluateEssayAnswer($quiz, $request->answer, $user);
+            $evaluation = $this->evaluateEssayAnswer($quiz, $validated['answer'], $user);
             $isCorrect = $evaluation['is_correct'];
             $aiFeedback = $evaluation['feedback'];
             $scorePercent = $evaluation['score_percent'] ?? ($isCorrect ? 100 : 0);
-            $pointsEarned = ($isCorrect && ! $previouslyCorrect)
-                ? max(5, (int) round(($scorePercent / 100) * $quiz->points))
-                : 0;
         } else {
-            $isCorrect = strtolower(trim($request->answer)) === strtolower(trim($quiz->correct_answer));
-            $pointsEarned = ($isCorrect && ! $previouslyCorrect) ? $quiz->points : 0;
+            $isCorrect = strtolower(trim($validated['answer'])) === strtolower(trim($quiz->correct_answer));
+            $scorePercent = 100;
         }
 
-        $attempt = QuizAttempt::create([
-            'user_id' => $user->id,
-            'quiz_id' => $quiz->id,
-            'answer' => $request->answer,
-            'is_correct' => $isCorrect,
-            'ai_feedback' => $aiFeedback,
-            'time_spent' => $request->time_spent ?? 0,
-            'points_earned' => $pointsEarned,
-        ]);
+        [$attempt, $pointsEarned, $previouslyCorrect, $sessionId] = DB::transaction(function () use (
+            $user,
+            $quiz,
+            $validated,
+            $isCorrect,
+            $aiFeedback,
+            $scorePercent
+        ): array {
+            $lockedUser = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
 
-        if ($pointsEarned > 0) {
-            $user->addScore($pointsEarned);
-        }
+            $sessionQuery = SesiBelajar::where('user_id', $lockedUser->id)
+                ->where('topic_id', $quiz->topic_id)
+                ->whereNull('selesai_pada');
+
+            if (! empty($validated['session_id'])) {
+                $sessionQuery->whereKey($validated['session_id']);
+            }
+
+            $session = $sessionQuery->lockForUpdate()->latest('id')->first();
+
+            if (! $session && empty($validated['session_id'])) {
+                $session = $lockedUser->sesiBelajar()->create([
+                    'topic_id' => $quiz->topic_id,
+                    'dimulai_pada' => now(),
+                ]);
+            }
+
+            if (! $session) {
+                abort(404);
+            }
+
+            $previouslyCorrect = QuizAttempt::where('user_id', $lockedUser->id)
+                ->where('quiz_id', $quiz->id)
+                ->where('is_correct', true)
+                ->exists();
+            $pointsEarned = $isCorrect && ! $previouslyCorrect
+                ? ($quiz->isEssay() ? max(5, (int) round(($scorePercent / 100) * $quiz->points)) : $quiz->points)
+                : 0;
+
+            $attempt = QuizAttempt::create([
+                'user_id' => $lockedUser->id,
+                'quiz_id' => $quiz->id,
+                'sesi_belajar_id' => $session->id,
+                'answer' => $validated['answer'],
+                'is_correct' => $isCorrect,
+                'ai_feedback' => $aiFeedback,
+                'time_spent' => $validated['time_spent'] ?? 0,
+                'points_earned' => $pointsEarned,
+            ]);
+
+            if ($pointsEarned > 0) {
+                $lockedUser->addScore($pointsEarned);
+                $session->increment('poin_diperoleh', $pointsEarned);
+            }
+
+            return [$attempt, $pointsEarned, $previouslyCorrect, $session->id];
+        });
 
         // Check badges
         app(GamificationService::class)->checkBadges($user);
@@ -198,6 +266,7 @@ class QuizController extends Controller
             'ai_feedback' => $aiFeedback,
             'points' => $pointsEarned,
             'already_earned' => $previouslyCorrect,
+            'session_id' => $sessionId,
             'explanation' => $quiz->explanation,
             'correct_answer' => $quiz->correct_answer,
             'total_score' => $user->fresh()->total_score,
@@ -298,6 +367,13 @@ PROMPT;
     public function result(Topic $topic)
     {
         $user = Auth::user();
+        abort_unless($this->studentHasTopic($user, $topic), 404);
+
+        $user->sesiBelajar()
+            ->where('topic_id', $topic->id)
+            ->whereNull('selesai_pada')
+            ->update(['selesai_pada' => now()]);
+
         $attempts = QuizAttempt::where('user_id', $user->id)
             ->whereHas('quiz', fn ($q) => $q->where('topic_id', $topic->id))
             ->with('quiz')
@@ -310,5 +386,10 @@ PROMPT;
         $totalPoints = $attempts->sum('points_earned');
 
         return view('student.quiz.result', compact('topic', 'attempts', 'totalCorrect', 'totalAttempts', 'totalPoints'));
+    }
+
+    private function studentHasTopic(User $student, Topic $topic): bool
+    {
+        return Topic::availableToStudent($student)->whereKey($topic->id)->exists();
     }
 }

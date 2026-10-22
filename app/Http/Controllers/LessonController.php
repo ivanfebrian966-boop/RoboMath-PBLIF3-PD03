@@ -13,8 +13,7 @@ class LessonController extends Controller
     public function topics()
     {
         $user = Auth::user();
-        $topics = Topic::where('kelas_level', $user->kelas)
-            ->where('is_active', true)
+        $topics = Topic::availableToStudent($user)
             ->withCount('lessons')
             ->orderBy('order')
             ->get()
@@ -36,6 +35,8 @@ class LessonController extends Controller
     public function showTopic(Topic $topic)
     {
         $user = Auth::user();
+        abort_unless(Topic::availableToStudent($user)->whereKey($topic->id)->exists(), 404);
+
         $lessons = $topic->lessons()->where('is_active', true)->orderBy('order')->get();
 
         $lessons->each(function ($lesson) use ($user) {
@@ -52,6 +53,7 @@ class LessonController extends Controller
     {
         $user = Auth::user();
         $lesson->load('topic');
+        abort_unless(Topic::availableToStudent($user)->whereKey($lesson->topic_id)->exists(), 404);
 
         // Mark as 'sedang' if not yet started
         Progress::firstOrCreate(
@@ -77,6 +79,7 @@ class LessonController extends Controller
     public function completeLesson(Lesson $lesson)
     {
         $user = Auth::user();
+        abort_unless(Topic::availableToStudent($user)->whereKey($lesson->topic_id)->exists(), 404);
 
         $progress = Progress::updateOrCreate(
             ['user_id' => $user->id, 'lesson_id' => $lesson->id],

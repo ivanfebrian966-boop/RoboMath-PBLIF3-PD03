@@ -53,6 +53,36 @@
                             <div class="bg-indigo-600 h-full rounded-full" style="width: {{ $topic->lesson_progress }}%"></div>
                         </div>
                     </div>
+
+                    <section class="space-y-3">
+                        <h2 class="text-xl font-black text-slate-800">Riwayat Sesi Belajar</h2>
+                        <div class="overflow-x-auto rounded-3xl border-2 border-slate-200 bg-white">
+                            <table class="w-full text-left text-sm">
+                                <thead class="border-b-2 border-slate-100 text-xs uppercase text-slate-400">
+                                    <tr>
+                                        <th class="px-4 py-3">Topik</th>
+                                        <th class="px-4 py-3">Mulai</th>
+                                        <th class="px-4 py-3">Durasi</th>
+                                        <th class="px-4 py-3">Poin sesi</th>
+                                        <th class="px-4 py-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    @forelse($recentSessions as $session)
+                                    <tr>
+                                        <td class="px-4 py-3 font-bold">{{ $session->topic->title ?? 'Matematika' }}</td>
+                                        <td class="px-4 py-3">{{ $session->dimulai_pada->format('d M Y H:i') }}</td>
+                                        <td class="px-4 py-3">{{ $session->selesai_pada ? gmdate('H:i:s', $session->durasi_detik) : 'Berlangsung' }}</td>
+                                        <td class="px-4 py-3 font-black text-amber-600">{{ $session->poin_diperoleh }}</td>
+                                        <td class="px-4 py-3">{{ $session->selesai_pada ? 'Selesai' : 'Berlangsung' }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">Belum ada sesi belajar tercatat.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
                 </div>
             @endforeach
         </div>

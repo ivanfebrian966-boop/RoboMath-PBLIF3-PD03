@@ -172,7 +172,13 @@ class QuizSeeder extends Seeder
         ];
 
         foreach ($quizzes as $quiz) {
-            Quiz::create($quiz);
+            Quiz::updateOrCreate(
+                [
+                    'topic_id' => $quiz['topic_id'],
+                    'question' => $quiz['question'],
+                ],
+                $quiz
+            );
         }
     }
 }

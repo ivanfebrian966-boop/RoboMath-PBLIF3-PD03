@@ -50,7 +50,7 @@ class UserManagementController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:pengguna,email'],
             'password' => ['required', 'string', 'min:6'],
             'role' => ['required', 'in:siswa,guru,admin'],
             'kelas' => ['nullable', 'required_if:role,siswa', 'integer', 'min:1', 'max:6'],
@@ -69,7 +69,7 @@ class UserManagementController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('pengguna')->ignore($user->id)],
             'password' => ['nullable', 'string', 'min:6'],
             'role' => ['required', 'in:siswa,guru,admin'],
             'kelas' => ['nullable', 'required_if:role,siswa', 'integer', 'min:1', 'max:6'],

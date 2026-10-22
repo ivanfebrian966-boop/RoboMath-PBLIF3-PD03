@@ -36,7 +36,7 @@ class LessonManagementController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'topic_id' => ['required', 'exists:topics,id'],
+            'topic_id' => ['required', 'exists:topik,id'],
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'video_url' => ['nullable', 'url'],
@@ -64,7 +64,7 @@ class LessonManagementController extends Controller
     public function update(Request $request, Lesson $lesson)
     {
         $data = $request->validate([
-            'topic_id' => ['required', 'exists:topics,id'],
+            'topic_id' => ['required', 'exists:topik,id'],
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'video_url' => ['nullable', 'url'],

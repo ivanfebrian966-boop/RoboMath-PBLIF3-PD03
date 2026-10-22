@@ -44,7 +44,7 @@
             </div>
 
             <div>
-                <label class="block text-sm font-black text-slate-700 mb-2">Pilih Topik Materi yang Ditugaskan (Opsional)</label>
+                <label class="block text-sm font-black text-slate-700 mb-2">Pilih Topik Materi yang Ditugaskan</label>
                 <p class="text-xs text-slate-500 mb-3">Siswa dalam kelas ini akan difokuskan pada materi-materi berikut:</p>
                 <div class="space-y-2 max-h-56 overflow-y-auto p-3 border-2 border-slate-100 rounded-2xl bg-slate-50">
                     @forelse($topics as $topic)

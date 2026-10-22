@@ -25,12 +25,12 @@ class Tugas extends Model
 
     public function classRoom(): BelongsTo
     {
-        return $this->belongsTo(ClassRoom::class, 'class_room_id');
+        return $this->belongsTo(Kelas::class, 'class_room_id');
     }
 
     public function topic(): BelongsTo
     {
-        return $this->belongsTo(Topic::class);
+        return $this->belongsTo(Topik::class, 'topic_id');
     }
 
     public function pengumpulan(): HasMany

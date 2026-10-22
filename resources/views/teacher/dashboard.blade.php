@@ -93,6 +93,36 @@
         </div>
     </div>
 
+    <div class="bg-white rounded-3xl border-2 border-slate-200 p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+            <h3 class="font-black text-slate-800 text-base flex items-center gap-2">
+                <span>📚</span> Sesi Belajar Terbaru
+            </h3>
+            <span class="text-xs font-bold text-slate-400">Siswa dari kelas yang Anda ajar</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @forelse($recentSessions as $session)
+            <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-between gap-3">
+                <div>
+                    <div class="font-black text-slate-800 text-xs">{{ $session->user->name ?? 'Siswa' }}</div>
+                    <div class="text-[11px] text-slate-500">Topik: {{ $session->topic->title ?? 'Matematika' }}</div>
+                    <div class="text-[10px] text-slate-400">{{ $session->dimulai_pada->diffForHumans() }}</div>
+                </div>
+                <div class="text-right">
+                    <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800">
+                        {{ $session->poin_diperoleh }} poin
+                    </span>
+                    <div class="text-[10px] font-bold text-slate-500 mt-1">
+                        {{ $session->selesai_pada ? 'Selesai' : 'Berlangsung' }}
+                    </div>
+                </div>
+            </div>
+            @empty
+            <p class="text-xs text-slate-400 col-span-3">Belum ada sesi belajar dari siswa kelas Anda.</p>
+            @endforelse
+        </div>
+    </div>
+
     <!-- Students Table -->
     <div class="bg-white rounded-3xl border-2 border-slate-200 p-6 shadow-sm space-y-4">
         <div class="flex items-center justify-between">

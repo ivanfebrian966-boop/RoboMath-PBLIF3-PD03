@@ -15,6 +15,8 @@ class ClassRoom extends Model
 {
     use HasFactory;
 
+    protected $table = 'kelas';
+
     /**
      * @return array<string, string>
      */
@@ -29,12 +31,13 @@ class ClassRoom extends Model
 
     public function teacher(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'teacher_id');
+        return $this->belongsTo(Pengguna::class, 'teacher_id');
     }
 
     public function students(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'class_room_student', 'class_room_id', 'student_id')
+        return $this->belongsToMany(Pengguna::class, 'anggota_kelas', 'class_room_id', 'student_id')
+            ->using(AnggotaKelas::class)
             ->withPivot('joined_at')
             ->withTimestamps();
     }
@@ -54,7 +57,7 @@ class ClassRoom extends Model
      */
     public function topics(): BelongsToMany
     {
-        return $this->belongsToMany(Topic::class, 'class_room_topic')
+        return $this->belongsToMany(Topik::class, 'kelas_topik', 'class_room_id', 'topic_id')
             ->withTimestamps();
     }
 
@@ -64,7 +67,11 @@ class ClassRoom extends Model
      */
     public function availableQuizzes(): Builder
     {
-        return Quiz::whereIn('topic_id', $this->topics()->pluck('topics.id'))
-            ->where('is_active', true);
+        return Soal::whereIn('topic_id', $this->topics()->pluck('topik.id'))
+            ->where('is_active', true)
+            ->where('review_status', 'approved')
+            ->whereHas('topic', fn ($query) => $query
+                ->where('is_active', true)
+                ->where('review_status', 'approved'));
     }
 }

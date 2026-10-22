@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class Quiz extends Model
 {
+    protected $table = 'soal';
+
     protected function casts(): array
     {
         return [
@@ -43,22 +45,22 @@ class Quiz extends Model
 
     public function topic(): BelongsTo
     {
-        return $this->belongsTo(Topic::class);
+        return $this->belongsTo(Topik::class, 'topic_id');
     }
 
     public function documentSummary(): BelongsTo
     {
-        return $this->belongsTo(DocumentSummary::class);
+        return $this->belongsTo(Dokumen::class, 'document_summary_id');
     }
 
     public function reviewer(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'reviewed_by');
+        return $this->belongsTo(Pengguna::class, 'reviewed_by');
     }
 
     public function attempts(): HasMany
     {
-        return $this->hasMany(QuizAttempt::class);
+        return $this->hasMany(PercobaanSoal::class);
     }
 
     public function getTypeLabelAttribute(): string

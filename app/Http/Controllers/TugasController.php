@@ -36,7 +36,7 @@ class TugasController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'class_room_id' => ['required', 'integer', 'exists:class_rooms,id'],
+            'class_room_id' => ['required', 'integer', 'exists:kelas,id'],
             'judul' => ['required', 'string', 'max:255'],
             'tenggat_waktu' => ['nullable', 'date'],
             'nilai_lulus' => ['nullable', 'numeric', 'min:0', 'max:100'],
@@ -74,7 +74,7 @@ class TugasController extends Controller
     {
         $user = Auth::user();
 
-        $tugasList = Tugas::whereHas('classRoom.students', fn ($q) => $q->where('users.id', $user->id))
+        $tugasList = Tugas::whereHas('classRoom.students', fn ($q) => $q->where('pengguna.id', $user->id))
             ->with(['classRoom', 'topic'])
             ->latest()
             ->get()

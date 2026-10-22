@@ -16,6 +16,8 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    protected $table = 'pengguna';
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
@@ -64,7 +66,7 @@ class User extends Authenticatable
 
     public function quizAttempts(): HasMany
     {
-        return $this->hasMany(QuizAttempt::class);
+        return $this->hasMany(PercobaanSoal::class);
     }
 
     public function progress(): HasMany
@@ -74,7 +76,10 @@ class User extends Authenticatable
 
     public function badges(): BelongsToMany
     {
-        return $this->belongsToMany(Badge::class, 'user_badges')->withPivot('earned_at')->withTimestamps();
+        return $this->belongsToMany(Pencapaian::class, 'pencapaian_pengguna', 'user_id', 'badge_id')
+            ->using(PencapaianPengguna::class)
+            ->withPivot('earned_at')
+            ->withTimestamps();
     }
 
     /**
@@ -82,7 +87,8 @@ class User extends Authenticatable
      */
     public function classRooms(): BelongsToMany
     {
-        return $this->belongsToMany(ClassRoom::class, 'class_room_student', 'student_id', 'class_room_id')
+        return $this->belongsToMany(Kelas::class, 'anggota_kelas', 'student_id', 'class_room_id')
+            ->using(AnggotaKelas::class)
             ->withPivot('joined_at')
             ->withTimestamps();
     }
@@ -92,7 +98,7 @@ class User extends Authenticatable
      */
     public function teachingClassRooms(): HasMany
     {
-        return $this->hasMany(ClassRoom::class, 'teacher_id');
+        return $this->hasMany(Kelas::class, 'teacher_id');
     }
 
     public function sekolah(): BelongsTo
