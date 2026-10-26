@@ -253,6 +253,13 @@ class RoboMathSPA {
                     currentSidebar.innerHTML = newSidebar.innerHTML;
                 }
 
+                // 3b. Update Mobile Sidebar Drawer (Menu mobile/iOS)
+                const currentMobileSidebar = document.getElementById('mobile-sidebar-drawer');
+                const newMobileSidebar = doc.getElementById('mobile-sidebar-drawer');
+                if (currentMobileSidebar && newMobileSidebar) {
+                    currentMobileSidebar.innerHTML = newMobileSidebar.innerHTML;
+                }
+
                 // 4. Update Header Navbar (jika ada update skor/nama user)
                 const currentNavbar = document.getElementById('app-navbar');
                 const newNavbar = doc.getElementById('app-navbar');
@@ -260,12 +267,18 @@ class RoboMathSPA {
                     currentNavbar.innerHTML = newNavbar.innerHTML;
                 }
 
+                // Tutup drawer sidebar mobile jika terbuka
+                window.dispatchEvent(new CustomEvent('close-mobile-sidebar'));
+
                 // 5. Eksekusi script khusus di dalam halaman baru
                 this.executeScripts(currentMain);
 
                 // 6. Inisialisasi ulang Alpine.js pada DOM baru
                 if (window.Alpine) {
                     window.Alpine.initTree(currentMain);
+                    if (currentNavbar) window.Alpine.initTree(currentNavbar);
+                    if (currentSidebar) window.Alpine.initTree(currentSidebar);
+                    if (currentMobileSidebar) window.Alpine.initTree(currentMobileSidebar);
                 }
 
                 // 7. Push History State

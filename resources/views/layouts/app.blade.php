@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'RoboMath - Aplikasi Web Berbasis AI untuk Pengembangan Pembelajaran Matematika Anak Sekolah Dasar' }}</title>
     <!-- Google Fonts: Poppins -->
@@ -14,12 +14,17 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-[#FAF6EF] font-sans text-slate-800 antialiased min-h-screen flex flex-col selection:bg-amber-200 selection:text-amber-900">
+<body class="bg-[#FAF6EF] font-sans text-slate-800 antialiased min-h-screen flex flex-col selection:bg-amber-200 selection:text-amber-900"
+      x-data="{ mobileSidebarOpen: false }"
+      @toggle-mobile-sidebar.window="mobileSidebarOpen = !mobileSidebarOpen"
+      @close-mobile-sidebar.window="mobileSidebarOpen = false"
+      @keydown.window.escape="mobileSidebarOpen = false"
+      x-effect="document.body.classList.toggle('overflow-hidden', mobileSidebarOpen)">
 
     <!-- Top Navbar -->
     @include('components.navbar')
 
-    <div class="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
+    <div class="flex-1 flex max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 gap-6">
         <!-- Sidebar Navigation -->
         @include('components.sidebar')
 

@@ -61,9 +61,10 @@
 <div class="relative overflow-x-hidden selection:bg-amber-200 selection:text-amber-900 bg-[#FAF6EF] min-h-screen">
 
     {{-- NAVBAR PILL --}}
-    <header class="sticky top-4 z-50 max-w-3xl mx-auto px-4"
+    <header class="sticky top-safe top-3 sm:top-4 z-50 max-w-3xl mx-auto px-3 sm:px-4"
             x-data="{
                 activeNav: 'hero',
+                mobileMenuOpen: false,
                 init() {
                     const sections = ['hero', 'fitur', 'modul', 'prestasi'];
                     const updateActive = () => {
@@ -87,8 +88,10 @@
                     window.addEventListener('resize', updateActive, { passive: true });
                     updateActive();
                 }
-            }">
-        <nav class="bg-white/95 backdrop-blur-md rounded-full px-4 sm:px-5 py-2.5 flex items-center justify-between border transition-all duration-300"
+            }"
+            @click.outside="mobileMenuOpen = false"
+            @keydown.window.escape="mobileMenuOpen = false">
+        <nav class="bg-white/95 backdrop-blur-md rounded-full px-3.5 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between border transition-all duration-300 shadow-md"
              :class="{
                  'border-red-200/90 shadow-[0_6px_25px_rgba(255,59,48,0.12)]': activeNav === 'hero',
                  'border-blue-200/90 shadow-[0_6px_25px_rgba(52,120,246,0.12)]': activeNav === 'fitur',
@@ -97,11 +100,11 @@
              }">
             {{-- Logo --}}
             <a href="{{ route('home') }}" class="flex items-center gap-2 group flex-shrink-0">
-                <img src="{{ asset('images/logo.png') }}" alt="RoboMath Logo" class="h-7 w-auto transition-transform duration-200 group-hover:scale-105">
+                <img src="{{ asset('images/logo.png') }}" alt="RoboMath Logo" class="h-6 sm:h-7 w-auto transition-transform duration-200 group-hover:scale-105">
             </a>
 
-            {{-- Nav Links --}}
-            <div class="flex items-center gap-1 sm:gap-2 text-xs font-semibold overflow-x-auto no-scrollbar py-0.5">
+            {{-- Nav Links Desktop / Tablet --}}
+            <div class="hidden md:flex items-center gap-1 sm:gap-2 text-xs font-semibold overflow-x-auto no-scrollbar py-0.5">
                 {{-- Beranda: Merah #FF3B30 --}}
                 <a href="#hero"
                    @click="activeNav = 'hero'"
@@ -135,11 +138,11 @@
                 </a>
             </div>
 
-            {{-- Auth Action --}}
-            <div class="flex items-center gap-2 text-xs font-bold flex-shrink-0">
+            {{-- Auth Action & Hamburger Toggle --}}
+            <div class="flex items-center gap-1.5 sm:gap-2 text-xs font-bold flex-shrink-0">
                 @auth
                     <a href="{{ auth()->user()->isGuru() ? route('guru.dashboard') : (auth()->user()->isAdmin() ? route('admin.dashboard') : route('siswa.dashboard')) }}"
-                       class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-1.5 rounded-full transition-all">
+                       class="bg-slate-900 hover:bg-slate-800 text-white px-3 sm:px-4 py-1.5 rounded-full transition-all text-xs">
                         Dashboard &rarr;
                     </a>
                 @else
@@ -150,12 +153,72 @@
                            'border-[#10B981]/60 text-[#10B981] hover:bg-[#10B981]': activeNav === 'modul',
                            'border-[#FF9500]/60 text-[#FF9500] hover:bg-[#FF9500]': activeNav === 'prestasi',
                        }"
-                       class="border hover:text-white px-4 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap">
+                       class="border hover:text-white px-3 sm:px-4 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap">
                         Masuk
                     </a>
                 @endauth
+
+                {{-- Mobile Hamburger Toggle Button --}}
+                <button type="button"
+                        @click="mobileMenuOpen = !mobileMenuOpen"
+                        class="md:hidden flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 transition-all duration-200 active:scale-95 focus:outline-none"
+                        aria-label="Toggle Menu Navigasi">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" x-show="!mobileMenuOpen">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24" x-show="mobileMenuOpen" x-cloak>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
         </nav>
+
+        {{-- Mobile Dropdown Menu Card (Mobile & iOS) --}}
+        <div x-show="mobileMenuOpen"
+             x-cloak
+             x-transition:enter="transition ease-out duration-200 transform"
+             x-transition:enter-start="opacity-0 -translate-y-3 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-150 transform"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 -translate-y-3 scale-95"
+             class="md:hidden mt-2 bg-white/95 backdrop-blur-md rounded-3xl border border-amber-200/80 shadow-xl p-3 space-y-1.5">
+            {{-- Beranda --}}
+            <a href="#hero"
+               @click="activeNav = 'hero'; mobileMenuOpen = false"
+               :class="activeNav === 'hero' ? 'bg-red-50 text-[#FF3B30] font-black border border-red-200' : 'text-slate-700 hover:bg-red-50/50 font-bold'"
+               class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm transition-all duration-200">
+                <span class="w-2 h-2 rounded-full bg-[#FF3B30]"></span>
+                <span>Beranda</span>
+            </a>
+
+            {{-- Fitur AI --}}
+            <a href="#fitur"
+               @click="activeNav = 'fitur'; mobileMenuOpen = false"
+               :class="activeNav === 'fitur' ? 'bg-blue-50 text-[#3478F6] font-black border border-blue-200' : 'text-slate-700 hover:bg-blue-50/50 font-bold'"
+               class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm transition-all duration-200">
+                <span class="w-2 h-2 rounded-full bg-[#3478F6]"></span>
+                <span>Fitur AI Interaktif</span>
+            </a>
+
+            {{-- Modul SD --}}
+            <a href="#modul"
+               @click="activeNav = 'modul'; mobileMenuOpen = false"
+               :class="activeNav === 'modul' ? 'bg-emerald-50 text-[#10B981] font-black border border-emerald-200' : 'text-slate-700 hover:bg-emerald-50/50 font-bold'"
+               class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm transition-all duration-200">
+                <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
+                <span>Modul Matematika SD</span>
+            </a>
+
+            {{-- Prestasi --}}
+            <a href="#prestasi"
+               @click="activeNav = 'prestasi'; mobileMenuOpen = false"
+               :class="activeNav === 'prestasi' ? 'bg-amber-50 text-[#FF9500] font-black border border-amber-200' : 'text-slate-700 hover:bg-amber-50/50 font-bold'"
+               class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm transition-all duration-200">
+                <span class="w-2 h-2 rounded-full bg-[#FF9500]"></span>
+                <span>Prestasi & Juara</span>
+            </a>
+        </div>
     </header>
 
     {{-- HERO SECTION --}}

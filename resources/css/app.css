@@ -145,3 +145,54 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .animate-float-subtle {
     animation: float-subtle 3.5s ease-in-out infinite;
 }
+
+/* =========================================================
+   Mobile & iOS Optimization Utilities
+   ========================================================= */
+
+/* Alpine Cloak to avoid flash of unstyled content */
+[x-cloak] {
+    display: none !important;
+}
+
+/* iOS Safe Area Padding Support */
+.pt-safe {
+    padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}
+.pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+.pl-safe {
+    padding-left: env(safe-area-inset-left, 0px);
+}
+.pr-safe {
+    padding-right: env(safe-area-inset-right, 0px);
+}
+.top-safe {
+    top: max(0.75rem, env(safe-area-inset-top, 0px));
+}
+
+/* Smooth Touch Momentum Scrolling for iOS */
+.touch-scroll,
+.overflow-y-auto,
+.overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Remove default iOS tap highlight */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Minimum 16px font-size on mobile inputs to prevent iOS Safari auto-zoom */
+@media screen and (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="search"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}
