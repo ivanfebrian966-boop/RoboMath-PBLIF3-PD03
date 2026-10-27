@@ -82,26 +82,34 @@
             </button>
         </div>
 
-        {{-- Status Filter Buttons (Semua, Belum selesai, Selesai) --}}
-        <div class="flex items-center gap-1.5 self-end sm:self-auto">
-            <button type="button" 
-                    @click="statusFilter = 'all'" 
-                    :class="statusFilter === 'all' ? 'bg-[#001738] text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 bg-transparent'"
-                    class="px-4 py-1.5 rounded-full text-xs font-black transition-all">
-                Semua Topik
-            </button>
-            <button type="button" 
-                    @click="statusFilter = 'uncompleted'" 
-                    :class="statusFilter === 'uncompleted' ? 'bg-[#001738] text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 bg-transparent'"
-                    class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all">
-                Belum Selesai
-            </button>
-            <button type="button" 
-                    @click="statusFilter = 'completed'" 
-                    :class="statusFilter === 'completed' ? 'bg-[#001738] text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 bg-transparent'"
-                    class="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all">
-                Selesai
-            </button>
+        {{-- Status Filter Buttons & Masukan Kode Kelas CTA --}}
+        <div class="flex items-center gap-2 flex-wrap self-end sm:self-auto">
+            <a href="{{ route('siswa.kelas.join') }}" 
+               class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-black bg-[#CCFBF1] text-[#00A88F] border border-teal-300/80 hover:bg-teal-100 transition shadow-2xs">
+                <span>🔑</span>
+                <span>Masukan Kode Kelas</span>
+            </a>
+
+            <div class="flex items-center gap-1 bg-slate-100/80 p-1 rounded-full">
+                <button type="button" 
+                        @click="statusFilter = 'all'" 
+                        :class="statusFilter === 'all' ? 'bg-[#001738] text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 bg-transparent'"
+                        class="px-3.5 py-1 rounded-full text-xs font-black transition-all">
+                    Semua
+                </button>
+                <button type="button" 
+                        @click="statusFilter = 'uncompleted'" 
+                        :class="statusFilter === 'uncompleted' ? 'bg-[#001738] text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 bg-transparent'"
+                        class="px-3 py-1 rounded-full text-xs font-bold transition-all">
+                    Belum Selesai
+                </button>
+                <button type="button" 
+                        @click="statusFilter = 'completed'" 
+                        :class="statusFilter === 'completed' ? 'bg-[#001738] text-white shadow-xs' : 'text-slate-500 hover:text-slate-800 bg-transparent'"
+                        class="px-3 py-1 rounded-full text-xs font-bold transition-all">
+                    Selesai
+                </button>
+            </div>
         </div>
     </div>
 
@@ -250,10 +258,20 @@
 
             </div>
         @empty
-            <div class="col-span-full py-16 text-center space-y-3 bg-white rounded-3xl border border-slate-200">
-                <div class="text-4xl">📚</div>
-                <h3 class="text-base font-black text-slate-800">Belum Ada Topik Latihan</h3>
-                <p class="text-xs text-slate-400">Topik latihan soal akan muncul di sini setelah disiapkan oleh guru.</p>
+            <div class="col-span-full py-12 sm:py-16 text-center space-y-4 bg-white rounded-3xl border-2 border-dashed border-slate-200 p-6 sm:p-10">
+                <div class="text-5xl">🔑</div>
+                <div class="space-y-1.5 max-w-md mx-auto">
+                    <h3 class="text-base sm:text-lg font-black text-slate-800">Belum Ada Topik Latihan Soal AI</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
+                        Topik latihan soal AI dibuka menggunakan kode kelas unik dari bapak/ibu gurumu. Masukkan kode kelas sekarang untuk membuka paket soal!
+                    </p>
+                </div>
+                <div class="pt-2">
+                    <a href="{{ route('siswa.kelas.join') }}" 
+                       class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#00A88F] hover:bg-[#00907A] text-white font-black text-xs sm:text-sm shadow-md transition transform active:scale-95">
+                        <span>🚀 Masukan Kode Kelas Sekarang</span>
+                    </a>
+                </div>
             </div>
         @endforelse
     </div>
