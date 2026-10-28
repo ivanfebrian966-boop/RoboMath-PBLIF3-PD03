@@ -17,7 +17,7 @@
     </div>
 
     <!-- Quick Menu Navigasi Utama Siswa -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <a href="{{ route('siswa.quiz') }}" class="group bg-white p-5 rounded-3xl border-2 border-blue-200 hover:border-blue-500 shadow-sm transition transform hover:-translate-y-1 flex items-center gap-4">
             <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-2xl group-hover:scale-110 transition flex-shrink-0">
                 🧩
@@ -25,6 +25,16 @@
             <div>
                 <h4 class="font-black text-slate-800 text-sm">Latihan Soal AI</h4>
                 <p class="text-xs text-slate-500 font-medium">Uji kemampuan & terima pembahasan</p>
+            </div>
+        </a>
+
+        <a href="{{ route('siswa.kelas.join') }}" class="group bg-white p-5 rounded-3xl border-2 border-teal-200 hover:border-teal-500 shadow-sm transition transform hover:-translate-y-1 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-teal-100 text-[#00A88F] flex items-center justify-center text-2xl group-hover:scale-110 transition flex-shrink-0">
+                🔑
+            </div>
+            <div>
+                <h4 class="font-black text-slate-800 text-sm">Masukan Kode Kelas</h4>
+                <p class="text-xs text-slate-500 font-medium">Buka soal topik AI dari gurumu</p>
             </div>
         </a>
 

@@ -42,6 +42,18 @@
                             <span>Latihan Soal</span>
                         </a>
 
+                        {{-- Kode Kelas (Topik Soal AI dari Guru) --}}
+                        @php $isActive = request()->routeIs('siswa.kelas*'); @endphp
+                        <a href="{{ route('siswa.kelas.join') }}"
+                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#00A88F] text-white font-black shadow-[0_12px_24px_rgba(0,168,143,0.35)]' : 'text-[#001738] font-black border border-transparent hover:border-teal-200 hover:bg-teal-50 hover:shadow-xs' }} active:scale-95 group">
+                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-[#008f7a] text-white' : 'bg-[#CCFBF1] text-[#00A88F] group-hover:scale-105' }}">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                                </svg>
+                            </span>
+                            <span>Kode Kelas</span>
+                        </a>
+
                         
                         {{-- Leaderboard --}}
                         @php $isActive = request()->routeIs('siswa.leaderboard*'); @endphp
@@ -249,9 +261,10 @@
 
 <!-- ========================================== -->
 <!-- MOBILE & iOS SIDEBAR DRAWER (OFF-CANVAS)   -->
+<!-- HANYA TAMPIL DI UKURAN MOBILE (< md)       -->
 <!-- ========================================== -->
 @auth
-<div class="md:hidden"
+<div class="hidden max-md:block md:!hidden"
      x-cloak
      x-show="mobileSidebarOpen"
      @keydown.window.escape="mobileSidebarOpen = false">
@@ -385,6 +398,19 @@
                             </svg>
                         </span>
                         <span>Latihan Soal</span>
+                    </a>
+
+                    {{-- Kode Kelas (Topik Soal AI dari Guru) --}}
+                    @php $isActive = request()->routeIs('siswa.kelas*'); @endphp
+                    <a href="{{ route('siswa.kelas.join') }}"
+                       @click="mobileSidebarOpen = false"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#00A88F] text-white font-black shadow-[0_8px_20px_rgba(0,168,143,0.35)]' : 'text-[#001738] font-bold hover:bg-teal-50 hover:text-teal-900' }} active:scale-95 group">
+                        <span class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-[#008f7a] text-white' : 'bg-[#CCFBF1] text-[#00A88F] group-hover:scale-105' }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                            </svg>
+                        </span>
+                        <span>Kode Kelas</span>
                     </a>
 
                     {{-- Leaderboard --}}

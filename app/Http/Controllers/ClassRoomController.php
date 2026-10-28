@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassRoom;
+use App\Models\QuizAttempt;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -109,45 +110,98 @@ class ClassRoomController extends Controller
     }
 
     /**
-     * Siswa: Form join kelas
+     * Siswa: Form masukan kode kelas & daftar topik soal AI yang terbuka
      */
     public function joinForm()
     {
         $user = Auth::user();
-        $myClasses = $user->classRooms()->with('teacher')->get();
+        $myClasses = $user->classRooms()
+            ->with([
+                'teacher',
+                'topics' => function ($query) {
+                    $query->where('topik.is_active', true)
+                        ->where('topik.review_status', 'approved')
+                        ->withCount(['quizzes' => function ($q) {
+                            $q->where('is_active', true)
+                                ->where('review_status', 'approved');
+                        }]);
+                },
+                'topics.documentSummary',
+            ])
+            ->latest('anggota_kelas.created_at')
+            ->get();
 
-        return view('student.classes.join', compact('myClasses'));
+        // Hitung kuis yang sudah diselesaikan siswa per topik
+        $allTopicIds = $myClasses->flatMap->topics->pluck('id')->unique();
+        $completedQuizCountByTopic = [];
+
+        if ($allTopicIds->isNotEmpty()) {
+            $userAttempts = QuizAttempt::where('user_id', $user->id)
+                ->where('is_correct', true)
+                ->whereHas('quiz', fn ($q) => $q->whereIn('topic_id', $allTopicIds))
+                ->with('quiz:id,topic_id')
+                ->get()
+                ->groupBy('quiz.topic_id');
+
+            foreach ($allTopicIds as $tId) {
+                $completedQuizCountByTopic[$tId] = $userAttempts->get($tId, collect())->pluck('quiz_id')->unique()->count();
+            }
+        }
+
+        return view('student.classes.join', compact('myClasses', 'completedQuizCountByTopic'));
     }
 
     /**
-     * Siswa: Proses join kelas dengan kode
+     * Siswa: Proses masuk kelas dengan kode unik dari guru
      */
     public function join(Request $request)
     {
         $request->validate([
             'code' => ['required', 'string', 'size:6'],
+        ], [
+            'code.required' => 'Silakan masukkan 6 digit kode unik kelas dari gurumu.',
+            'code.size' => 'Kode unik kelas harus terdiri dari tepat 6 karakter.',
         ]);
 
-        $classRoom = ClassRoom::where('code', strtoupper($request->code))
+        $code = strtoupper(trim($request->code));
+
+        $classRoom = ClassRoom::where('code', $code)
             ->where('is_active', true)
+            ->with(['teacher', 'topics' => fn ($q) => $q->where('is_active', true)->where('review_status', 'approved')])
             ->first();
 
         if (! $classRoom) {
-            return back()->withErrors(['code' => 'Kode kelas tidak ditemukan atau tidak aktif.']);
+            return back()->withErrors([
+                'code' => "Kode kelas \"{$code}\" tidak ditemukan atau kelas sedang dinonaktifkan. Mohon periksa kembali kode unik dari gurumu.",
+            ])->withInput();
         }
 
         $user = Auth::user();
 
         if ($classRoom->students()->where('student_id', $user->id)->exists()) {
-            return back()->withErrors(['code' => 'Kamu sudah bergabung di kelas ini.']);
+            return back()->with('info', "Kamu sudah bergabung di kelas \"{$classRoom->name}\". Kamu bisa langsung mengerjakan paket soal topik AI di bawah!")->withInput();
         }
 
-        if ($user->kelas !== $classRoom->kelas_level) {
-            return back()->withErrors(['code' => 'Tingkat kelasmu tidak sesuai dengan kelas yang dipilih.']);
+        // Jika tingkat kelas siswa belum diatur, otomatis sesuaikan dengan kelas yang dimasuki
+        if (! $user->kelas) {
+            $user->update(['kelas' => $classRoom->kelas_level]);
+        } elseif ((int) $user->kelas !== (int) $classRoom->kelas_level) {
+            return back()->withErrors([
+                'code' => "Tingkat kelas kamu (Kelas {$user->kelas} SD) tidak sesuai dengan kelas ini (Kelas {$classRoom->kelas_level} SD). Minta kode kelas yang sesuai tingkat kelasmu kepada gurumu.",
+            ])->withInput();
         }
 
         $classRoom->students()->attach($user->id, ['joined_at' => now()]);
 
-        return back()->with('success', "Berhasil bergabung ke kelas \"{$classRoom->name}\"! 🎉");
+        $teacherName = $classRoom->teacher?->name ?? 'Guru';
+        $topicCount = $classRoom->topics->count();
+        $message = "Hore! Berhasil bergabung ke kelas \"{$classRoom->name}\" ({$teacherName}). ";
+        if ($topicCount > 0) {
+            $message .= "{$topicCount} topik latihan soal AI sekarang sudah terbuka dan siap kamu kerjakan! 🚀";
+        } else {
+            $message .= 'Topik soal AI dari gurumu akan segera tersedia di kelas ini! ✨';
+        }
+
+        return redirect()->route('siswa.kelas.join')->with('success', $message);
     }
 }

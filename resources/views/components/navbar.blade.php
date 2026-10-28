@@ -4,10 +4,10 @@
         <!-- Sisi Kiri: Tombol Hamburger (Mobile/iOS) + Logo + Divider + Badge Panel -->
         <div class="flex items-center gap-2 sm:gap-3.5">
             @auth
-                <!-- Tombol Hamburger Menu (Mobile & iOS) -->
+                <!-- Tombol Hamburger Menu (Hanya Terintegrasi pada Ukuran Mobile, Tersembunyi Total di Desktop & Laptop) -->
                 <button type="button"
                         @click="mobileSidebarOpen = !mobileSidebarOpen"
-                        class="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 transition-all duration-200 active:scale-90 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#FF8A00] cursor-pointer"
+                        class="hidden max-md:flex md:!hidden items-center justify-center w-10 h-10 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 transition-all duration-200 active:scale-90 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#FF8A00] cursor-pointer"
                         aria-label="Buka Menu Navigasi"
                         title="Buka Menu">
                     <svg class="w-5 h-5 text-amber-900" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
