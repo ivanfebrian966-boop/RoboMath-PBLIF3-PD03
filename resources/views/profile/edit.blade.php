@@ -3,67 +3,71 @@
 @section('title', 'Edit Profil - RoboMath')
 
 @section('content')
-<div class="max-w-xl mx-auto space-y-6">
+<div class="max-w-xl mx-auto space-y-6 font-poppins">
 
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-black text-slate-900">✏️ Edit Profil</h1>
-            <p class="text-sm text-slate-500 mt-0.5">Perbarui informasi akun Anda</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">✏️ Edit Profil</h1>
+            <p class="text-sm text-slate-500 mt-1">Perbarui informasi akun Anda</p>
         </div>
-        <a href="{{ route('profil.show') }}" class="text-sm text-amber-600 font-bold hover:underline">← Kembali</a>
+        <a href="{{ route('profil.show') }}" class="text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
+            ← Kembali
+        </a>
     </div>
 
     @if(session('success'))
-        <div class="p-4 bg-emerald-50 border-2 border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 font-bold text-sm shadow-xs">
-            <span class="text-xl">✅</span>
+        <div class="p-4 bg-emerald-50 border-2 border-emerald-300 text-emerald-800 rounded-2xl flex items-center gap-3 font-bold text-sm shadow-xs">
+            <svg class="w-5 h-5 flex-shrink-0 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
             <span>{{ session('success') }}</span>
         </div>
     @endif
 
-    <div class="bg-white border-2 border-amber-200/70 rounded-3xl p-6 sm:p-8 shadow-sm">
+    <div class="bg-white border border-slate-200/80 rounded-[28px] sm:rounded-[32px] p-6 sm:p-8 shadow-xs">
         <form action="{{ route('profil.update') }}" method="POST" class="space-y-5" id="profile-form">
             @csrf @method('PUT')
 
             <div>
-                <label class="block text-sm font-black text-slate-700 mb-1.5">Nama Lengkap <span class="text-rose-500">*</span></label>
+                <label class="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Nama Lengkap <span class="text-rose-500">*</span></label>
                 <input type="text" name="name" value="{{ old('name', $user->name) }}"
-                       class="w-full px-4 py-3 border-2 border-amber-200 rounded-2xl focus:outline-none focus:border-amber-400 bg-amber-50/30 font-medium text-slate-800 transition-colors @error('name') border-rose-400 bg-rose-50 @enderror">
-                @error('name')<p class="text-xs text-rose-500 mt-1 font-semibold">{{ $message }}</p>@enderror
+                       class="w-full px-4 py-3.5 border border-slate-200 rounded-[18px] focus:outline-none focus:border-[#00BA88] focus:ring-4 focus:ring-[#00BA88]/10 bg-slate-50/50 font-bold text-slate-800 transition-all @error('name') border-rose-400 bg-rose-50 @enderror">
+                @error('name')<p class="text-xs text-rose-500 mt-1.5 font-semibold">{{ $message }}</p>@enderror
             </div>
 
             <div>
-                <label class="block text-sm font-black text-slate-700 mb-1.5">Email <span class="text-rose-500">*</span></label>
+                <label class="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Email <span class="text-rose-500">*</span></label>
                 <input type="email" name="email" value="{{ old('email', $user->email) }}"
-                       class="w-full px-4 py-3 border-2 border-amber-200 rounded-2xl focus:outline-none focus:border-amber-400 bg-amber-50/30 font-medium text-slate-800 transition-colors @error('email') border-rose-400 bg-rose-50 @enderror">
-                @error('email')<p class="text-xs text-rose-500 mt-1 font-semibold">{{ $message }}</p>@enderror
+                       class="w-full px-4 py-3.5 border border-slate-200 rounded-[18px] focus:outline-none focus:border-[#00BA88] focus:ring-4 focus:ring-[#00BA88]/10 bg-slate-50/50 font-bold text-slate-800 transition-all @error('email') border-rose-400 bg-rose-50 @enderror">
+                @error('email')<p class="text-xs text-rose-500 mt-1.5 font-semibold">{{ $message }}</p>@enderror
             </div>
 
-            <div class="border-t border-amber-100 pt-4">
-                <p class="text-xs font-black text-slate-500 uppercase tracking-wider mb-3">Ubah Password (opsional)</p>
+            <div class="border-t border-slate-100 pt-5 mt-5">
+                <p class="text-xs font-black text-slate-400 uppercase tracking-wider mb-4">Ubah Password (opsional)</p>
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-black text-slate-700 mb-1.5">Password Baru</label>
+                        <label class="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Password Baru</label>
                         <input type="password" name="password"
                                placeholder="Kosongkan jika tidak ingin mengubah"
-                               class="w-full px-4 py-3 border-2 border-amber-200 rounded-2xl focus:outline-none focus:border-amber-400 bg-amber-50/30 font-medium text-slate-800 placeholder-slate-300 transition-colors @error('password') border-rose-400 bg-rose-50 @enderror">
-                        @error('password')<p class="text-xs text-rose-500 mt-1 font-semibold">{{ $message }}</p>@enderror
+                               class="w-full px-4 py-3.5 border border-slate-200 rounded-[18px] focus:outline-none focus:border-[#00BA88] focus:ring-4 focus:ring-[#00BA88]/10 bg-slate-50/50 font-bold text-slate-800 placeholder-slate-400 transition-all @error('password') border-rose-400 bg-rose-50 @enderror">
+                        @error('password')<p class="text-xs text-rose-500 mt-1.5 font-semibold">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-black text-slate-700 mb-1.5">Konfirmasi Password Baru</label>
+                        <label class="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Konfirmasi Password Baru</label>
                         <input type="password" name="password_confirmation"
                                placeholder="Ulangi password baru"
-                               class="w-full px-4 py-3 border-2 border-amber-200 rounded-2xl focus:outline-none focus:border-amber-400 bg-amber-50/30 font-medium text-slate-800 placeholder-slate-300 transition-colors">
+                               class="w-full px-4 py-3.5 border border-slate-200 rounded-[18px] focus:outline-none focus:border-[#00BA88] focus:ring-4 focus:ring-[#00BA88]/10 bg-slate-50/50 font-bold text-slate-800 placeholder-slate-400 transition-all">
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 pt-2">
+            <div class="flex items-center gap-3 pt-3">
                 <button type="submit"
-                        class="flex-1 py-3 bg-amber-400 hover:bg-amber-500 text-amber-900 font-black rounded-2xl shadow-sm transition-all duration-200 hover:scale-[1.02] cursor-pointer">
+                        class="flex-1 py-3.5 bg-[#EF4444] hover:bg-[#DC2626] text-white font-extrabold rounded-full shadow-[0_4px_14px_rgba(239,68,68,0.35)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
                     Simpan Perubahan
                 </button>
                 <a href="{{ route('profil.show') }}"
-                   class="flex-1 py-3 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl transition-colors">
+                   class="flex-1 py-3.5 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-full transition-colors">
                     Batal
                 </a>
             </div>
@@ -71,4 +75,3 @@
     </div>
 </div>
 @endsection
-

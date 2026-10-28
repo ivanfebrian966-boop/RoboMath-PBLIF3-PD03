@@ -377,9 +377,11 @@ PROMPT;
         $attempts = QuizAttempt::where('user_id', $user->id)
             ->whereHas('quiz', fn ($q) => $q->where('topic_id', $topic->id))
             ->with('quiz')
-            ->latest()
+            ->latest('id')
             ->take(10)
-            ->get();
+            ->get()
+            ->reverse()
+            ->values();
 
         $totalCorrect = $attempts->where('is_correct', true)->count();
         $totalAttempts = $attempts->count();
