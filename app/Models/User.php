@@ -66,12 +66,12 @@ class User extends Authenticatable
 
     public function quizAttempts(): HasMany
     {
-        return $this->hasMany(PercobaanSoal::class);
+        return $this->hasMany(PercobaanSoal::class, 'user_id');
     }
 
     public function progress(): HasMany
     {
-        return $this->hasMany(Progress::class);
+        return $this->hasMany(Progress::class, 'user_id');
     }
 
     public function badges(): BelongsToMany
@@ -108,12 +108,12 @@ class User extends Authenticatable
 
     public function sesiBelajar(): HasMany
     {
-        return $this->hasMany(SesiBelajar::class);
+        return $this->hasMany(SesiBelajar::class, 'user_id');
     }
 
     public function misiPengguna(): HasMany
     {
-        return $this->hasMany(MisiPengguna::class);
+        return $this->hasMany(MisiPengguna::class, 'user_id');
     }
 
     public function pengumpulanTugas(): HasMany

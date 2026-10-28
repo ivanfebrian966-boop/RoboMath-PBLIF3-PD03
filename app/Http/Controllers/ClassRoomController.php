@@ -80,7 +80,10 @@ class ClassRoomController extends Controller
         });
 
         return redirect()->route('guru.classes.index')
-            ->with('success', "Kelas \"{$request->name}\" berhasil dibuat! Kode kelas: {$code} 🎉");
+            ->with('class_created', [
+                'name' => $classRoom->name,
+                'code' => $classRoom->code,
+            ]);
     }
 
     public function show(ClassRoom $classRoom)

@@ -21,10 +21,16 @@
         </div>
     </div>
 
-    @if(session('success'))
-    <div class="p-4 bg-emerald-50 border-2 border-emerald-300 text-emerald-800 rounded-2xl font-bold flex items-center gap-3">
-        <span class="text-2xl">✅</span>
-        <span>{{ session('success') }}</span>
+    @if(session('class_created'))
+    <div role="alert" class="p-5 bg-emerald-50 border-2 border-emerald-300 text-emerald-900 rounded-2xl shadow-sm flex flex-col sm:flex-row sm:items-center gap-4">
+        <span class="text-3xl" aria-hidden="true">✅</span>
+        <div class="flex-1">
+            <p class="font-black">Kelas {{ session('class_created.name') }} berhasil dibuat!</p>
+            <p class="text-sm text-emerald-800 mt-1">Bagikan kode ini kepada siswa agar mereka bisa bergabung:</p>
+        </div>
+        <div class="font-mono bg-white border-2 border-emerald-300 text-emerald-800 text-xl font-black tracking-widest rounded-xl px-5 py-3">
+            {{ session('class_created.code') }}
+        </div>
     </div>
     @endif
 

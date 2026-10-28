@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Pengguna;
 use App\Models\Quiz;
 use App\Models\Topic;
 use App\Models\User;
@@ -116,6 +117,25 @@ class QuizEssayTest extends TestCase
 
         $this->actingAs($student)->get(route('siswa.quiz.result', $topic))->assertOk();
         $this->assertNotNull($attempt->sesiBelajar->fresh()->selesai_pada);
+    }
+
+    public function test_pengguna_can_create_and_retrieve_learning_sessions(): void
+    {
+        $this->seed();
+
+        $student = Pengguna::where('role', 'siswa')->firstOrFail();
+        $topic = Topic::firstOrFail();
+
+        $session = $student->sesiBelajar()->create([
+            'topic_id' => $topic->id,
+            'dimulai_pada' => now(),
+        ]);
+
+        $this->assertDatabaseHas('sesi_belajar', [
+            'id' => $session->id,
+            'user_id' => $student->id,
+        ]);
+        $this->assertSame($session->id, $student->sesiBelajar()->firstOrFail()->id);
     }
 
     public function test_student_cannot_answer_quiz_from_a_topic_not_assigned_to_their_class(): void

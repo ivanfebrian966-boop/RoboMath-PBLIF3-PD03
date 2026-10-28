@@ -96,6 +96,11 @@ class BusinessWorkflowTest extends TestCase
 
         $classRoom = ClassRoom::where('teacher_id', $teacher->id)->firstOrFail();
         $this->assertSame([$approvedTopic->id], $classRoom->topics()->pluck('topik.id')->all());
+
+        $this->get(route('guru.classes.index'))
+            ->assertSee('Kelas Kelas Pecahan berhasil dibuat!')
+            ->assertSee('Bagikan kode ini kepada siswa')
+            ->assertSee($classRoom->code);
     }
 
     public function test_student_can_join_matching_grade_class_and_cannot_join_another_grade(): void
