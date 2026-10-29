@@ -420,13 +420,13 @@
 <!-- ======================================================== -->
 <!-- LOADING MODAL OVERLAY -->
 <!-- ======================================================== -->
-<div id="result-loading" class="fixed inset-0 z-[80] hidden bg-[#FAF6EF] flex items-center justify-center overflow-y-auto p-5 sm:p-10">
-    <div class="w-full max-w-5xl py-8 text-center space-y-8 sm:space-y-10">
-        <div class="relative w-44 h-44 sm:w-48 sm:h-48 mx-auto">
-            <div class="absolute inset-0 rounded-full border-[10px] border-[#E8E1D5]"></div>
-            <div class="absolute inset-0 rounded-full border-[10px] border-transparent border-t-[#2563EB] border-r-[#2563EB] -rotate-45 animate-spin"></div>
+<div id="result-loading" class="fixed inset-0 z-[80] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-sm sm:max-w-md bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-100 text-center space-y-4 font-poppins">
+        <div class="relative w-20 h-20 sm:w-24 sm:h-24 mx-auto">
+            <div class="absolute inset-0 rounded-full border-4 border-slate-100"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-[#2563EB] border-r-[#2563EB] -rotate-45 animate-spin"></div>
             <div class="absolute inset-0 flex items-center justify-center">
-                <svg class="w-24 h-24" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                <svg class="w-10 h-10 sm:w-12 sm:h-12" viewBox="0 0 80 80" fill="none" aria-hidden="true">
                     <path d="M40 11v10" stroke="#17182F" stroke-width="5" stroke-linecap="round"/>
                     <circle cx="40" cy="10" r="6" fill="#EF342B"/>
                     <rect x="16" y="22" width="48" height="42" rx="15" fill="#2563EB" stroke="#17182F" stroke-width="5"/>
@@ -436,18 +436,18 @@
                 </svg>
             </div>
         </div>
-        <div class="space-y-5">
-            <h3 class="text-3xl sm:text-5xl font-black text-[#17182F] tracking-tight" id="loading-stage-text">Mengekstrak materi dokumen...</h3>
-            <p class="text-lg sm:text-2xl text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed">RoboMath sedang membaca isi dokumen dan menyusun butir soal.</p>
-            <p class="inline-flex items-center justify-center px-6 py-3 rounded-full border-2 border-[#FFDE67] bg-[#FFFBEB] text-base sm:text-xl text-amber-950 font-bold">
-                AI lokal bisa butuh 1–3 menit. Mohon ditunggu.
-            </p>
+        <div class="space-y-2">
+            <h3 class="text-base sm:text-lg font-black text-[#17182F] tracking-tight" id="loading-stage-text">Mengekstrak materi dokumen...</h3>
+            <p class="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">RoboMath sedang membaca isi dokumen dan menyusun butir soal.</p>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#FFDE67] bg-[#FFFBEB] text-[11px] sm:text-xs text-amber-900 font-semibold">
+                <span>⏱️</span> AI lokal butuh 1–3 menit. Mohon ditunggu.
+            </div>
         </div>
-        <div class="space-y-3 max-w-4xl mx-auto">
-            <div class="w-full bg-[#E8E1D5] h-5 rounded-full overflow-hidden">
+        <div class="space-y-2 pt-1 max-w-xs mx-auto">
+            <div class="w-full bg-slate-100 h-2 sm:h-2.5 rounded-full overflow-hidden">
                 <div id="loading-progress-bar" class="bg-[#2563EB] h-full w-0 rounded-full transition-all duration-700"></div>
             </div>
-            <div class="flex items-center justify-between text-base sm:text-xl font-bold text-slate-600">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-500">
                 <span id="loading-progress-label">Menyiapkan dokumen</span>
                 <span id="loading-progress-percent">0%</span>
             </div>

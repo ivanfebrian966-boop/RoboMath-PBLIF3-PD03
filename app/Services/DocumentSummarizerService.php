@@ -158,6 +158,18 @@ class DocumentSummarizerService
                 $pdf = $parser->parseFile($filePath);
                 $text = $pdf->getText();
 
+                if (empty(trim($text))) {
+                    $pages = $pdf->getPages();
+                    $pageTexts = [];
+                    foreach ($pages as $page) {
+                        $pText = trim($page->getText());
+                        if ($pText !== '') {
+                            $pageTexts[] = $pText;
+                        }
+                    }
+                    $text = implode("\n\n", $pageTexts);
+                }
+
                 if (! empty(trim($text))) {
                     return trim($text);
                 }
