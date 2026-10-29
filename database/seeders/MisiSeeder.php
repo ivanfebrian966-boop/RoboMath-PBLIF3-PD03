@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Misi;
+use App\Models\MisiPengguna;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class MisiSeeder extends Seeder
@@ -31,10 +33,25 @@ class MisiSeeder extends Seeder
         ];
 
         foreach ($missions as $mission) {
-            Misi::updateOrCreate(
+            $misiModel = Misi::updateOrCreate(
                 ['judul' => $mission['judul']],
                 $mission
             );
+
+            $students = User::where('role', 'siswa')->get();
+            foreach ($students as $student) {
+                MisiPengguna::firstOrCreate(
+                    [
+                        'user_id' => $student->id,
+                        'misi_id' => $misiModel->id,
+                    ],
+                    [
+                        'judul' => $mission['judul'],
+                        'deskripsi' => $mission['deskripsi'],
+                        'status' => 'belum',
+                    ]
+                );
+            }
         }
     }
 }

@@ -41,6 +41,7 @@ class QuizSeeder extends Seeder
                 'difficulty' => 'mudah',
                 'points' => 10,
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
             [
                 'topic_id' => $urutan->id,
@@ -58,6 +59,7 @@ class QuizSeeder extends Seeder
                 'difficulty' => 'sedang',
                 'points' => 15,
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
 
             // --- PERCABANGAN ---
@@ -77,6 +79,7 @@ class QuizSeeder extends Seeder
                 'difficulty' => 'mudah',
                 'points' => 10,
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
             [
                 'topic_id' => $percabangan->id,
@@ -94,6 +97,7 @@ class QuizSeeder extends Seeder
                 'difficulty' => 'sedang',
                 'points' => 15,
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
 
             // --- PENGULANGAN ---
@@ -113,6 +117,7 @@ class QuizSeeder extends Seeder
                 'difficulty' => 'mudah',
                 'points' => 10,
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
             [
                 'topic_id' => $pengulangan->id,
@@ -130,6 +135,7 @@ class QuizSeeder extends Seeder
                 'difficulty' => 'sedang',
                 'points' => 15,
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
 
             // --- POLA ---
@@ -149,6 +155,7 @@ class QuizSeeder extends Seeder
                 'difficulty' => 'mudah',
                 'points' => 10,
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
 
             // --- DEKOMPOSISI ---
@@ -168,6 +175,7 @@ class QuizSeeder extends Seeder
                 'difficulty' => 'sedang',
                 'points' => 15,
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
         ];
 

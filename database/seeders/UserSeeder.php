@@ -11,40 +11,45 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin
-        User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'admin@robomath.id'],
             [
                 'name' => 'Admin RoboMath',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
+                'is_active' => true,
             ]
         );
 
         // Guru
-        $guru = User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'guru@robomath.id'],
             [
                 'name' => 'Ibu Guru Budi',
                 'password' => Hash::make('password'),
                 'role' => 'guru',
+                'is_active' => true,
             ]
         );
 
         // Siswa 1
-        $siswa1 = User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'siswa@robomath.id'],
             [
                 'name' => 'Budi Pratama',
                 'password' => Hash::make('password'),
                 'role' => 'siswa',
                 'kelas' => 1,
-                'total_score' => 120,
+                'total_score' => 130,
                 'level' => 1,
+                'streak_saat_ini' => 1,
+                'streak_terbaik' => 1,
+                'is_active' => true,
             ]
         );
 
         // Siswa 2
-        $siswa2 = User::updateOrCreate(
+        User::firstOrCreate(
             ['email' => 'ani@robomath.id'],
             [
                 'name' => 'Ani Lestari',
@@ -53,22 +58,33 @@ class UserSeeder extends Seeder
                 'kelas' => 1,
                 'total_score' => 250,
                 'level' => 1,
+                'streak_saat_ini' => 3,
+                'streak_terbaik' => 5,
+                'is_active' => true,
             ]
         );
 
         // Alias for backwards compatibility
-        User::updateOrCreate(['email' => 'siswa@algokids.id'], [
-            'name' => 'Budi Pratama',
-            'password' => Hash::make('password'),
-            'role' => 'siswa',
-            'kelas' => 1,
-            'total_score' => 120,
-            'level' => 1,
-        ]);
-        User::updateOrCreate(['email' => 'guru@algokids.id'], [
-            'name' => 'Ibu Guru Budi',
-            'password' => Hash::make('password'),
-            'role' => 'guru',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'siswa@algokids.id'],
+            [
+                'name' => 'Budi Pratama',
+                'password' => Hash::make('password'),
+                'role' => 'siswa',
+                'kelas' => 1,
+                'total_score' => 130,
+                'level' => 1,
+                'is_active' => true,
+            ]
+        );
+        User::firstOrCreate(
+            ['email' => 'guru@algokids.id'],
+            [
+                'name' => 'Ibu Guru Budi',
+                'password' => Hash::make('password'),
+                'role' => 'guru',
+                'is_active' => true,
+            ]
+        );
     }
 }

@@ -42,11 +42,10 @@ class DocumentSummarizerTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.document-summarizer.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Ringkas Dokumen Jadi Soal AI');
-        $response->assertSee('Unggah modul, silabus, lembar kerja');
+        $response->assertSee('Kelola Materi');
+        $response->assertSee('Unggah dokumen materi');
         $response->assertSee('Ajukan soal ke Review AI');
         $response->assertSee('Mengekstrak materi dokumen...');
-        $response->assertSee('Tingkat kesulitan');
     }
 
     public function test_admin_can_summarize_direct_text_content(): void

@@ -1,114 +1,109 @@
 @extends('layouts.admin')
 
-@section('title', 'Ringkasan Dokumen Jadi Soal AI - RoboMath')
+@section('title', 'Kelola Materi - RoboMath')
 
 @section('content')
-<div class="space-y-5 sm:space-y-6">
+<style>
+    .kelola-materi-page,
+    .kelola-materi-page *,
+    .kelola-materi-page button,
+    .kelola-materi-page input,
+    .kelola-materi-page select,
+    .kelola-materi-page textarea {
+        font-family: 'Poppins', sans-serif !important;
+    }
+</style>
+
+<div class="kelola-materi-page space-y-5 sm:space-y-6">
 
     <!-- ======================================================== -->
     <!-- 1. HEADER HERO BANNER -->
     <!-- ======================================================== -->
     <div class="rounded-[28px] bg-[#2563EB] p-6 sm:p-8 text-white shadow-md shadow-blue-500/10">
-        <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Ringkas Dokumen Jadi Soal AI
+        <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            Kelola Materi
         </h1>
-        <p class="text-blue-100 text-xs sm:text-sm font-medium mt-2 max-w-2xl leading-relaxed">
-            Unggah modul, silabus, lembar kerja, atau masukkan teks materi. AI langsung mengubahnya menjadi butir soal latihan lengkap dengan kunci dan pembahasan.
+        <p class="text-blue-100 text-xs sm:text-sm font-normal mt-2 max-w-2xl leading-relaxed">
+            Unggah dokumen materi, lalu biarkan AI meringkasnya menjadi paket soal yang siap dipakai siswa.
         </p>
     </div>
 
     <!-- ======================================================== -->
-    <!-- 2. METRICS CARD (DOKUMEN DIPROSES | KATA DIANALISIS | SOAL DIBUAT) -->
+    <!-- 2. KPI STAT CARDS (DOKUMEN DIUPLOAD | SEDANG DIPROSES | PAKET SOAL SIAP) -->
     <!-- ======================================================== -->
-    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 shadow-xs border border-slate-100 grid grid-cols-3 divide-x divide-slate-100 text-center">
-        <div class="px-2">
-            <div class="text-2xl sm:text-3xl font-black text-[#EF4444]" id="stat-total-summaries">{{ $totalSummaries }}</div>
-            <div class="text-[11px] sm:text-xs font-semibold text-slate-400 mt-0.5">Dokumen diproses</div>
-        </div>
-        <div class="px-2">
-            <div class="text-2xl sm:text-3xl font-black text-slate-900">{{ number_format($totalWordsAnalyzed) }}</div>
-            <div class="text-[11px] sm:text-xs font-semibold text-slate-400 mt-0.5">Kata dianalisis</div>
-        </div>
-        <div class="px-2">
-            <div class="text-2xl sm:text-3xl font-black text-[#2563EB]">5</div>
-            <div class="text-[11px] sm:text-xs font-semibold text-slate-400 mt-0.5">Soal dibuat</div>
-        </div>
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- 3. STATUS / "MENUNGGU DOKUMEN ANDA" CARD -->
-    <!-- ======================================================== -->
-    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center flex-shrink-0">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {{-- Card 1: Dokumen Diupload (orange) --}}
+        <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-[#FFF0E6] text-[#EA580C] flex items-center justify-center flex-shrink-0">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
             </div>
             <div>
-                <h3 class="font-black text-slate-900 text-sm sm:text-base">Menunggu dokumen Anda</h3>
-                <p class="text-xs font-medium text-slate-400 mt-0.5">Dokumen akan dibaca AI setelah Anda menekan tombol mulai.</p>
+                <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500">DOKUMEN DIUPLOAD</div>
+                <div class="text-3xl font-bold text-slate-900 leading-tight" id="stat-total-summaries">{{ $totalSummaries }}</div>
+                <div class="text-xs font-normal text-slate-400 mt-0.5">Materi terdaftar</div>
             </div>
         </div>
 
-        <div class="space-y-1.5 md:text-right">
-            <div class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-[#D97706]">HASIL YANG DIBUAT</div>
-            <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-bold text-slate-700">
-                <span class="inline-flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
-                    Soal otomatis
-                </span>
-                <span class="inline-flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
-                    Pilihan ganda A-D
-                </span>
-                <span class="inline-flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-[#10B981]"></span>
-                    Kunci jawaban
-                </span>
-                <span class="inline-flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-[#2563EB]"></span>
-                    Pembahasan
-                </span>
+        {{-- Card 2: Sedang Diproses (blue) --}}
+        <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-[#EBF3FF] text-[#2563EB] flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500">SEDANG DIPROSES</div>
+                @php $inProcessCount = \App\Models\DocumentSummary::where('status', 'proses')->count(); @endphp
+                <div class="text-3xl font-bold text-slate-900 leading-tight">{{ $inProcessCount }}</div>
+                <div class="text-xs font-normal text-slate-400 mt-0.5">{{ $inProcessCount === 0 ? 'Antrean AI kosong' : 'Dokumen menunggu' }}</div>
+            </div>
+        </div>
+
+        {{-- Card 3: Paket Soal Siap (green) --}}
+        <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-[#E1F8EC] text-[#059669] flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500">PAKET SOAL SIAP</div>
+                <div class="text-3xl font-bold text-slate-900 leading-tight">{{ \App\Models\DocumentSummary::where('status', 'selesai')->count() }}</div>
+                <div class="text-xs font-normal text-slate-400 mt-0.5">Siap dikerjakan siswa</div>
             </div>
         </div>
     </div>
 
     <!-- ======================================================== -->
-    <!-- 4. MAIN FORM CARD (STEP 1 & STEP 2) -->
+    <!-- 3. TWO-COLUMN LAYOUT: FORM + RIWAYAT -->
     <!-- ======================================================== -->
-    <div class="bg-white rounded-3xl sm:rounded-[32px] p-6 sm:p-8 shadow-xs border border-slate-100">
-        <form id="summarizer-form" enctype="multipart/form-data" method="POST"
-              action="{{ route('admin.document-summarizer.summarize') }}"
-              data-no-spa class="space-y-6">
-            @csrf
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
 
-            <!-- Hidden fields for format compatibility -->
-            <input type="hidden" name="summary_style" value="kuis_latihan">
-            <input type="hidden" name="summary_length" id="summary_length" value="5_soal">
+        <!-- LEFT: FORM CARD "Ubah dokumen jadi soal" -->
+        <div class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100">
+            <h2 class="text-lg font-bold text-slate-900 mb-5">Ubah dokumen jadi soal</h2>
 
-            <!-- STEP 1: PILIH DOKUMEN SUMBER -->
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2.5">
-                        <span class="w-7 h-7 rounded-full bg-red-50 text-red-500 border border-red-200 flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
-                        <div>
-                            <h2 class="text-sm sm:text-base font-black text-slate-800">Pilih dokumen sumber</h2>
-                            <p class="text-xs text-slate-400 font-medium">Pilih berkas dari perangkat atau masukkan teks materi.</p>
-                        </div>
-                    </div>
+            <form id="summarizer-form" enctype="multipart/form-data" method="POST"
+                  action="{{ route('admin.document-summarizer.summarize') }}"
+                  data-no-spa class="space-y-4">
+                @csrf
 
-                    <!-- Input Mode Toggle -->
-                    <div class="inline-flex p-1 rounded-full bg-slate-100 text-xs font-bold">
-                        <button type="button" onclick="setInputMode('file')" id="btn-mode-file"
-                                class="px-4 py-1.5 rounded-full transition-all bg-white text-slate-800 border border-slate-200 shadow-xs">
-                            Unggah file
-                        </button>
-                        <button type="button" onclick="setInputMode('text')" id="btn-mode-text"
-                                class="px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800">
-                            Tempel teks
-                        </button>
-                    </div>
+                <!-- Hidden fields for format compatibility -->
+                <input type="hidden" name="summary_style" value="kuis_latihan">
+                <input type="hidden" name="summary_length" id="summary_length" value="5_soal">
+
+                <!-- Input Mode Toggle -->
+                <div class="inline-flex p-1 rounded-full bg-slate-100 text-xs font-bold">
+                    <button type="button" onclick="setInputMode('file')" id="btn-mode-file"
+                            class="px-4 py-1.5 rounded-full transition-all bg-white text-slate-800 border border-slate-200 shadow-xs">
+                        Unggah file
+                    </button>
+                    <button type="button" onclick="setInputMode('text')" id="btn-mode-text"
+                            class="px-4 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-800">
+                        Tempel teks
+                    </button>
                 </div>
 
                 <!-- 1. MODE FILE UPLOAD -->
@@ -118,33 +113,29 @@
 
                     <!-- Dropzone -->
                     <div id="dropzone" onclick="document.getElementById('document_file').click()"
-                         class="border-2 border-dashed border-slate-200 hover:border-blue-400 bg-white hover:bg-blue-50/20 rounded-2xl p-8 sm:p-10 text-center transition-all cursor-pointer">
-                        <div class="w-12 h-12 mx-auto rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                         class="border-2 border-dashed border-[#84A9FF] bg-[#EEF4FF] hover:bg-[#E5EFFF] rounded-2xl p-7 text-center transition-all cursor-pointer">
+                        <div class="w-12 h-12 mx-auto rounded-xl bg-[#2563EB] text-white flex items-center justify-center shadow-xs">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                             </svg>
                         </div>
-                        <p class="text-xs sm:text-sm font-bold text-slate-800 mt-3">
-                            Klik untuk memilih berkas atau seret & lepas ke sini
-                        </p>
-                        <p class="text-[11px] sm:text-xs text-slate-400 font-medium mt-1">
-                            PDF, Word (DOCX), TXT, Markdown • maks. 20 MB
-                        </p>
-                        <span class="mt-4 inline-block px-5 py-1.5 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-full shadow-xs hover:bg-slate-50">
-                            Pilih berkas
+                        <p class="text-sm font-bold text-slate-800 mt-3">Tarik dokumen ke sini</p>
+                        <p class="text-xs text-slate-400 font-normal mt-1">PDF, DOCX, PPTX • maksimal 10 MB</p>
+                        <span class="mt-3.5 inline-block px-5 py-1.5 text-xs font-semibold text-[#2563EB] bg-white border border-[#BFDBFE] rounded-xl shadow-xs hover:bg-blue-50 transition-colors">
+                            Pilih dokumen
                         </span>
                     </div>
 
                     <!-- Selected File Preview Card -->
-                    <div id="file-preview-card" class="hidden bg-slate-50/80 border border-slate-200 rounded-2xl p-4 transition-all">
+                    <div id="file-preview-card" class="hidden bg-[#F8F5EE] border border-slate-200 rounded-2xl p-4 transition-all">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex flex-col items-center justify-center font-black shadow-xs flex-shrink-0" id="file-ext-badge-container">
-                                    <span class="text-[9px] font-black uppercase tracking-wider" id="file-ext-badge">PDF</span>
+                                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex flex-col items-center justify-center font-bold shadow-xs flex-shrink-0" id="file-ext-badge-container">
+                                    <span class="text-[9px] font-bold uppercase tracking-wider" id="file-ext-badge">PDF</span>
                                 </div>
                                 <div class="min-w-0">
                                     <div class="font-bold text-slate-800 text-xs sm:text-sm truncate" id="file-name-label">document.pdf</div>
-                                    <div class="text-[11px] text-slate-400 font-medium mt-0.5">
+                                    <div class="text-[11px] text-slate-400 font-normal mt-0.5">
                                         <span id="file-size-label">1.2 MB</span>
                                         <span class="mx-1">•</span>
                                         <button type="button" onclick="document.getElementById('document_file').click()" class="text-blue-600 hover:underline font-bold">
@@ -165,237 +156,209 @@
                     <div class="relative">
                         <textarea id="direct_text" name="direct_text" rows="5"
                                   placeholder="Salin atau ketik teks materi pembelajaran di sini (minimal 20 karakter)..."
-                                  class="w-full rounded-2xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 p-4 text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 resize-y transition-all"
+                                  class="w-full rounded-2xl border-0 bg-[#F8F5EE] focus:ring-2 focus:ring-blue-500 focus:bg-white p-4 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 resize-y transition-all"
                                   oninput="updateTextCounter(this)"></textarea>
-                        <div class="absolute bottom-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500" id="text-char-count">
+                        <div class="absolute bottom-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-200 text-slate-600" id="text-char-count">
                             0 kata
                         </div>
                     </div>
                 </div>
 
-                <!-- Input Judul Dokumen (Opsional) -->
-                <div class="space-y-1.5 pt-1">
+                <!-- Judul Paket Soal -->
+                <div class="space-y-1.5">
                     <label for="custom_title" class="block text-xs font-bold text-slate-700">
-                        Judul dokumen / topik <span class="font-normal text-slate-400">(opsional)</span>
+                        Judul paket soal
                     </label>
-                    <input type="text" id="custom_title" name="custom_title" placeholder="Contoh: Modul Pecahan Sederhana Kelas 4 SD"
-                           class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 transition-all">
+                    <input type="text" id="custom_title" name="custom_title" placeholder="Contoh: Hasil Pembelajaran Matematika"
+                           class="w-full px-4 py-3 rounded-xl border-0 bg-[#F8F5EE] focus:ring-2 focus:ring-blue-500 focus:bg-white text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 transition-all">
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Tingkat Kelas, Kategori Topik & Poin Per Soal -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label for="kelas_level" class="block text-xs font-bold text-slate-700 mb-1.5">Tingkat kelas topik</label>
-                        <select id="kelas_level" name="kelas_level" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-800">
+                        <label for="kelas_level" class="block text-xs font-bold text-slate-700 mb-1.5">Tingkat kelas</label>
+                        <select id="kelas_level" name="kelas_level" class="w-full px-3 py-3 rounded-xl border-0 bg-[#F8F5EE] focus:ring-2 focus:ring-blue-500 focus:bg-white text-xs sm:text-sm font-medium text-slate-800">
                             @for($level = 1; $level <= 6; $level++)
                                 <option value="{{ $level }}">Kelas {{ $level }} SD</option>
                             @endfor
                         </select>
                     </div>
                     <div>
-                        <label for="topic_category" class="block text-xs font-bold text-slate-700 mb-1.5">Kategori topik</label>
-                        <select id="topic_category" name="topic_category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-800">
+                        <label for="topic_category" class="block text-xs font-bold text-slate-700 mb-1.5">Topik materi</label>
+                        <select id="topic_category" name="topic_category" class="w-full px-3 py-3 rounded-xl border-0 bg-[#F8F5EE] focus:ring-2 focus:ring-blue-500 focus:bg-white text-xs sm:text-sm font-medium text-slate-800">
                             <option value="urutan">Urutan</option>
+                            <option value="pola">Pola &amp; Pattern</option>
                             <option value="percabangan">Percabangan</option>
                             <option value="pengulangan">Pengulangan</option>
-                            <option value="pola">Pola</option>
                             <option value="dekomposisi" selected>Dekomposisi</option>
                         </select>
                     </div>
-                </div>
-            </div>
-
-            <!-- STEP 2: INSTRUKSI SOAL -->
-            <div class="space-y-3 pt-2">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-7 h-7 rounded-full bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
                     <div>
-                        <h2 class="text-sm sm:text-base font-black text-slate-800">
-                            Instruksi soal <span class="text-xs font-normal text-slate-400">- opsional</span>
-                        </h2>
-                        <p class="text-xs text-slate-400 font-medium">Beri arahan khusus kepada AI tentang soal yang diinginkan.</p>
+                        <label for="points" class="block text-xs font-bold text-slate-700 mb-1.5">Poin per soal</label>
+                        <div class="relative">
+                            <input type="number" id="points" name="points" value="10" min="1" max="100" placeholder="10"
+                                   class="w-full pl-3.5 pr-12 py-3 rounded-xl border-0 bg-[#F8F5EE] focus:ring-2 focus:ring-blue-500 focus:bg-white text-xs sm:text-sm font-bold text-slate-800 transition-all">
+                            <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 pointer-events-none">Poin</span>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Instruksi tambahan -->
                 <div class="space-y-2">
+                    <label for="custom_prompt" class="block text-xs font-bold text-slate-700">Instruksi tambahan untuk AI</label>
                     <textarea id="custom_prompt" name="custom_prompt" rows="3"
-                              placeholder='Contoh: "Buatkan 10 soal cerita tingkat HOTS tentang pecahan untuk kelas 4 SD."'
-                              class="w-full rounded-2xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 p-4 text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 resize-y transition-all"></textarea>
+                              placeholder="Contoh: fokus pada soal cerita"
+                              class="w-full rounded-2xl border-0 bg-[#F8F5EE] focus:ring-2 focus:ring-blue-500 focus:bg-white p-4 text-xs sm:text-sm font-medium text-slate-800 placeholder:text-slate-400 resize-y transition-all"></textarea>
 
                     <!-- Prompt Suggestion Chips -->
-                    <div class="flex items-center gap-2 flex-wrap pt-1">
-                        <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal pesan / uraian dengan pembahasan detail dan langkah pengerjaannya.')"
-                                class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:border-red-300 hover:bg-red-50/50 flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
-                            <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span> 5 soal pesan / uraian
-                        </button>
-                        <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal HOTS (Higher Order Thinking Skills) dengan analisis penalaran tingkat tinggi.')"
-                                class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:border-amber-300 hover:bg-amber-50/50 flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
-                            <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span> 5 soal HOTS
-                        </button>
+                    <div class="flex items-center gap-2 flex-wrap pt-0.5">
                         <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal cerita kontekstual matematika ramah anak SD dengan skenario sehari-hari.')"
-                                class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50 flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
-                            <span class="w-2 h-2 rounded-full bg-[#10B981]"></span> 5 soal cerita
+                                class="px-3.5 py-1.5 rounded-full text-xs font-medium text-[#059669] bg-[#E1F8EC] hover:bg-[#c9f2dc] transition-all cursor-pointer">
+                            Soal cerita
+                        </button>
+                        <button type="button" onclick="setPromptTemplate('Buatkan 5 butir soal pilihan ganda (A, B, C, D) lengkap dengan kunci jawaban dan pembahasan.')"
+                                class="px-3.5 py-1.5 rounded-full text-xs font-medium text-[#059669] bg-[#E1F8EC] hover:bg-[#c9f2dc] transition-all cursor-pointer">
+                            Pilihan ganda
                         </button>
                         <button type="button" onclick="setPromptTemplate('Buatkan 10 butir soal kuis evaluasi komprehensif mencakup semua konsep pada dokumen.')"
-                                class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50/50 flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
-                            <span class="w-2 h-2 rounded-full bg-[#2563EB]"></span> 10 soal evaluasi
+                                class="px-3.5 py-1.5 rounded-full text-xs font-medium text-[#059669] bg-[#E1F8EC] hover:bg-[#c9f2dc] transition-all cursor-pointer">
+                            10 soal
                         </button>
                     </div>
-
-                    <p class="text-[11px] sm:text-xs text-slate-400 font-medium pt-1">
-                        <strong>Mode default:</strong> jika instruksi kosong, AI membuat 5 soal pilihan ganda (A, B, C, D) lengkap dengan kunci jawaban dan pembahasan.
-                    </p>
                 </div>
-            </div>
 
-            <!-- FORM FOOTER -->
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
-                <p class="text-xs font-semibold text-slate-600">
-                    Dokumen, potongan teks, topik, dan soal akan disimpan untuk proses tinjauan admin.
-                </p>
-
+                <!-- Submit Button -->
                 <button type="submit" id="btn-submit-summarize"
-                        class="w-full sm:w-auto px-7 py-3 rounded-full font-bold text-white bg-[#FF3B30] hover:bg-[#E0352B] shadow-lg shadow-red-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
+                        class="w-full py-3.5 rounded-2xl font-bold text-white bg-[#056B48] hover:bg-[#04583B] active:scale-[0.99] transition-all flex items-center justify-center gap-2 text-sm cursor-pointer shadow-md shadow-emerald-950/10">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
                     </svg>
-                    <span>Mulai buat soal dengan AI</span>
+                    <span>Hasilkan soal sekarang</span>
                 </button>
-            </div>
-        </form>
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- 5. RIWAYAT PAKET SOAL DOKUMEN TABLE CARD -->
-    <!-- ======================================================== -->
-    <div class="bg-white rounded-3xl sm:rounded-[32px] p-6 sm:p-8 shadow-xs border border-slate-100 space-y-5">
-        
-        <!-- Header with Search -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <div class="flex items-center gap-2">
-                    <h2 class="text-base sm:text-lg font-black text-slate-800">Riwayat Paket Soal Dokumen</h2>
-                    <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-600 text-xs font-black flex items-center justify-center">{{ $summaries->total() }}</span>
-                </div>
-                <p class="text-xs text-slate-400 font-medium mt-0.5">Daftar arsip paket soal yang pernah dibuat dari dokumen materi</p>
-            </div>
-
-            <form method="GET" action="{{ route('admin.document-summarizer.index') }}" class="relative w-full sm:w-64">
-                <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama dokumen..."
-                       class="w-full pl-9 pr-4 py-2 rounded-full border border-slate-200 text-xs font-medium text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:outline-none transition-all">
-                @if(request('q'))
-                    <a href="{{ route('admin.document-summarizer.index') }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold">&times;</a>
-                @endif
             </form>
         </div>
 
-        @if($summaries->isEmpty())
-            <div class="py-12 text-center text-slate-400 space-y-2">
-                <div class="text-4xl">📂</div>
-                <div class="text-sm font-bold text-slate-600">Belum ada riwayat paket soal dari dokumen.</div>
-                <p class="text-xs text-slate-400">Gunakan formulir di atas untuk membuat paket soal pertama Anda.</p>
+        <!-- RIGHT: RIWAYAT PAKET SOAL -->
+        <div class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold text-slate-900">Riwayat paket soal</h2>
+                <span class="px-3 py-1 rounded-full bg-[#FCE8D0] text-[#9A621E] text-xs font-bold">{{ $summaries->total() }} Paket</span>
             </div>
-        @else
-            <!-- Table View -->
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                    <thead>
-                        <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[11px]">
-                            <th class="py-3 px-3">Nama Dokumen</th>
-                            <th class="py-3 px-3">Jenis Pembuatan</th>
-                            <th class="py-3 px-3">Kata Sumber / Soal</th>
-                            <th class="py-3 px-3">Tanggal</th>
-                            <th class="py-3 px-3 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-50 font-medium text-slate-700">
-                        @foreach($summaries as $item)
-                            <tr class="hover:bg-slate-50/60 transition-colors">
-                                <!-- Nama Dokumen -->
-                                <td class="py-4 px-3">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 font-black text-[10px] flex items-center justify-center uppercase flex-shrink-0">
-                                            {{ $item->file_type ?: 'DOCX' }}
-                                        </span>
-                                        <div class="min-w-0">
-                                            <div class="font-bold text-slate-800 text-xs sm:text-sm truncate max-w-[240px]" title="{{ $item->title }}">
-                                                {{ $item->title }}
-                                            </div>
-                                            <div class="text-[11px] text-slate-400 truncate max-w-[240px] mt-0.5" title="{{ $item->original_filename }}">
-                                                {{ $item->original_filename }} • {{ $item->formatted_file_size }}
-                                            </div>
-                                            <span class="mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-black {{ $item->status === 'selesai' ? 'bg-emerald-100 text-emerald-800' : ($item->status === 'gagal' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800') }}">
-                                                {{ ucfirst($item->status) }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </td>
 
-                                <!-- Jenis Pembuatan -->
-                                <td class="py-4 px-3 whitespace-nowrap">
-                                    <span class="bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5">
-                                        <span class="w-2 h-2 rounded-full bg-[#F59E0B]"></span>
-                                        Soal & Kuis Latihan
-                                    </span>
-                                </td>
+            <!-- Filter Topik Pills -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 text-xs scrollbar-none">
+                <a href="{{ route('admin.document-summarizer.index') }}"
+                   class="px-3 py-1 rounded-full font-bold transition-all whitespace-nowrap {{ !request('category') ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                    Semua
+                </a>
+                @foreach(['urutan' => 'Urutan', 'pola' => 'Pola', 'percabangan' => 'Percabangan', 'pengulangan' => 'Pengulangan', 'dekomposisi' => 'Dekomposisi'] as $catKey => $catName)
+                    <a href="{{ route('admin.document-summarizer.index', ['category' => $catKey]) }}"
+                       class="px-3 py-1 rounded-full font-bold transition-all whitespace-nowrap {{ request('category') === $catKey ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                        {{ $catName }}
+                    </a>
+                @endforeach
+            </div>
 
-                                <!-- Kata Sumber / Soal -->
-                                <td class="py-4 px-3 whitespace-nowrap space-y-1">
-                                    <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-                                        <span class="w-2 h-2 rounded-full bg-[#2563EB]"></span>
-                                        {{ number_format($item->word_count_original) }} kata sumber
-                                    </div>
-                                    <div class="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-                                        <span class="w-2 h-2 rounded-full bg-[#EF4444]"></span>
-                                        {{ number_format($item->word_count_summary) }} kata soal
-                                    </div>
-                                </td>
-
-                                <!-- Tanggal -->
-                                <td class="py-4 px-3 whitespace-nowrap text-slate-500">
-                                    <div class="font-bold text-slate-800 text-xs">{{ $item->created_at->translatedFormat('d M Y') }}</div>
-                                    <div class="text-[11px] text-slate-400 mt-0.5">{{ $item->created_at->format('H:i') }} WIB</div>
-                                </td>
-
-                                <!-- Aksi -->
-                                <td class="py-4 px-3 text-right whitespace-nowrap">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <!-- Lihat Modal -->
-                                        <button type="button" onclick="viewSummaryModal({{ $item->id }})"
-                                                class="px-4 py-1.5 rounded-full bg-[#2563EB] hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all">
-                                            Lihat
-                                        </button>
-
-                                        <!-- Unduh -->
-                                        <a href="{{ route('admin.document-summarizer.download', $item->id) }}"
-                                           class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 hover:bg-emerald-100 flex items-center justify-center transition-all" title="Unduh File">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                        </a>
-
-                                        <!-- Hapus -->
-                                        <form action="{{ route('admin.document-summarizer.destroy', $item->id) }}" method="POST"
-                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus arsip soal ini?');" class="inline m-0">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition-all" title="Hapus Riwayat">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
+            @if($summaries->isEmpty())
+                <div class="py-12 text-center text-slate-400 space-y-2">
+                    <div class="text-4xl">📂</div>
+                    <div class="text-sm font-bold text-slate-600">Belum ada paket soal.</div>
+                    <p class="text-xs text-slate-400">Gunakan formulir di sebelah kiri untuk membuat paket soal pertama Anda.</p>
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[10px]">
+                                <th class="py-3 pb-3">NAMA MATERI</th>
+                                <th class="py-3 pb-3 text-center">STATUS</th>
+                                <th class="py-3 pb-3 text-right">AKSI</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            @foreach($summaries as $item)
+                                @php
+                                    $words = preg_split('/\s+/', trim($item->title));
+                                    $initials = strtoupper(substr($words[0] ?? 'X', 0, 1) . substr($words[1] ?? '', 0, 1));
+                                    $topic = $item->topics->first();
+                                    $topicCategory = $topic ? $topic->category : 'dekomposisi';
+                                    $topicLabel = $topic ? $topic->category_label : 'Dekomposisi';
+                                    $topicColors = [
+                                        'urutan' => 'bg-red-50 text-red-700 border-red-200',
+                                        'pola' => 'bg-amber-50 text-amber-800 border-amber-200',
+                                        'percabangan' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                                        'pengulangan' => 'bg-blue-50 text-blue-800 border-blue-200',
+                                        'dekomposisi' => 'bg-purple-50 text-purple-800 border-purple-200',
+                                    ];
+                                    $badgeStyle = $topicColors[$topicCategory] ?? 'bg-slate-50 text-slate-700 border-slate-200';
+                                @endphp
+                                <tr class="hover:bg-slate-50/60 transition-colors">
+                                    <!-- Nama Materi -->
+                                    <td class="py-3.5 pr-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-xl bg-[#FCE5D4] text-[#C05621] font-bold text-xs flex items-center justify-center flex-shrink-0">
+                                                {{ $initials }}
+                                            </div>
+                                            <div class="min-w-0">
+                                                <div class="font-bold text-slate-800 text-xs sm:text-sm truncate max-w-[170px]" title="{{ $item->title }}">
+                                                    {{ $item->title }}
+                                                </div>
+                                                <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-normal mt-0.5">
+                                                    <span>Kelas {{ $topic?->kelas_level ?? '1' }} SD</span>
+                                                    <span>·</span>
+                                                    <span class="px-1.5 py-0.2 rounded border text-[9px] font-bold {{ $badgeStyle }}">{{ $topicLabel }}</span>
+                                                    <span>·</span>
+                                                    <span class="font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded text-[9px] border border-amber-200">+{{ $topic?->quizzes->first()?->points ?? 10 }} Poin</span>
+                                                    <span>·</span>
+                                                    <span>{{ $item->created_at->translatedFormat('d M') }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
 
-            <!-- Pagination -->
-            <div class="pt-4 border-t border-slate-100">
-                {{ $summaries->links() }}
-            </div>
-        @endif
+                                    <!-- Status -->
+                                    <td class="py-3.5 px-2 text-center">
+                                        @if($item->status === 'selesai')
+                                            <span class="px-3.5 py-1 rounded-full bg-[#E1F8EC] text-[#059669] text-xs font-bold inline-block">Siap</span>
+                                        @elseif($item->status === 'gagal')
+                                            <span class="px-3.5 py-1 rounded-full bg-[#FEE2E2] text-[#EF4444] text-xs font-bold inline-block">Gagal</span>
+                                        @else
+                                            <span class="px-3.5 py-1 rounded-full bg-[#FEF3C7] text-[#D97706] text-xs font-bold inline-block">Proses</span>
+                                        @endif
+                                    </td>
+
+                                    <!-- Aksi -->
+                                    <td class="py-3.5 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <!-- Lihat Modal -->
+                                            <button type="button" onclick="viewSummaryModal({{ $item->id }})"
+                                                    class="w-8 h-8 rounded-full bg-[#EBF3FF] text-[#2563EB] hover:bg-blue-100 flex items-center justify-center transition-all" title="Lihat detail">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            </button>
+
+                                            <!-- Hapus -->
+                                            <form action="{{ route('admin.document-summarizer.destroy', $item->id) }}" method="POST"
+                                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus arsip soal ini?');" class="inline m-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-8 h-8 rounded-full bg-[#FEE2E2] text-[#EF4444] hover:bg-red-100 flex items-center justify-center transition-all" title="Hapus Riwayat">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pt-4 border-t border-slate-100 mt-2">
+                    {{ $summaries->links() }}
+                </div>
+            @endif
+        </div>
 
     </div>
 

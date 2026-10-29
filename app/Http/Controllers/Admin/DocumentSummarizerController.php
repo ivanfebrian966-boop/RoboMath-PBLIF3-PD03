@@ -28,7 +28,7 @@ class DocumentSummarizerController extends Controller
         $search = $request->query('q');
         $styleFilter = $request->query('style');
 
-        $summariesQuery = DocumentSummary::with('user')
+        $summariesQuery = DocumentSummary::with(['user', 'topics.quizzes'])
             ->when($search, function ($query, $term) {
                 $query->where(function ($q) use ($term) {
                     $q->where('title', 'like', "%{$term}%")
@@ -38,6 +38,11 @@ class DocumentSummarizerController extends Controller
             })
             ->when($styleFilter, function ($query, $style) {
                 $query->where('summary_style', $style);
+            })
+            ->when($request->query('category'), function ($query, $cat) {
+                $query->whereHas('topics', function ($tq) use ($cat) {
+                    $tq->where('category', $cat);
+                });
             })
             ->latest();
 
@@ -79,6 +84,7 @@ class DocumentSummarizerController extends Controller
             'focus_topic' => 'nullable|string|max:255',
             'kelas_level' => ['nullable', 'integer', 'between:1,6'],
             'topic_category' => ['nullable', 'in:urutan,percabangan,pengulangan,pola,dekomposisi'],
+            'points' => ['nullable', 'integer', 'min:1', 'max:100'],
         ]);
 
         if (! $request->hasFile('document_file') && empty(trim($request->input('direct_text', '')))) {
@@ -185,10 +191,11 @@ class DocumentSummarizerController extends Controller
             $hasMultipleChoiceOptions = (bool) preg_match('/(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i', $aiResult['summary']);
             $preserveEssay = ! $hasMultipleChoiceOptions
                 || (bool) preg_match('/(essay|esai|uraian|isian|terbuka|jawaban\s*singkat)/i', (string) $customPrompt);
+            $defaultPoints = max(1, min(100, (int) $request->input('points', 10)));
             $generatedQuizzes = $this->parseQuizzesFromMarkdown(
                 $aiResult['summary'],
                 'sedang',
-                10,
+                $defaultPoints,
                 $preserveEssay
             );
 

@@ -20,6 +20,7 @@ class TopicSeeder extends Seeder
                 'order' => 1,
                 'category' => 'urutan',
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
             [
                 'title' => 'Pola & Pattern',
@@ -31,6 +32,7 @@ class TopicSeeder extends Seeder
                 'order' => 2,
                 'category' => 'pola',
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
             [
                 'title' => 'Percabangan (Selection / If-Else)',
@@ -42,6 +44,7 @@ class TopicSeeder extends Seeder
                 'order' => 3,
                 'category' => 'percabangan',
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
             [
                 'title' => 'Pengulangan (Looping)',
@@ -53,6 +56,7 @@ class TopicSeeder extends Seeder
                 'order' => 4,
                 'category' => 'pengulangan',
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
             [
                 'title' => 'Dekomposisi (Decomposition)',
@@ -64,6 +68,7 @@ class TopicSeeder extends Seeder
                 'order' => 5,
                 'category' => 'dekomposisi',
                 'is_active' => true,
+                'review_status' => 'approved',
             ],
         ];
 

@@ -4,9 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Secondary / Body Font: Apple SF Pro */
+/* Secondary / Body Font: Poppins (selaras dengan halaman Kelola Materi) */
 body, .font-secondary {
-    font-family: 'SF Pro Display', 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: #FAF6EF;
     color: #1E293B;
 }
@@ -16,13 +16,17 @@ h1, h2, h3, h4, h5, h6, .font-heading {
     font-family: 'Poppins', sans-serif;
 }
 
+input, button, select, textarea {
+    font-family: inherit;
+}
+
 .font-inter, .font-navbar, .font-sf-pro {
-    font-family: 'SF Pro Display', 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
 }
 
 /* Navbar Interactive Glass Click & Hover Effect with Red Highlight */
 .nav-glass-link {
-    font-family: 'SF Pro Display', 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
