@@ -431,24 +431,66 @@ class DocumentSummarizerController extends Controller
             ], 422);
         }
 
-        $created = 0;
-        foreach ($quizzes as $q) {
-            Quiz::create([
-                'topic_id' => $topic->id,
-                'lesson_id' => null,
-                'document_summary_id' => $summaryId,
-                'type' => $q['type'] ?? (empty($q['options']) ? 'essay' : 'pilihan_ganda'),
-                'question' => $q['question'],
-                'options' => $q['options'] ?? null,
-                'correct_answer' => $q['correct_answer'],
-                'explanation' => $q['explanation'],
-                'difficulty' => $q['difficulty'],
-                'points' => $q['points'],
-                'is_active' => false, // Belum aktif sebelum disetujui di Review AI
-                'review_status' => 'pending',
-            ]);
-            $created++;
-        }
+        $created = DB::transaction(function () use ($quizzes, $summaryId, $topic): int {
+            if ($summaryId) {
+                DocumentSummary::whereKey($summaryId)->lockForUpdate()->firstOrFail();
+            }
+
+            $pendingQuizzes = $summaryId
+                ? Quiz::where('document_summary_id', $summaryId)
+                    ->where('review_status', 'pending')
+                    ->where('is_active', false)
+                    ->orderBy('id')
+                    ->lockForUpdate()
+                    ->get()
+                : collect();
+
+            foreach ($quizzes as $index => $question) {
+                $attributes = [
+                    'topic_id' => $topic->id,
+                    'lesson_id' => null,
+                    'document_summary_id' => $summaryId,
+                    'type' => $question['type'] ?? (empty($question['options']) ? 'essay' : 'pilihan_ganda'),
+                    'question' => $question['question'],
+                    'options' => $question['options'] ?? null,
+                    'correct_answer' => $question['correct_answer'],
+                    'explanation' => $question['explanation'],
+                    'difficulty' => $question['difficulty'],
+                    'points' => $question['points'],
+                    'is_active' => false,
+                    'review_status' => 'pending',
+                ];
+                $pendingQuiz = $pendingQuizzes->get($index);
+
+                if ($pendingQuiz) {
+                    $pendingQuiz->update($attributes);
+
+                    continue;
+                }
+
+                Quiz::create($attributes);
+            }
+
+            foreach ($pendingQuizzes->slice(count($quizzes)) as $unusedQuiz) {
+                $unusedQuiz->delete();
+            }
+
+            if ($summaryId) {
+                $draftTopics = Topic::where('document_summary_id', $summaryId)
+                    ->where('id', '!=', $topic->id)
+                    ->where('review_status', 'pending')
+                    ->where('is_active', false)
+                    ->get();
+
+                foreach ($draftTopics as $draftTopic) {
+                    if ($draftTopic->quizzes()->doesntExist()) {
+                        $draftTopic->delete();
+                    }
+                }
+            }
+
+            return count($quizzes);
+        });
 
         $reviewUrl = route('admin.ai-recommendations.index', [
             'tab' => 'quiz',

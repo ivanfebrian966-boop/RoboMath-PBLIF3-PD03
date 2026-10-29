@@ -7,6 +7,7 @@ use App\Models\Progress;
 use App\Models\QuizAttempt;
 use App\Models\Topic;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -94,20 +95,29 @@ class LeaderboardController extends Controller
     public function teacherLeaderboard(Request $request): View
     {
         $kelasFilter = $request->query('kelas', 'all');
+        $user = Auth::user();
 
-        $query = User::where('role', 'siswa')->where('is_active', true);
+        $query = User::query()
+            ->where('role', 'siswa')
+            ->where('is_active', true)
+            ->when($user->isGuru(), fn (Builder $query) => $query->whereHas(
+                'classRooms',
+                fn (Builder $classRooms) => $classRooms->where('kelas.teacher_id', $user->id)
+            ))
+            ->withCount([
+                'quizAttempts as attempts_count',
+                'quizAttempts as correct_attempts_count' => fn (Builder $attempts) => $attempts->where('is_correct', true),
+                'progress as completed_lessons' => fn (Builder $progress) => $progress->where('status', 'selesai'),
+            ]);
 
         if ($kelasFilter !== 'all') {
             $query->where('kelas', (int) $kelasFilter);
         }
 
         $leaderboard = $query->orderByDesc('total_score')->take(50)->get()->map(function ($student) {
-            $attempts = $student->quizAttempts;
-            $total = $attempts->count();
-            $correct = $attempts->where('is_correct', true)->count();
-            $student->accuracy = $total > 0 ? round(($correct / $total) * 100) : 0;
-            $student->attempts_count = $total;
-            $student->completed_lessons = $student->progress()->where('status', 'selesai')->count();
+            $student->accuracy = $student->attempts_count > 0
+                ? round(($student->correct_attempts_count / $student->attempts_count) * 100)
+                : 0;
 
             return $student;
         });

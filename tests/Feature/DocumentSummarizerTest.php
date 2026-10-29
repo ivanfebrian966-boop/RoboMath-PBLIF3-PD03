@@ -44,6 +44,9 @@ class DocumentSummarizerTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Ringkas Dokumen Jadi Soal AI');
         $response->assertSee('Unggah modul, silabus, lembar kerja');
+        $response->assertSee('Ajukan soal ke Review AI');
+        $response->assertSee('Mengekstrak materi dokumen...');
+        $response->assertSee('Tingkat kesulitan');
     }
 
     public function test_admin_can_summarize_direct_text_content(): void
@@ -372,6 +375,100 @@ MD;
         $this->assertDatabaseHas('soal', [
             'topic_id' => $topic->id,
             'correct_answer' => 'C',
+        ]);
+    }
+
+    public function test_admin_reuses_pending_quizzes_generated_from_the_document_when_submitting_to_review(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $summary = DocumentSummary::create([
+            'user_id' => $admin->id,
+            'title' => 'Materi Pecahan',
+            'original_filename' => 'pecahan.docx',
+            'file_type' => 'docx',
+            'file_size' => 500,
+            'summary' => 'Ringkasan materi pecahan untuk menguji pengajuan soal.',
+            'summary_style' => 'kuis_latihan',
+            'summary_length' => '5_soal',
+            'word_count_original' => 50,
+            'word_count_summary' => 20,
+            'ai_provider' => 'local',
+        ]);
+        $generatedTopic = Topic::create([
+            'document_summary_id' => $summary->id,
+            'title' => 'Materi Pecahan',
+            'slug' => 'materi-pecahan-dari-dokumen',
+            'description' => 'Topik sementara dari dokumen.',
+            'icon' => '📘',
+            'color' => '#2563EB',
+            'kelas_level' => 4,
+            'order' => 1,
+            'category' => 'pola',
+            'is_active' => false,
+            'review_status' => 'pending',
+        ]);
+        $targetTopic = Topic::create([
+            'title' => 'Pecahan Kelas 4',
+            'slug' => 'pecahan-kelas-4',
+            'description' => 'Topik pecahan aktif.',
+            'icon' => '➗',
+            'color' => '#10B981',
+            'kelas_level' => 4,
+            'order' => 2,
+            'category' => 'pola',
+            'is_active' => true,
+        ]);
+        Quiz::create([
+            'topic_id' => $generatedTopic->id,
+            'document_summary_id' => $summary->id,
+            'type' => 'pilihan_ganda',
+            'question' => 'Pertanyaan sementara?',
+            'options' => ['A' => '1', 'B' => '2', 'C' => '3', 'D' => '4'],
+            'correct_answer' => 'B',
+            'explanation' => 'Penjelasan sementara.',
+            'difficulty' => 'sedang',
+            'points' => 10,
+            'is_active' => false,
+            'review_status' => 'pending',
+        ]);
+        $markdown = <<<'MD'
+## Paket Soal Pecahan
+
+### Soal 1
+Jelaskan arti satu per dua dengan bahasamu sendiri.
+
+> **Kunci Jawaban:** Satu dari dua bagian yang sama besar.
+> **Pembahasan:** Satu per dua menunjukkan satu bagian dari keseluruhan yang dibagi dua sama besar.
+MD;
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.publish-to-students'), [
+            'topic_id' => $targetTopic->id,
+            'summary_id' => $summary->id,
+            'markdown' => $markdown,
+            'difficulty' => 'mudah',
+            'points' => 15,
+            'as_essay' => true,
+            'type' => 'essay',
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'count' => 1,
+                'topic' => 'Pecahan Kelas 4',
+            ]);
+        $this->assertDatabaseCount('soal', 1);
+        $this->assertDatabaseHas('soal', [
+            'topic_id' => $targetTopic->id,
+            'document_summary_id' => $summary->id,
+            'type' => 'essay',
+            'difficulty' => 'mudah',
+            'points' => 15,
+            'review_status' => 'pending',
+            'is_active' => false,
+        ]);
+        $this->assertDatabaseMissing('topik', [
+            'id' => $generatedTopic->id,
         ]);
     }
 

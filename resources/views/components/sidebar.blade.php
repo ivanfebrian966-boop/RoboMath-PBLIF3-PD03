@@ -1,4 +1,4 @@
-<aside class="w-64 flex-shrink-0 hidden md:block self-stretch" id="app-sidebar">
+<aside class="w-64 flex-shrink-0 hidden md:block self-stretch {{ auth()->check() && auth()->user()->isGuru() ? 'font-poppins' : '' }}" id="app-sidebar">
     <div class="bg-white rounded-[32px] p-5 border-2 border-amber-200/80 shadow-sm sticky top-20 flex flex-col justify-between gap-6 min-h-[480px] max-h-[calc(100vh-6rem)] overflow-y-auto">
         
         <!-- Bagian Atas: Label & Navigasi -->
@@ -73,10 +73,10 @@
                         {{-- Dashboard Guru (Tema Indigo) --}}
                         @php $isActive = request()->routeIs('guru.dashboard') || request()->routeIs('guru.students*'); @endphp
                         <a href="{{ route('guru.dashboard') }}"
-                           class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#4F46E5] text-white font-black shadow-[0_8px_20px_rgba(79,70,229,0.35)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-indigo-50/70 hover:text-indigo-950 hover:scale-[1.01]' }} active:scale-95 group">
-                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-indigo-100 text-indigo-600 group-hover:scale-105' }} transition-transform">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                           class="flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs transition-all duration-200 {{ $isActive ? 'bg-[#316CE5] text-white font-extrabold shadow-[0_8px_20px_rgba(49,108,229,0.32)]' : 'text-slate-900 font-bold hover:bg-blue-50 hover:text-blue-900' }} active:scale-95 group">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600 group-hover:scale-105' }} transition-transform">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>
                                 </svg>
                             </span>
                             <span>Dashboard Guru</span>

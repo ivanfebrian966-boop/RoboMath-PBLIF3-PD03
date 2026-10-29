@@ -74,8 +74,8 @@
                     </div>
                     
                     {{-- Info Nama & Label Peran (Desktop / Tablet) --}}
-                    <div class="text-left hidden xs:block">
-                        <div class="text-xs sm:text-sm font-black text-[#001738] group-hover:text-amber-600 transition-colors truncate max-w-[85px] sm:max-w-[170px] leading-tight">
+                    <div class="text-left block min-w-0">
+                        <div class="text-xs sm:text-sm font-black text-[#001738] group-hover:text-amber-600 transition-colors truncate max-w-[90px] sm:max-w-[170px] leading-tight">
                             {{ auth()->user()->name }}
                         </div>
                         <div class="text-[9px] sm:text-[11px] font-black uppercase tracking-wider text-[#A15822] leading-none mt-0.5">

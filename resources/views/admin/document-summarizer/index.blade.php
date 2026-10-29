@@ -420,13 +420,13 @@
 <!-- ======================================================== -->
 <!-- LOADING MODAL OVERLAY -->
 <!-- ======================================================== -->
-<div id="result-loading" class="fixed inset-0 z-[80] hidden bg-[#191A32]/85 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-[#FAF6EF] rounded-3xl p-5 sm:p-7 max-w-xl w-full text-center shadow-2xl border-[3px] border-slate-900 space-y-5">
-        <div class="relative w-28 h-28 mx-auto">
+<div id="result-loading" class="fixed inset-0 z-[80] hidden bg-[#FAF6EF] flex items-center justify-center overflow-y-auto p-5 sm:p-10">
+    <div class="w-full max-w-5xl py-8 text-center space-y-8 sm:space-y-10">
+        <div class="relative w-44 h-44 sm:w-48 sm:h-48 mx-auto">
             <div class="absolute inset-0 rounded-full border-[10px] border-[#E8E1D5]"></div>
             <div class="absolute inset-0 rounded-full border-[10px] border-transparent border-t-[#2563EB] border-r-[#2563EB] -rotate-45 animate-spin"></div>
             <div class="absolute inset-0 flex items-center justify-center">
-                <svg class="w-16 h-16" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+                <svg class="w-24 h-24" viewBox="0 0 80 80" fill="none" aria-hidden="true">
                     <path d="M40 11v10" stroke="#17182F" stroke-width="5" stroke-linecap="round"/>
                     <circle cx="40" cy="10" r="6" fill="#EF342B"/>
                     <rect x="16" y="22" width="48" height="42" rx="15" fill="#2563EB" stroke="#17182F" stroke-width="5"/>
@@ -436,18 +436,18 @@
                 </svg>
             </div>
         </div>
-        <div class="space-y-2.5">
-            <h3 class="text-xl sm:text-2xl font-black text-[#17182F] tracking-tight" id="loading-stage-text">Mengekstrak materi dokumen...</h3>
-            <p class="text-sm sm:text-base text-slate-600 font-medium max-w-md mx-auto">RoboMath sedang membaca isi dokumen dan menyusun butir soal.</p>
-            <p class="inline-flex items-center justify-center px-4 py-2 rounded-full border-2 border-[#FF9500] bg-[#FFF3D9] text-xs sm:text-sm text-amber-950 font-black">
+        <div class="space-y-5">
+            <h3 class="text-3xl sm:text-5xl font-black text-[#17182F] tracking-tight" id="loading-stage-text">Mengekstrak materi dokumen...</h3>
+            <p class="text-lg sm:text-2xl text-slate-600 font-medium max-w-3xl mx-auto leading-relaxed">RoboMath sedang membaca isi dokumen dan menyusun butir soal.</p>
+            <p class="inline-flex items-center justify-center px-6 py-3 rounded-full border-2 border-[#FFDE67] bg-[#FFFBEB] text-base sm:text-xl text-amber-950 font-bold">
                 AI lokal bisa butuh 1–3 menit. Mohon ditunggu.
             </p>
         </div>
-        <div class="space-y-2">
-            <div class="w-full bg-[#E8E1D5] h-3 rounded-full overflow-hidden">
+        <div class="space-y-3 max-w-4xl mx-auto">
+            <div class="w-full bg-[#E8E1D5] h-5 rounded-full overflow-hidden">
                 <div id="loading-progress-bar" class="bg-[#2563EB] h-full w-0 rounded-full transition-all duration-700"></div>
             </div>
-            <div class="flex items-center justify-between text-xs sm:text-sm font-black text-slate-600">
+            <div class="flex items-center justify-between text-base sm:text-xl font-bold text-slate-600">
                 <span id="loading-progress-label">Menyiapkan dokumen</span>
                 <span id="loading-progress-percent">0%</span>
             </div>
@@ -504,73 +504,73 @@
 <!-- ======================================================== -->
 <!-- MODAL POPUP BESAR: HASIL SOAL AI (Setelah Generate) -->
 <!-- ======================================================== -->
-<div id="result-popup-modal" class="fixed inset-0 z-[60] hidden" style="background: rgba(35,39,68,0.92); backdrop-filter: blur(6px);">
-    <div class="flex items-stretch justify-center min-h-screen p-3 sm:p-5">
-        <div class="bg-[#FAF6EF] rounded-3xl w-full max-w-2xl flex flex-col shadow-2xl border border-white/20 overflow-hidden" style="max-height: calc(100vh - 32px);">
+<div id="result-popup-modal" class="fixed inset-0 z-[60] hidden bg-slate-900/60 backdrop-blur-sm">
+    <div class="flex items-stretch justify-center min-h-screen p-0 sm:p-4">
+        <div class="bg-[#FAF6EF] rounded-none sm:rounded-[30px] w-full max-w-5xl flex flex-col shadow-2xl overflow-hidden" style="max-height: 100vh;">
 
             <!-- Popup Header Bar -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-4 sm:px-5 py-3 bg-[#2563EB] flex-shrink-0">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 sm:px-7 py-4 bg-white border-b border-[#E9E0D4] flex-shrink-0">
                 <div class="flex items-center gap-2.5 min-w-0">
-                    <div class="w-8 h-8 rounded-lg bg-white text-blue-600 flex items-center justify-center flex-shrink-0">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3.75h7.5L19.25 8.5v11.75H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Zm7.5 0V8.5h4.75M9 13h6m-6 3.5h6"/></svg>
                     </div>
                     <div class="min-w-0">
-                        <h2 class="text-sm sm:text-base font-black text-white truncate" id="popup-res-title">Paket Soal AI</h2>
-                        <p class="text-[9px] sm:text-[10px] text-blue-100 font-semibold mt-0.5 truncate">
-                            <span id="popup-res-badge-type"></span> · <span id="popup-res-provider" class="text-amber-200"></span> · <span id="popup-res-date"></span>
+                        <h2 class="text-base sm:text-xl font-black text-slate-900 truncate" id="popup-res-title">Paket Soal AI</h2>
+                        <p class="text-[10px] sm:text-xs text-slate-500 font-semibold mt-0.5 truncate">
+                            <span id="popup-res-badge-type"></span> · <span id="popup-res-provider"></span> · <span id="popup-res-date"></span>
                         </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <!-- Action buttons in header -->
-                    <button type="button" onclick="openPublishModal()" title="Buka antrian tinjauan"
-                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-all">
+                    <button type="button" onclick="openPublishModal()" title="Ajukan soal ke Review AI"
+                            class="flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] sm:text-xs font-black bg-slate-900 hover:bg-slate-700 text-white shadow-xs transition-all">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-                        <span>Buka Review AI</span>
+                        <span>Ajukan ke Review AI</span>
                     </button>
                     <button type="button" onclick="copySummaryText()" title="Salin Semua"
-                            class="p-1.5 rounded-full border-2 border-white/70 hover:bg-white/15 text-white transition-all">
+                            class="p-2 rounded-full border border-[#E9E0D4] hover:bg-slate-50 text-slate-700 transition-all">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     </button>
                     <button type="button" onclick="downloadCurrentSummary()" title="Unduh .MD"
-                            class="p-1.5 rounded-full border-2 border-white/70 hover:bg-white/15 text-white transition-all">
+                            class="p-2 rounded-full border border-[#E9E0D4] hover:bg-slate-50 text-slate-700 transition-all">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     </button>
                     <button type="button" onclick="closeResultPopup()"
-                            class="w-8 h-8 rounded-full bg-white hover:bg-blue-50 text-blue-700 flex items-center justify-center font-black text-base transition-all">&times;</button>
+                            class="w-10 h-10 rounded-full border border-[#E9E0D4] bg-white hover:bg-slate-50 text-slate-700 flex items-center justify-center font-black text-base transition-all" aria-label="Tutup">&times;</button>
                 </div>
             </div>
 
             <!-- Stats Bar -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 px-4 sm:px-5 py-3 flex-shrink-0">
-                <div class="rounded-xl bg-white border-2 border-[#E9E0D4] p-2.5">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 px-5 sm:px-7 py-4 flex-shrink-0">
+                <div class="rounded-2xl bg-white border border-[#E9E0D4] p-3.5">
                     <span class="block text-[9px] text-slate-500 font-black uppercase tracking-wider">Kata sumber</span>
                     <span class="block text-lg font-black text-slate-900 mt-0.5" id="popup-res-words-original">—</span>
                 </div>
-                <div class="rounded-xl bg-white border-2 border-[#E9E0D4] p-2.5">
+                <div class="rounded-2xl bg-white border border-[#E9E0D4] p-3.5">
                     <span class="block text-[9px] text-slate-500 font-black uppercase tracking-wider">Panjang soal</span>
                     <span class="block text-lg font-black text-slate-900 mt-0.5" id="popup-res-words-summary">—</span>
                 </div>
-                <div class="rounded-xl bg-[#FF9500] p-2.5">
-                    <span class="block text-[9px] text-slate-950 font-black uppercase tracking-wider">Jumlah soal</span>
-                    <span class="block text-lg font-black text-slate-950 mt-0.5" id="popup-res-question-count">—</span>
+                <div class="rounded-2xl bg-[#FFF3D9] border border-amber-100 p-3.5">
+                    <span class="block text-[9px] text-amber-800 font-black uppercase tracking-wider">Jumlah soal</span>
+                    <span class="block text-lg font-black text-amber-800 mt-0.5" id="popup-res-question-count">—</span>
                 </div>
-                <div class="rounded-xl bg-[#FFF3D9] border-2 border-[#FF9500] p-2.5">
+                <div class="rounded-2xl bg-[#FFFBEB] border border-[#FFDE67] p-3.5">
                     <span class="block text-[10px] font-black text-slate-900">Perlu ditinjau guru</span>
                     <span class="block text-[9px] text-amber-950 font-semibold mt-1 leading-relaxed">Tinjau dan setujui soal sebelum dipakai siswa.</span>
                 </div>
             </div>
 
             <!-- Main Body: Questions Scroll Area -->
-            <div class="flex-1 overflow-y-auto px-4 sm:px-5 pb-4 space-y-2.5" id="popup-res-markdown-body" style="scroll-behavior: smooth;">
+            <div class="flex-1 overflow-y-auto px-5 sm:px-7 pb-5 space-y-3" id="popup-res-markdown-body" style="scroll-behavior: smooth;">
                 <!-- Dynamic question cards rendered here -->
             </div>
 
             <!-- Footer -->
-            <div class="px-4 sm:px-5 py-2.5 border-t border-[#E9E0D4] bg-white flex items-center justify-between gap-3 flex-shrink-0">
-                <p class="text-[10px] text-slate-500 font-medium">Dibuat oleh <span class="font-bold text-blue-600">RoboMath AI</span></p>
+            <div class="px-5 sm:px-7 py-3 border-t border-[#E9E0D4] bg-[#FAF6EF] flex items-center justify-between gap-3 flex-shrink-0">
+                <p class="text-[10px] text-slate-500 font-medium">Dibuat oleh RoboMath AI</p>
                 <button type="button" onclick="closeResultPopup()"
-                        class="px-5 py-2 rounded-full text-xs font-bold bg-slate-900 text-white hover:bg-slate-700 shadow-xs transition-all">
+                        class="px-5 py-2 rounded-full text-xs font-bold bg-white border border-[#E9E0D4] text-slate-900 hover:bg-slate-50 shadow-xs transition-all">
                     Tutup
                 </button>
             </div>
@@ -581,33 +581,33 @@
 <!-- ============================================================ -->
 <!-- MODAL: PUBLISH SOAL KE REVIEW AI -->
 <!-- ============================================================ -->
-<div id="publish-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-2 sm:p-3 overflow-y-auto" style="background: rgba(25,26,50,0.78); backdrop-filter: blur(5px);">
-    <div class="bg-[#FAF6EF] rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg max-h-[80vh] overflow-y-auto p-3 sm:p-4 space-y-3 relative border-2 border-slate-900 my-auto">
+<div id="publish-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-5 overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-[#FAF6EF] rounded-[30px] shadow-2xl w-full max-w-3xl max-h-[94vh] overflow-y-auto p-6 sm:p-10 space-y-5 relative my-auto">
         <!-- Modal Header -->
         <div class="flex items-center justify-between gap-3">
             <div>
-                <h3 class="text-base sm:text-xl font-black text-[#17182F]">Ajukan soal ke Review AI</h3>
+                <h3 class="text-2xl sm:text-3xl font-black tracking-tight text-[#17182F]">Ajukan soal ke Review AI</h3>
             </div>
-            <button type="button" onclick="closePublishModal()" aria-label="Tutup" class="w-8 h-8 rounded-full bg-white border-2 border-slate-900 hover:bg-slate-100 text-slate-900 flex items-center justify-center font-black text-lg transition-all">&times;</button>
+            <button type="button" onclick="closePublishModal()" aria-label="Tutup" class="w-12 h-12 rounded-full bg-white border-2 border-[#E9E0D4] hover:bg-slate-100 text-slate-900 flex items-center justify-center font-black text-2xl transition-all">&times;</button>
         </div>
 
         <!-- Info Card -->
-        <div class="p-2.5 sm:p-3 rounded-xl bg-[#E6F0FF] text-[11px] sm:text-xs font-semibold text-blue-900 leading-relaxed">
+        <div class="p-4 sm:p-5 rounded-3xl bg-[#DBEAFE] text-sm sm:text-base font-medium text-blue-900 leading-relaxed">
             Soal disimpan dengan status <strong>“Menunggu tinjauan”</strong> di halaman Review AI sebelum dikerjakan siswa.
         </div>
 
         <!-- Preview -->
-        <div id="publish-preview" class="hidden flex p-2.5 rounded-xl bg-[#E7F4D9] border-2 border-[#63A52E] text-[11px] sm:text-xs font-black text-slate-900 items-center gap-2">
-            <svg class="w-4 h-4 text-emerald-800 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.75 2.25 2.25L15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        <div id="publish-preview" class="hidden flex p-4 sm:p-5 rounded-3xl bg-[#ECFDF5] border-2 border-emerald-300 text-base sm:text-xl font-black text-slate-900 items-center gap-4">
+            <svg class="w-8 h-8 text-emerald-700 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.75 2.25 2.25L15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
             <span id="publish-preview-text"></span>
         </div>
 
         <!-- Form Fields -->
-        <div class="space-y-2.5">
+        <div class="space-y-5">
             <!-- Pilih Topik -->
             <div>
-                <label class="block text-[9px] sm:text-[10px] font-black text-slate-600 mb-1 uppercase tracking-wider">Topik tujuan <span class="text-[#EF342B]">*</span></label>
-                <select id="publish-topic-id" class="w-full px-3 py-2 rounded-lg border-2 border-slate-900 focus:border-[#2563EB] bg-white font-bold text-slate-800 text-xs outline-none transition-all">
+                <label class="block text-xs sm:text-sm font-black text-slate-600 mb-2 uppercase tracking-wider">Topik tujuan <span class="text-[#EF342B]">*</span></label>
+                <select id="publish-topic-id" class="w-full px-5 py-4 rounded-2xl border-2 border-[#E9E0D4] focus:border-[#2563EB] bg-white font-bold text-slate-800 text-base outline-none transition-all">
                     <option value="">Pilih topik</option>
                     @foreach(\App\Models\Topic::where('is_active', true)->orderBy('kelas_level')->orderBy('order')->get() as $t)
                         <option value="{{ $t->id }}">{{ $t->title }} (Kelas {{ $t->kelas_level }})</option>
@@ -617,13 +617,13 @@
 
             <!-- Format Soal -->
             <div>
-                <label class="block text-[9px] sm:text-[10px] font-black text-slate-600 mb-1 uppercase tracking-wider">Format soal</label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#7CC043] has-[:checked]:text-slate-950">
+                <label class="block text-xs sm:text-sm font-black text-slate-600 mb-2 uppercase tracking-wider">Format soal</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-emerald-300 has-[:checked]:bg-[#CFFAE9] has-[:checked]:text-emerald-950">
                         <input type="radio" name="publish-type" value="essay" id="publish-type-essay" class="sr-only" checked>
                         <span>Essay / Uraian</span>
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#2563EB] has-[:checked]:text-white">
+                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-[#2563EB] has-[:checked]:bg-[#2563EB] has-[:checked]:text-white">
                         <input type="radio" name="publish-type" value="pilihan_ganda" id="publish-type-mcq" class="sr-only">
                         <span>Pilihan Ganda (A-D)</span>
                     </label>
@@ -632,15 +632,15 @@
 
             <!-- Tingkat Kesulitan -->
             <div>
-                <label class="block text-[9px] sm:text-[10px] font-black text-slate-600 mb-1 uppercase tracking-wider">Tingkat kesulitan</label>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
-                    <label class="flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#7CC043]">
+                <label class="block text-xs sm:text-sm font-black text-slate-600 mb-2 uppercase tracking-wider">Tingkat kesulitan</label>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-emerald-300 has-[:checked]:bg-[#CFFAE9] has-[:checked]:text-emerald-950">
                         <input type="radio" name="publish-difficulty" value="mudah" class="sr-only" checked> Mudah
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#FFCC00]">
+                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-amber-300 has-[:checked]:bg-amber-100">
                         <input type="radio" name="publish-difficulty" value="sedang" class="sr-only"> Sedang
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border-2 border-[#E8E1D5] bg-white text-[11px] sm:text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-slate-900 has-[:checked]:bg-[#EF342B]">
+                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-rose-300 has-[:checked]:bg-rose-100">
                         <input type="radio" name="publish-difficulty" value="sulit" class="sr-only"> Sulit
                     </label>
                 </div>
@@ -648,12 +648,12 @@
 
             <!-- Poin per Soal -->
             <div>
-                <label class="block text-[9px] sm:text-[10px] font-black text-slate-600 mb-1 uppercase tracking-wider">Poin per soal</label>
-                <div class="flex items-center gap-3">
+                <label class="block text-xs sm:text-sm font-black text-slate-600 mb-2 uppercase tracking-wider">Poin per soal</label>
+                <div class="flex items-center gap-4">
                     <input type="range" id="publish-points" min="5" max="50" step="5" value="10"
                            oninput="document.getElementById('publish-points-label').textContent = this.value"
                            class="flex-1 accent-[#2563EB]">
-                    <span class="w-20 text-center font-black text-[#17182F] text-[11px] sm:text-xs bg-[#FFF0D1] border-2 border-slate-900 px-2 py-1 rounded-lg">
+                    <span class="w-24 shrink-0 text-center font-black text-amber-800 text-base sm:text-lg bg-[#FEF3C7] px-4 py-3 rounded-2xl">
                         <span id="publish-points-label">10</span> Poin
                     </span>
                 </div>
@@ -661,12 +661,12 @@
         </div>
 
         <!-- Modal Actions -->
-        <div class="flex flex-col-reverse sm:flex-row items-center gap-2 pt-1">
-            <button type="button" onclick="closePublishModal()" class="flex-1 w-full px-3 py-2 rounded-full bg-white border-2 border-slate-900 hover:bg-slate-100 text-slate-900 font-black text-[11px] sm:text-xs transition-all">
+        <div class="flex flex-col-reverse sm:flex-row items-center gap-3 pt-2">
+            <button type="button" onclick="closePublishModal()" class="flex-1 w-full px-6 py-4 rounded-full bg-white border-2 border-[#E9E0D4] hover:bg-slate-100 text-slate-900 font-black text-base transition-all">
                 Batal
             </button>
             <button type="button" onclick="submitPublishToStudents()" id="btn-publish-confirm"
-                    class="flex-1 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-full bg-[#EF342B] hover:bg-[#D72B24] border-2 border-slate-900 text-white font-black text-[11px] sm:text-xs shadow-xs transition-all">
+                    class="flex-1 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-slate-900 hover:bg-slate-700 text-white font-black text-base shadow-xs transition-all">
                 <span>Ajukan ke Review AI</span>
             </button>
         </div>
@@ -808,10 +808,10 @@
                     if (headerMatch) {
                         const cleanTitle = headerMatch[1].replace(/[*#]/g, '').trim();
                         finalHtml += `
-                            <div class="p-4 sm:p-5 rounded-2xl bg-[#7CC043] mb-3">
+                            <div class="p-4 sm:p-5 rounded-2xl bg-[#CFFAE9] mb-3">
                                 <div>
-                                    <h2 class="text-sm sm:text-base font-black text-slate-950">${cleanTitle}</h2>
-                                    <p class="text-xs font-semibold text-slate-800 mt-0.5">Dibuat dari “${state.activeSummaryTitle || 'dokumen materi'}”.</p>
+                                    <h2 class="text-base sm:text-lg font-black text-emerald-950">${cleanTitle}</h2>
+                                    <p class="text-xs font-semibold text-emerald-800 mt-0.5">Dibuat dari “${state.activeSummaryTitle || 'dokumen materi'}”.</p>
                                 </div>
                             </div>
                         `;
@@ -876,7 +876,7 @@
                         let answerBoxHtml = '';
                         if (keyAnswer || explanation) {
                             answerBoxHtml = `
-                                <div class="mt-1 p-3 rounded-2xl bg-[#E7F4D9] border-2 border-[#63A52E] text-slate-800 space-y-1">
+                                <div class="mt-1 p-3 rounded-2xl bg-[#ECFDF5] border border-emerald-300 text-slate-800 space-y-1">
                                     ${keyAnswer ? `
                                         <div class="text-xs leading-relaxed">
                                             <strong>Kunci jawaban:</strong> ${keyAnswer}
@@ -892,12 +892,12 @@
                         }
 
                         finalHtml += `
-                            <div class="bg-white rounded-3xl p-4 sm:p-5 border-2 border-slate-800 space-y-3">
+                            <div class="bg-white rounded-3xl p-4 sm:p-5 border border-[#E9E0D4] shadow-[0_8px_24px_rgba(15,23,42,0.05)] space-y-3">
                                 <div class="flex items-center justify-between gap-3">
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-black bg-[#EF342B] text-white">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-[#FFE4E1] text-[#C92A20]">
                                         Soal ${qNum}
                                     </span>
-                                    <span class="text-[10px] font-black ${isMultipleChoice ? 'text-blue-800' : 'text-slate-800'} bg-[#F2EDE4] px-2.5 py-1 rounded-full">
+                                    <span class="text-[10px] font-black ${isMultipleChoice ? 'text-blue-800' : 'text-slate-700'} bg-slate-100 px-2.5 py-1 rounded-full">
                                         ${isMultipleChoice ? 'Pilihan ganda' : 'Essay / uraian'}
                                     </span>
                                 </div>
@@ -1154,6 +1154,7 @@
             const markdownBody = document.getElementById('res-markdown-body');
             const popupQuestionCount = document.getElementById('popup-res-question-count');
             const questionCount = (data.summary_markdown.match(/###\s*(?:📝|🌟)?\s*Soal\s*\d+/gi) || []).length;
+            state.activeQuizCount = questionCount;
 
             if (resTitle) resTitle.textContent = data.title;
             if (badgeType) badgeType.textContent = `${data.file_type} • ${data.file_size_formatted}`;
@@ -1305,16 +1306,30 @@
 
         // Publish to Review AI
         window.openPublishModal = function() {
-            if (!state.activeReviewUrl) {
+            if (!state.activeSummaryMarkdown) {
                 Swal.fire({ icon: 'warning', title: 'Belum Ada Antrian Tinjauan', text: 'Buat paket soal dari dokumen terlebih dahulu.', confirmButtonColor: '#2563EB' });
                 return;
             }
-            window.location.href = state.activeReviewUrl;
+
+            const preview = document.getElementById('publish-preview');
+            const previewText = document.getElementById('publish-preview-text');
+            const modal = document.getElementById('publish-modal');
+
+            if (previewText) {
+                previewText.textContent = `${state.activeQuizCount || 0} butir soal siap diajukan`;
+            }
+            if (preview) preview.classList.remove('hidden');
+            if (modal) modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         };
 
         window.closePublishModal = function() {
             const modal = document.getElementById('publish-modal');
             if (modal) modal.classList.add('hidden');
+            const resultPopup = document.getElementById('result-popup-modal');
+            if (!resultPopup || resultPopup.classList.contains('hidden')) {
+                document.body.style.overflow = '';
+            }
         };
 
         window.submitPublishToStudents = async function() {
@@ -1363,15 +1378,16 @@
                         text: 'Soal tersimpan dengan status “Menunggu tinjauan” di halaman Review AI.',
                         background: '#FAF6EF',
                         color: '#17182F',
-                        iconColor: '#7CC043',
+                        iconColor: '#07835E',
                         buttonsStyling: false,
                         customClass: {
-                            popup: 'rounded-[30px] border-[3px] border-slate-900',
-                            title: 'font-black text-[#17182F]',
-                            htmlContainer: 'text-slate-600',
-                            confirmButton: 'px-6 py-3 rounded-full bg-[#2563EB] hover:bg-blue-700 border-[3px] border-slate-900 text-white font-black',
-                            cancelButton: 'px-6 py-3 rounded-full bg-white hover:bg-slate-100 border-[3px] border-slate-900 text-slate-900 font-black',
-                            actions: 'gap-3',
+                            popup: 'rounded-[32px] !border-0 !shadow-2xl !px-6 !py-8 sm:!px-10 sm:!py-10',
+                            icon: '!rounded-[28px] !border-0 !bg-[#CFFAE9] after:!text-[#07835E]',
+                            title: '!text-2xl sm:!text-3xl !font-black !text-[#17182F]',
+                            htmlContainer: '!text-sm sm:!text-lg !leading-relaxed !text-slate-600',
+                            confirmButton: '!px-6 !py-4 !rounded-full !bg-slate-900 hover:!bg-slate-700 !text-white !font-black',
+                            cancelButton: '!px-6 !py-4 !rounded-full !bg-white hover:!bg-slate-50 !border-2 !border-[#E9E0D4] !text-slate-900 !font-black',
+                            actions: '!gap-3',
                         },
                         confirmButtonText: 'Buka halaman Review AI',
                         showCancelButton: true,

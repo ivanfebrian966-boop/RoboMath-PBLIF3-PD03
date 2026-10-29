@@ -8,8 +8,10 @@ use App\Models\SesiBelajar;
 use App\Models\Topic;
 use App\Models\User;
 use App\Services\SimpleXlsxExporter;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -27,6 +29,51 @@ class TeacherDashboardController extends Controller
         $students = $studentsQuery->orderBy('kelas')->orderBy('name')->get();
         $studentIds = $students->modelKeys();
         $totalStudents = $students->count();
+
+        $lessonCompletionByStudent = DB::table('anggota_kelas')
+            ->join('kelas', 'kelas.id', '=', 'anggota_kelas.class_room_id')
+            ->join('kelas_topik', 'kelas_topik.class_room_id', '=', 'kelas.id')
+            ->join('topik', 'topik.id', '=', 'kelas_topik.topic_id')
+            ->join('pengguna', 'pengguna.id', '=', 'anggota_kelas.student_id')
+            ->join('lessons', 'lessons.topic_id', '=', 'topik.id')
+            ->leftJoin('progress', function (JoinClause $join): void {
+                $join->on('progress.lesson_id', '=', 'lessons.id')
+                    ->on('progress.user_id', '=', 'pengguna.id')
+                    ->where('progress.status', 'selesai');
+            })
+            ->whereIn('pengguna.id', $studentIds)
+            ->whereColumn('topik.kelas_level', 'pengguna.kelas')
+            ->where('kelas.is_active', true)
+            ->where('topik.is_active', true)
+            ->where('topik.review_status', 'approved')
+            ->groupBy('pengguna.id')
+            ->selectRaw(
+                'pengguna.id as student_id, COUNT(DISTINCT lessons.id) as total_lessons, COUNT(DISTINCT progress.lesson_id) as completed_lessons'
+            )
+            ->get()
+            ->keyBy('student_id');
+
+        $studentCompletionStats = $students->map(function ($student) use ($lessonCompletionByStudent): array {
+            $lessonCounts = $lessonCompletionByStudent->get($student->id);
+            $totalLessons = (int) ($lessonCounts->total_lessons ?? 0);
+            $completedLessons = (int) ($lessonCounts->completed_lessons ?? 0);
+
+            return [
+                'name' => $student->name,
+                'email' => $student->email,
+                'kelas' => $student->kelas,
+                'completed_lessons' => $completedLessons,
+                'total_lessons' => $totalLessons,
+                'remaining_lessons' => max($totalLessons - $completedLessons, 0),
+                'percentage' => $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0,
+            ];
+        });
+        $totalCompletedLessons = $studentCompletionStats->sum('completed_lessons');
+        $totalAvailableLessons = $studentCompletionStats->sum('total_lessons');
+        $totalRemainingLessons = max($totalAvailableLessons - $totalCompletedLessons, 0);
+        $overallCompletionPercentage = $totalAvailableLessons > 0
+            ? round(($totalCompletedLessons / $totalAvailableLessons) * 100)
+            : 0;
 
         // Overall stats
         $avgScore = $students->avg('total_score') ?: 0;
@@ -65,7 +112,9 @@ class TeacherDashboardController extends Controller
 
         return view('teacher.dashboard', compact(
             'user', 'totalStudents', 'avgScore', 'overallAccuracy',
-            'classStats', 'topStudents', 'students', 'recentActivities', 'recentSessions'
+            'classStats', 'topStudents', 'students', 'recentActivities', 'recentSessions',
+            'studentCompletionStats', 'totalCompletedLessons', 'totalRemainingLessons',
+            'totalAvailableLessons', 'overallCompletionPercentage'
         ));
     }
 

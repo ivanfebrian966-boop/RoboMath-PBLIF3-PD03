@@ -62,24 +62,34 @@
     </div>
 
     <!-- 3. PENCARIAN & STATUS FILTER -->
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+    <div class="flex flex-wrap items-center justify-between gap-3">
         {{-- Search Input (Pill Bulat Putih) --}}
-        <div class="relative flex-1 max-w-md">
-            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                </svg>
-            </span>
-            <input type="text" 
-                   x-model="searchQuery" 
-                   placeholder="Cari topik latihan..." 
-                   class="w-full pl-9 pr-9 py-2.5 rounded-full bg-white border border-slate-200/90 text-xs font-semibold text-slate-800 placeholder-slate-400 outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition shadow-2xs font-poppins">
-            <button x-show="searchQuery.length > 0" 
-                    @click="searchQuery = ''" 
-                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 font-bold text-xs"
-                    type="button">
-                ✕
-            </button>
+        <div class="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+            <div class="relative w-full min-w-[220px] flex-1 max-w-md">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </span>
+                <input type="text"
+                       x-model="searchQuery"
+                       placeholder="Cari topik latihan..."
+                       class="w-full pl-9 pr-9 py-2.5 rounded-full bg-white border border-slate-200/90 text-xs font-semibold text-slate-800 placeholder-slate-400 outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition shadow-2xs font-poppins">
+                <button x-show="searchQuery.length > 0"
+                        @click="searchQuery = ''"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 font-bold text-xs"
+                        type="button">
+                    ✕
+                </button>
+            </div>
+
+            <a href="{{ route('siswa.kelas.join') }}"
+               class="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-xs font-black text-teal-800 transition hover:border-teal-300 hover:bg-teal-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 sm:flex-none"
+               aria-label="Masuk kelas dengan kode dari guru untuk mendapatkan akses soal">
+                <span>🏫</span>
+                <span>Masuk Kelas dengan Kode</span>
+                <span aria-hidden="true">&rarr;</span>
+            </a>
         </div>
 
         {{-- Status Filter Buttons (Semua, Belum selesai, Selesai) --}}
