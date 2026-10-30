@@ -35,20 +35,30 @@ class ProfileController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        /** @var User $user */
         $user = Auth::user();
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:pengguna,email,'.$user->id],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-        ]);
+        $isAdmin = $user->isAdmin();
 
-        if (! empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
+        $rules = ['name' => ['required', 'string', 'max:255']];
+
+        if ($isAdmin) {
+            $rules['email'] = ['required', 'email', 'unique:pengguna,email,'.$user->id];
+            $rules['password'] = ['nullable', 'string', 'min:8', 'confirmed'];
         }
 
+        $validated = $request->validate($rules);
+
         $user->name = $validated['name'];
-        $user->email = $validated['email'];
+
+        if ($isAdmin) {
+            $user->email = $validated['email'];
+
+            if (! empty($validated['password'])) {
+                $user->password = Hash::make($validated['password']);
+            }
+        }
+
         $user->save();
 
         return redirect()->route('profil.show')->with('success', 'Profil berhasil diperbarui!');

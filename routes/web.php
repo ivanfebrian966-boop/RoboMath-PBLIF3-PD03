@@ -80,6 +80,7 @@ Route::middleware(['auth', RoleMiddleware::class.':guru,admin'])->prefix('guru')
     Route::get('/dashboard', [TeacherDashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/students/{student}', [TeacherDashboardController::class, 'studentDetail'])->name('students.show');
     Route::get('/laporan/download', [TeacherDashboardController::class, 'downloadReport'])->name('laporan.download');
+    Route::get('/laporan/download/pdf', [TeacherDashboardController::class, 'downloadReportPdf'])->name('laporan.pdf');
 
     // Leaderboard
     Route::get('/leaderboard', [LeaderboardController::class, 'teacherLeaderboard'])->name('leaderboard');

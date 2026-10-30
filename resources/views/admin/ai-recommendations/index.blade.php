@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Review AI - RoboMath')
+@section('title', 'Verifikasi Soal AI - RoboMath')
 
 @section('content')
 <style>
@@ -16,330 +16,279 @@
 
 <div class="review-ai-page space-y-5 sm:space-y-6">
 
-    <!-- ======================================================== -->
-    <!-- 1. HEADER HERO BANNER -->
-    <!-- ======================================================== -->
-    <div class="rounded-[28px] bg-[#0B7A55] p-6 sm:p-8 text-white shadow-md shadow-emerald-950/10">
-        <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            Review AI
-        </h1>
-        <p class="text-emerald-100 text-xs sm:text-sm font-normal mt-2 max-w-2xl leading-relaxed">
-            Periksa soal buatan AI, setujui yang layak, tolak atau ubah yang kurang tepat.
-        </p>
-    </div>
-
-    <!-- ======================================================== -->
-    <!-- 2. KPI STAT CARDS (MENUNGGU REVIEW | DISETUJUI | DITOLAK) -->
-    <!-- ======================================================== -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {{-- Card 1: Menunggu Review (kuning/amber) --}}
-        <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center font-black text-2xl flex-shrink-0">
-                !
-            </div>
-            <div>
-                <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500">MENUNGGU REVIEW</div>
-                <div class="text-3xl font-bold text-slate-900 leading-tight">{{ $pendingQuizzesCount }}</div>
-            </div>
+    {{-- ============================= --}}
+    {{-- 1. HEADER BANNER              --}}
+    {{-- ============================= --}}
+    <div class="rounded-[28px] bg-[#1A3C9C] p-6 sm:p-8 text-white shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                Verifikasi Soal AI &amp; Rekomendasi
+            </h1>
+            <p class="text-blue-200 text-xs sm:text-sm font-normal mt-2 max-w-2xl leading-relaxed">
+                Tinjau jawaban dan pembahasan buatan AI, lalu setujui sebelum soal tampil ke siswa.
+            </p>
         </div>
-
-        {{-- Card 2: Disetujui (hijau) --}}
-        <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-[#E1F8EC] text-[#059669] flex items-center justify-center font-black text-2xl flex-shrink-0">
-                ✓
+        <div class="flex items-center gap-3 flex-shrink-0">
+            <div class="bg-[#DC2626] text-white rounded-2xl px-5 py-3 text-center shadow">
+                <div class="text-2xl font-black leading-none">{{ $pendingQuizzesCount }}</div>
+                <div class="text-[10px] font-bold uppercase tracking-wider mt-1 text-red-100">Menunggu Review</div>
             </div>
-            <div>
-                <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500">DISETUJUI</div>
-                <div class="text-3xl font-bold text-slate-900 leading-tight">{{ $approvedQuizzesCount }}</div>
-            </div>
-        </div>
-
-        {{-- Card 3: Ditolak (merah) --}}
-        <div class="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-[#FEE2E2] text-[#DC2626] flex items-center justify-center font-black text-2xl flex-shrink-0">
-                ✕
-            </div>
-            <div>
-                <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500">DITOLAK</div>
-                <div class="text-3xl font-bold text-slate-900 leading-tight">{{ $rejectedQuizzesCount }}</div>
+            <div class="bg-[#056B48] text-white rounded-2xl px-5 py-3 text-center shadow">
+                <div class="text-2xl font-black leading-none">{{ $approvedQuizzesCount }}</div>
+                <div class="text-[10px] font-bold uppercase tracking-wider mt-1 text-emerald-100">Disetujui</div>
             </div>
         </div>
     </div>
 
-    <!-- ======================================================== -->
-    <!-- 3. PEMBEDA & FILTER TOPIK MATERI (BEDAKAN TOPIK) -->
-    <!-- ======================================================== -->
-    <div class="bg-white rounded-2xl p-4 shadow-xs border border-slate-100 space-y-2.5">
-        <div class="flex items-center justify-between text-xs font-bold text-slate-500">
-            <span class="flex items-center gap-2 uppercase tracking-wider text-[11px] text-slate-700">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#0B7A55]"></span>
-                Pembeda Topik Materi
-            </span>
-            <span class="text-slate-400 font-normal hidden sm:inline">Pilih topik untuk membedakan dan menyaring butir soal</span>
-        </div>
-        <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {{-- Filter Semua Topik --}}
-            <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => $statusFilter]) }}"
-               class="px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap {{ !$topicFilter ? 'bg-[#0B7A55] text-white shadow-sm' : 'bg-[#F8F5EE] text-slate-700 hover:bg-slate-200' }}">
-                Semua Topik
-            </a>
+    {{-- ============================= --}}
+    {{-- 2. DUA KOLOM UTAMA            --}}
+    {{-- ============================= --}}
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-            {{-- Topic Pills with Distinct Categories --}}
-            @foreach($topics as $t)
-                @php
-                    $pendingInTopic = $pendingQuizzesByTopic[$t->id] ?? 0;
-                    $topicCategoryColors = [
-                        'urutan' => 'text-red-700 border-red-200 bg-red-50/70 hover:bg-red-100',
-                        'pola' => 'text-amber-800 border-amber-200 bg-amber-50/70 hover:bg-amber-100',
-                        'percabangan' => 'text-emerald-800 border-emerald-200 bg-emerald-50/70 hover:bg-emerald-100',
-                        'pengulangan' => 'text-blue-800 border-blue-200 bg-blue-50/70 hover:bg-blue-100',
-                        'dekomposisi' => 'text-purple-800 border-purple-200 bg-purple-50/70 hover:bg-purple-100',
-                    ];
-                    $catColor = $topicCategoryColors[$t->category] ?? 'text-slate-700 border-slate-200 bg-slate-50 hover:bg-slate-100';
-                @endphp
-                <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => $statusFilter, 'topic_id' => $t->id]) }}"
-                   class="px-3.5 py-2 rounded-xl text-xs font-bold transition-all border whitespace-nowrap flex items-center gap-2 {{ $topicFilter == $t->id ? 'bg-[#0B7A55] text-white border-transparent shadow-sm' : $catColor }}">
-                    <span>{{ $t->icon ?? '📘' }}</span>
-                    <span>{{ $t->title }}</span>
-                    @if($pendingInTopic > 0)
-                        <span class="px-1.5 py-0.5 rounded-full text-[10px] {{ $topicFilter == $t->id ? 'bg-white/20 text-white' : 'bg-amber-200 text-amber-900' }}">
-                            {{ $pendingInTopic }}
-                        </span>
-                    @endif
-                </a>
-            @endforeach
-        </div>
-    </div>
+        {{-- ========================= --}}
+        {{-- KOLOM KIRI: MATERI        --}}
+        {{-- ========================= --}}
+        <div class="lg:col-span-4 space-y-4">
+            <h2 class="text-base font-bold text-slate-800">Materi menunggu
+                <span class="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+                    {{ $pendingTopics->count() }} Materi
+                </span>
+            </h2>
 
-    <!-- ======================================================== -->
-    <!-- 4. DUA KOLOM: ANTREAN SOAL (KIRI) & DETAIL REVIEW (KANAN) -->
-    <!-- ======================================================== -->
-    <div x-data="{
-        items: {{ json_encode($quizzesData) }},
-        currentIndex: 0,
-        editModalOpen: false,
-
-        get currentItem() {
-            return this.items[this.currentIndex] || null;
-        },
-        selectItem(index) {
-            this.currentIndex = index;
-        },
-        prevItem() {
-            if (this.currentIndex > 0) this.currentIndex--;
-        },
-        nextItem() {
-            if (this.currentIndex < this.items.length - 1) this.currentIndex++;
-        }
-    }" class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-
-        <!-- ==================================================== -->
-        <!-- KOLOM KIRI: ANTREAN SOAL -->
-        <!-- ==================================================== -->
-        <div class="lg:col-span-4 bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-100 space-y-4">
-            <h2 class="text-base font-bold text-slate-900">Antrean Soal</h2>
-
-            <!-- Filter Status Button Pills (Semua, Disetujui, Ditolak) -->
-            <div class="flex items-center gap-1.5 text-xs">
-                <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => 'all', 'topic_id' => $topicFilter]) }}"
-                   class="px-3.5 py-1.5 rounded-full font-bold transition-all {{ $statusFilter === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
-                    Semua ({{ $quizzes->total() }})
-                </a>
-                <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => 'approved', 'topic_id' => $topicFilter]) }}"
-                   class="px-3.5 py-1.5 rounded-full font-bold transition-all {{ $statusFilter === 'approved' ? 'bg-[#0B7A55] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
-                    Disetujui
-                </a>
-                <a href="{{ route('admin.ai-recommendations.index', ['tab' => 'quiz', 'status' => 'rejected', 'topic_id' => $topicFilter]) }}"
-                   class="px-3.5 py-1.5 rounded-full font-bold transition-all {{ $statusFilter === 'rejected' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
-                    Ditolak
-                </a>
-            </div>
-
-            <!-- List Butir Soal -->
-            <template x-if="items.length === 0">
-                <div class="py-12 text-center text-slate-400 space-y-2">
-                    <div class="text-4xl">📋</div>
-                    <div class="text-sm font-bold text-slate-700">Tidak ada soal dalam antrean.</div>
-                    <p class="text-xs text-slate-400">Pilih status atau topik lain untuk melihat soal.</p>
-                </div>
-            </template>
-
-            <div class="space-y-2 max-h-[640px] overflow-y-auto pr-1" x-show="items.length > 0">
-                <template x-for="(item, idx) in items" :key="item.id">
-                    <div @click="selectItem(idx)"
-                         :class="currentIndex === idx
-                            ? 'bg-[#E1F8EC] border-2 border-[#059669] shadow-xs'
-                            : 'bg-white border border-slate-200/80 hover:border-slate-300 hover:bg-slate-50'"
-                         class="p-3.5 rounded-2xl cursor-pointer transition-all flex items-start gap-3">
-
-                        <!-- Nomor Soal Badge -->
-                        <div :class="currentIndex === idx ? 'bg-[#059669] text-white' : 'bg-[#FCE8D0] text-[#9A621E]'"
-                             class="w-7 h-7 rounded-xl font-bold text-xs flex items-center justify-center flex-shrink-0 mt-0.5"
-                             x-text="idx + 1">
-                        </div>
-
-                        <!-- Info Soal & Pembeda Topik -->
-                        <div class="min-w-0 flex-1">
-                            <p class="text-xs font-bold text-slate-800 line-clamp-2 leading-relaxed" x-text="item.question"></p>
-                            
-                            <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                                <!-- Badge Pembeda Topik -->
-                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#EBF3FF] text-[#2563EB] border border-blue-200 truncate max-w-[150px]"
-                                      x-text="item.topic_title"></span>
-
-                                <!-- Status Badge Kecil Jika Disetujui/Ditolak -->
-                                <template x-if="item.review_status === 'approved'">
-                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 text-emerald-700">✓ Siap</span>
-                                </template>
-                                <template x-if="item.review_status === 'rejected'">
-                                    <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-100 text-rose-700">✕ Ditolak</span>
-                                </template>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-            </div>
-
-            <!-- Pagination Links -->
-            <div class="pt-2 border-t border-slate-100 text-xs">
-                {{ $quizzes->links() }}
-            </div>
-        </div>
-
-        <!-- ==================================================== -->
-        <!-- KOLOM KANAN: DETAIL BUTIR SOAL & TINDAKAN REVIEW -->
-        <!-- ==================================================== -->
-        <div class="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-7 shadow-xs border border-slate-100 space-y-5" x-show="currentItem">
-
-            <!-- Baris Header: Tag Kelas, Tipe Soal, Topik & Status -->
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#DBEAFE] text-[#1E40AF]"
-                          x-text="'Kelas ' + currentItem.kelas_level + ' SD'"></span>
-                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#FCE8D0] text-[#9A621E]"
-                          x-text="currentItem.type_label"></span>
-                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-[#F3E8FF] text-[#7E22CE] border border-purple-200"
-                          x-text="'Topik: ' + currentItem.topic_title"></span>
+            @forelse($pendingTopics as $topic)
+            @php
+                $topicStats      = $quizStatsByTopic[$topic->id] ?? ['pending' => 0, 'approved' => 0, 'rejected' => 0];
+                $pendingInTopic  = $topicStats['pending'];
+                $approvedInTopic = $topicStats['approved'];
+                $rejectedInTopic = $topicStats['rejected'];
+                $aiSummary       = $topic->documentSummary?->ai_summary
+                                    ?? 'Ringkasan AI: materi ini sedang menunggu verifikasi jawaban dan pembahasan soal.';
+            @endphp
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+                {{-- Topic Title --}}
+                <div>
+                    <p class="font-bold text-slate-900 text-sm">{{ $topic->title }}</p>
+                    <span class="inline-block mt-1 px-2.5 py-0.5 bg-blue-100 text-blue-700 text-[11px] font-bold rounded-full">
+                        Kelas {{ $topic->kelas_level }} SD
+                    </span>
                 </div>
 
-                <!-- Status Pill -->
-                <span :class="{
-                    'bg-[#FCE8D0] text-[#9A621E]': currentItem.review_status === 'pending',
-                    'bg-[#E1F8EC] text-[#059669]': currentItem.review_status === 'approved',
-                    'bg-[#FEE2E2] text-[#DC2626]': currentItem.review_status === 'rejected'
-                }" class="px-3.5 py-1 rounded-full text-xs font-bold" x-text="currentItem.status_label"></span>
-            </div>
+                {{-- AI Summary --}}
+                <p class="text-xs text-slate-500 leading-relaxed line-clamp-3">
+                    {{ Str::limit($aiSummary, 160) }}
+                </p>
 
-            <!-- Subtitle Materi -->
-            <div>
-                <p class="text-xs sm:text-sm font-semibold text-slate-700" x-text="'Materi: ' + currentItem.material_title"></p>
-            </div>
-
-            <!-- Rekomendasi AI Box (Sesuai Mockup Kuning/Cream) -->
-            <div class="rounded-2xl bg-[#FEF3C7] border border-amber-200/80 p-4 flex items-center gap-4">
-                <div class="w-12 h-12 rounded-full border-2 border-[#059669] bg-white flex items-center justify-center font-bold text-base text-[#059669] flex-shrink-0 shadow-xs"
-                     x-text="currentItem.ai_score">
-                    92
-                </div>
-                <div class="min-w-0">
-                    <div class="font-bold text-slate-900 text-xs sm:text-sm" x-text="currentItem.recommendation_title">
-                        Rekomendasi AI: layak disetujui
-                    </div>
-                    <div class="text-xs text-slate-600 mt-0.5 leading-relaxed" x-text="currentItem.recommendation_desc">
-                        Bahasa sesuai usia, satu jawaban benar, dan sesuai materi.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Teks Pertanyaan Soal -->
-            <div class="pt-2">
-                <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-snug"
-                    x-text="(currentIndex + 1) + '. ' + currentItem.question"></h3>
-            </div>
-
-            <!-- Opsi Pilihan Jawaban (A, B, C, D) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                <template x-for="opt in currentItem.options" :key="opt.key">
-                    <div :class="opt.key === currentItem.correct_answer
-                            ? 'bg-[#E1F8EC] border-2 border-[#059669] shadow-xs'
-                            : 'bg-white border border-slate-200/90'"
-                         class="p-4 rounded-2xl flex items-center gap-3 transition-all">
-
-                        <!-- Letter Badge -->
-                        <div :class="opt.key === currentItem.correct_answer
-                                ? 'bg-[#059669] text-white'
-                                : 'bg-slate-100 text-slate-700'"
-                             class="w-7 h-7 rounded-xl font-bold text-xs flex items-center justify-center flex-shrink-0"
-                             x-text="opt.key">
-                        </div>
-
-                        <!-- Option Text -->
-                        <div class="text-xs sm:text-sm font-medium text-slate-800 leading-relaxed min-w-0"
-                             x-text="opt.text">
-                        </div>
-                    </div>
-                </template>
-            </div>
-
-            <!-- Kunci Jawaban & Pembahasan Box (Mint Green) -->
-            <div class="rounded-2xl bg-[#E1F8EC] border border-emerald-200/80 p-4 text-xs sm:text-sm font-medium text-slate-800 leading-relaxed">
-                <strong class="font-bold text-[#059669]" x-text="'Kunci: ' + currentItem.correct_answer + '.'"></strong>
-                <span class="ml-1" x-text="currentItem.explanation"></span>
-            </div>
-
-            <!-- Tombol Navigasi & Tindakan Review -->
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-100">
-                <!-- Navigasi Kiri (Sebelumnya / Berikutnya) -->
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <button type="button" @click="prevItem" :disabled="currentIndex === 0"
-                            class="px-5 py-2.5 rounded-xl font-bold text-xs text-slate-700 bg-[#F8F5EE] hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
-                        Sebelumnya
-                    </button>
-                    <button type="button" @click="nextItem" :disabled="currentIndex >= items.length - 1"
-                            class="px-5 py-2.5 rounded-xl font-bold text-xs text-slate-700 bg-[#F8F5EE] hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
-                        Berikutnya
-                    </button>
-                </div>
-
-                <!-- Aksi Kanan (Ubah / Tolak / Setujui) -->
-                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <!-- Tombol Ubah -->
-                    <a :href="currentItem.edit_url"
-                       class="px-5 py-2.5 rounded-xl font-bold text-xs text-[#2563EB] bg-[#E0EDFF] hover:bg-blue-100 transition-all text-center">
-                        Ubah
-                    </a>
-
-                    <!-- Tombol Tolak -->
-                    <form :action="currentItem.reject_url" method="POST" class="inline m-0"
-                          onsubmit="return confirm('Apakah Anda yakin ingin menolak butir soal ini?');">
+                {{-- Tombol Setujui Materi / Tolak --}}
+                <div class="flex items-center gap-2 pt-1">
+                    @if($topic->review_status !== 'approved')
+                    <form action="{{ route('admin.ai-recommendations.topics.approve', $topic) }}" method="POST">
                         @csrf
-                        <button type="submit"
-                                class="px-5 py-2.5 rounded-xl font-bold text-xs text-[#DC2626] bg-[#FEE2E2] hover:bg-red-100 transition-all cursor-pointer">
+                        <button type="submit" class="px-4 py-2 bg-[#056B48] hover:bg-[#044d34] text-white text-xs font-bold rounded-xl transition">
+                            Setujui materi
+                        </button>
+                    </form>
+                    @else
+                    <span class="px-4 py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl">
+                        ✓ Disetujui
+                    </span>
+                    @endif
+
+                    <form action="{{ route('admin.ai-recommendations.topics.reject', $topic) }}" method="POST"
+                          onsubmit="return confirm('Tolak topik ini dan semua soal pending-nya?');">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 border border-slate-300 text-slate-600 text-xs font-bold rounded-xl hover:bg-slate-50 transition">
                             Tolak
                         </button>
                     </form>
-
-                    <!-- Tombol Setujui -->
-                    <form :action="currentItem.approve_url" method="POST" class="inline m-0">
-                        @csrf
-                        <button type="submit"
-                                class="px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-[#056B48] hover:bg-[#04583B] shadow-md shadow-emerald-950/10 transition-all cursor-pointer">
-                            Setujui
-                        </button>
-                    </form>
                 </div>
+
+                {{-- Stats Menunggu / Disetujui / Ditolak --}}
+                <div class="flex items-center gap-4 text-xs text-slate-500 pt-1 border-t border-slate-100">
+                    <span>Menunggu <strong class="text-slate-800">{{ $pendingInTopic }}</strong></span>
+                    <span>Disetujui <strong class="text-slate-800">{{ $approvedInTopic }}</strong></span>
+                    <span>Ditolak <strong class="text-slate-800">{{ $rejectedInTopic }}</strong></span>
+                </div>
+
+                {{-- Amber bulk box jika ada soal pending --}}
+                @if($pendingInTopic > 0)
+                <div class="bg-[#FFF8EC] border border-amber-200 rounded-xl p-4 space-y-2">
+                    <p class="text-xs font-bold text-slate-800">{{ $pendingInTopic }} soal menunggu persetujuan</p>
+                    <p class="text-[11px] text-slate-500">Periksa jawaban dan pembahasan sebelum disetujui.</p>
+                    <div class="flex items-center gap-2 pt-1">
+                        <form action="{{ route('admin.ai-recommendations.topics.approve-all', $topic) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 bg-[#056B48] hover:bg-[#044d34] text-white text-[11px] font-bold rounded-xl transition">
+                                Setujui semua
+                            </button>
+                        </form>
+                        <form action="{{ route('admin.ai-recommendations.topics.reject-all', $topic) }}" method="POST"
+                              onsubmit="return confirm('Tolak semua soal pending untuk topik ini?');">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 border border-slate-300 text-slate-600 text-[11px] font-bold rounded-xl hover:bg-slate-50 transition">
+                                Tolak semua
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endif
+            </div>
+            @empty
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-400 shadow-sm">
+                <div class="text-4xl mb-2">🎉</div>
+                <p class="text-sm font-bold text-slate-700">Semua materi sudah ditinjau!</p>
+                <p class="text-xs mt-1">Tidak ada materi yang menunggu persetujuan.</p>
+            </div>
+            @endforelse
+        </div>
+
+        {{-- ========================= --}}
+        {{-- KOLOM KANAN: BANK SOAL   --}}
+        {{-- ========================= --}}
+        <div class="lg:col-span-8 space-y-4">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <h2 class="text-base font-bold text-slate-800">Daftar bank soal AI</h2>
+                <span class="text-xs text-slate-400 font-medium">
+                    Menampilkan {{ $quizzes->firstItem() }}–{{ $quizzes->lastItem() }} dari {{ $quizzes->total() }}
+                </span>
             </div>
 
-        </div>
+            {{-- Filter Pills --}}
+            <div class="flex items-center gap-2 flex-wrap text-xs">
+                <a href="{{ route('admin.ai-recommendations.index', ['status' => 'pending']) }}"
+                   class="px-3.5 py-1.5 rounded-full font-bold transition {{ $statusFilter === 'pending' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                    Menunggu
+                </a>
+                <a href="{{ route('admin.ai-recommendations.index', ['status' => 'approved']) }}"
+                   class="px-3.5 py-1.5 rounded-full font-bold transition {{ $statusFilter === 'approved' ? 'bg-[#056B48] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                    Disetujui
+                </a>
+                <a href="{{ route('admin.ai-recommendations.index', ['status' => 'rejected']) }}"
+                   class="px-3.5 py-1.5 rounded-full font-bold transition {{ $statusFilter === 'rejected' ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                    Ditolak
+                </a>
+                <a href="{{ route('admin.ai-recommendations.index', ['status' => 'all']) }}"
+                   class="px-3.5 py-1.5 rounded-full font-bold transition {{ $statusFilter === 'all' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
+                    Semua
+                </a>
 
-        <!-- State Kosong jika tidak ada item sama sekali -->
-        <div class="lg:col-span-8 bg-white rounded-3xl p-12 text-center text-slate-400 space-y-2 border border-slate-100" x-show="!currentItem">
-            <div class="text-4xl">🎉</div>
-            <div class="text-sm font-bold text-slate-700">Semua butir soal telah diperiksa!</div>
-            <p class="text-xs text-slate-400">Tidak ada soal dalam antrean untuk filter yang dipilih.</p>
-        </div>
+                {{-- Topic filter --}}
+                @foreach($topics->take(5) as $t)
+                <a href="{{ route('admin.ai-recommendations.index', ['status' => $statusFilter, 'topic_id' => $t->id]) }}"
+                   class="px-3.5 py-1.5 rounded-full font-bold transition border {{ $topicFilter == $t->id ? 'bg-[#1A3C9C] text-white border-transparent' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' }}">
+                    {{ $t->title }}
+                </a>
+                @endforeach
+            </div>
 
-    </div>
+            {{-- Quiz Cards Grid --}}
+            @if($quizzes->isEmpty())
+            <div class="bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-400 shadow-sm">
+                <div class="text-4xl mb-2">📋</div>
+                <p class="text-sm font-bold text-slate-700">Tidak ada soal ditemukan.</p>
+                <p class="text-xs mt-1">Pilih filter lain untuk melihat soal.</p>
+            </div>
+            @else
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @foreach($quizzes as $i => $quiz)
+                @php
+                    $opts = [];
+                    if (is_array($quiz->options)) {
+                        $keys = ['A', 'B', 'C', 'D'];
+                        $j = 0;
+                        foreach ($quiz->options as $k => $val) {
+                            $key  = (is_string($k) && strlen($k) === 1 && ctype_alpha($k)) ? strtoupper($k) : ($keys[$j] ?? chr(65 + $j));
+                            $text = is_array($val) ? ($val['text'] ?? $val['label'] ?? json_encode($val)) : (string) $val;
+                            $opts[] = ['key' => $key, 'text' => $text];
+                            $j++;
+                        }
+                    }
+                    $correct     = strtoupper(trim($quiz->correct_answer ?? 'A'));
+                    $statusColor = match($quiz->review_status) {
+                        'approved' => 'bg-emerald-100 text-emerald-700',
+                        'rejected' => 'bg-rose-100 text-rose-700',
+                        default    => 'bg-amber-100 text-amber-700',
+                    };
+                    $statusLabel = match($quiz->review_status) {
+                        'approved' => 'Disetujui',
+                        'rejected' => 'Ditolak',
+                        default    => 'Menunggu',
+                    };
+                @endphp
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3 flex flex-col">
 
-</div>
+                    {{-- Card Header: badges + status --}}
+                    <div class="flex items-center flex-wrap gap-1.5">
+                        <span class="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-[11px] font-bold rounded-full">
+                            Soal {{ $quizzes->firstItem() + $i }}
+                        </span>
+                        <span class="px-2.5 py-0.5 bg-slate-100 text-slate-600 text-[11px] font-bold rounded-full">
+                            {{ $quiz->type === 'essay' ? 'Uraian' : 'Pilihan ganda' }}
+                        </span>
+                        <span class="ml-auto px-2.5 py-0.5 text-[11px] font-bold rounded-full {{ $statusColor }}">
+                            {{ $statusLabel }}
+                        </span>
+                    </div>
+
+                    {{-- Question --}}
+                    <p class="text-sm font-bold text-slate-800 leading-relaxed">
+                        {{ $quiz->question }}
+                    </p>
+
+                    {{-- Options grid 2x2 --}}
+                    @if(!empty($opts))
+                    <div class="grid grid-cols-2 gap-2">
+                        @foreach($opts as $opt)
+                        <div class="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium
+                            {{ $opt['key'] === $correct
+                                ? 'bg-[#E1F8EC] border border-[#059669] text-[#056B48] font-bold'
+                                : 'bg-slate-50 border border-slate-100 text-slate-700' }}">
+                            <span class="font-bold flex-shrink-0">{{ $opt['key'] }}.</span>
+                            <span class="line-clamp-2">{{ $opt['text'] }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    {{-- Explanation --}}
+                    @if($quiz->explanation)
+                    <div class="rounded-xl bg-[#E1F8EC] border border-emerald-200 px-3 py-2 text-[11px] text-slate-700 leading-relaxed">
+                        <strong class="text-[#056B48]">Jawaban {{ $correct }}.</strong>
+                        {{ Str::limit($quiz->explanation, 120) }}
+                    </div>
+                    @endif
+
+                    {{-- Actions --}}
+                    <div class="flex items-center justify-end gap-2 pt-1 mt-auto">
+                        <form action="{{ route('admin.ai-recommendations.quizzes.reject', $quiz) }}" method="POST"
+                              onsubmit="return confirm('Tolak soal ini?');">
+                            @csrf
+                            <button type="submit"
+                                    class="px-4 py-2 border border-rose-200 text-rose-600 text-xs font-bold rounded-xl hover:bg-rose-50 transition">
+                                Tolak
+                            </button>
+                        </form>
+                        <form action="{{ route('admin.ai-recommendations.quizzes.approve', $quiz) }}" method="POST">
+                            @csrf
+                            <button type="submit"
+                                    class="px-4 py-2 bg-[#056B48] hover:bg-[#044d34] text-white text-xs font-bold rounded-xl transition">
+                                Setujui
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+                @endforeach
+            </div>
+
+            {{-- Pagination --}}
+            <div class="pt-2 text-xs">
+                {{ $quizzes->withQueryString()->links() }}
+            </div>
+            @endif
+
+        </div>{{-- /kolom kanan --}}
+
+    </div>{{-- /grid utama --}}
+
+</div>{{-- /review-ai-page --}}
 @endsection

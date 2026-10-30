@@ -49,6 +49,7 @@ class TeacherLeaderboardTest extends TestCase
         $response->assertOk()
             ->assertSee('Leaderboard')
             ->assertSee('Unduh Laporan Excel')
+            ->assertSee('laporan/download/pdf?kelas=all')
             ->assertSee('Tingkat kelas')
             ->assertSee('papan peringkat siswa')
             ->assertSee('Siswa Pantauan')

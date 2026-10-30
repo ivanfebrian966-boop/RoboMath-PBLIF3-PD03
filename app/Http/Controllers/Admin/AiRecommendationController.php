@@ -108,6 +108,17 @@ class AiRecommendationController extends Controller
             ->groupBy('topic_id')
             ->pluck('count', 'topic_id');
 
+        // Stats per topic (pending/approved/rejected) untuk kolom kiri
+        $quizStatsByTopic = Quiz::selectRaw('topic_id, review_status, count(*) as count')
+            ->groupBy('topic_id', 'review_status')
+            ->get()
+            ->groupBy('topic_id')
+            ->map(fn ($rows) => [
+                'pending' => $rows->where('review_status', 'pending')->sum('count'),
+                'approved' => $rows->where('review_status', 'approved')->sum('count'),
+                'rejected' => $rows->where('review_status', 'rejected')->sum('count'),
+            ]);
+
         return view('admin.ai-recommendations.index', compact(
             'quizzes',
             'quizzesData',
@@ -122,7 +133,8 @@ class AiRecommendationController extends Controller
             'rejectedQuizzesCount',
             'pendingRecommendationsCount',
             'totalPendingCount',
-            'pendingQuizzesByTopic'
+            'pendingQuizzesByTopic',
+            'quizStatsByTopic'
         ));
     }
 

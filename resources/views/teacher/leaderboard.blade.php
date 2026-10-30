@@ -11,10 +11,14 @@
             <h1 class="text-3xl sm:text-4xl font-black">Leaderboard</h1>
             <p class="text-emerald-100 text-sm max-w-xl">Pantau capaian materi, akurasi kuis, dan peringkat siswa. Unduh laporan performa kelas kapan saja.</p>
         </div>
-        <div>
-            <a href="{{ route('guru.laporan.download') }}" class="inline-flex items-center gap-2 bg-white text-emerald-800 px-5 py-3 rounded-full font-black text-xs shadow-md hover:bg-emerald-50 transition transform active:scale-95">
+        <div class="flex flex-wrap justify-center gap-2">
+            <a href="{{ route('guru.laporan.download', ['kelas' => $kelasFilter]) }}" class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-xs font-black text-emerald-800 shadow-md transition hover:bg-emerald-50 active:scale-95">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 <span>Unduh Laporan Excel</span>
+            </a>
+            <a href="{{ route('guru.laporan.pdf', ['kelas' => $kelasFilter]) }}" class="inline-flex items-center gap-2 rounded-full border border-white/40 bg-emerald-900/20 px-5 py-3 text-xs font-black text-white shadow-md transition hover:bg-emerald-900/35 active:scale-95">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3.75h7l5 5v11.5H7a2 2 0 0 1-2-2v-12.5a2 2 0 0 1 2-2Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 3.75v5h5M8.5 14h7m-7 3h5"/></svg>
+                <span>Unduh PDF</span>
             </a>
         </div>
     </div>

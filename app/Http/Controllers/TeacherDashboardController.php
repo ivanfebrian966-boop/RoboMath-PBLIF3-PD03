@@ -8,8 +8,10 @@ use App\Models\SesiBelajar;
 use App\Models\Topic;
 use App\Models\User;
 use App\Services\SimpleXlsxExporter;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -173,45 +175,73 @@ class TeacherDashboardController extends Controller
      */
     public function downloadReport(Request $request): BinaryFileResponse
     {
+        ['kelasFilter' => $kelasFilter, 'headers' => $headers, 'rows' => $rows] = $this->reportData($request);
+        $filename = 'laporan-siswa-'.($kelasFilter !== 'all' ? "kelas{$kelasFilter}-" : '').now()->format('Y-m-d').'.xlsx';
+
+        return SimpleXlsxExporter::download($filename, $headers, $rows, 'Laporan Siswa');
+    }
+
+    public function downloadReportPdf(Request $request): Response
+    {
+        ['kelasFilter' => $kelasFilter, 'headers' => $headers, 'rows' => $rows] = $this->reportData($request);
+        $filename = 'laporan-siswa-'.($kelasFilter !== 'all' ? "kelas{$kelasFilter}-" : '').now()->format('Y-m-d').'.pdf';
+
+        return Pdf::loadView('teacher.reports.progress-pdf', [
+            'headers' => $headers,
+            'rows' => $rows,
+            'kelasFilter' => $kelasFilter,
+            'generatedAt' => now(),
+        ])
+            ->setPaper('a4', 'landscape')
+            ->download($filename);
+    }
+
+    /**
+     * @return array{
+     *     kelasFilter: string,
+     *     headers: list<string>,
+     *     rows: list<list<mixed>>
+     * }
+     */
+    private function reportData(Request $request): array
+    {
         $kelasFilter = $request->query('kelas', 'all');
+        if (! is_string($kelasFilter) || ! in_array($kelasFilter, ['all', '1', '2', '3', '4', '5', '6'], true)) {
+            abort(404);
+        }
 
-        $query = User::where('role', 'siswa')->where('is_active', true)->orderBy('kelas')->orderBy('name');
         $user = Auth::user();
-
-        if ($user->isGuru()) {
-            $query->whereHas('classRooms', fn ($classRooms) => $classRooms->where('kelas.teacher_id', $user->id));
-        }
-
-        if ($kelasFilter !== 'all') {
-            $query->where('kelas', (int) $kelasFilter);
-        }
-
-        $students = $query->get();
-
-        $filename = 'laporan-siswa-'.($kelasFilter !== 'all' ? "kelas{$kelasFilter}-" : '').date('Y-m-d').'.xlsx';
+        $students = User::query()
+            ->where('role', 'siswa')
+            ->where('is_active', true)
+            ->when($user->isGuru(), fn ($query) => $query->whereHas(
+                'classRooms',
+                fn ($classRooms) => $classRooms->where('kelas.teacher_id', $user->id)
+            ))
+            ->when($kelasFilter !== 'all', fn ($query) => $query->where('kelas', (int) $kelasFilter))
+            ->withCount([
+                'quizAttempts as total_attempts',
+                'quizAttempts as correct_attempts' => fn ($query) => $query->where('is_correct', true),
+                'progress as completed_lessons' => fn ($query) => $query->where('status', 'selesai'),
+                'badges',
+            ])
+            ->orderBy('kelas')
+            ->orderBy('name')
+            ->get();
 
         $headers = ['Nama Siswa', 'Email', 'Kelas', 'Total Poin', 'Level', 'Materi Selesai', 'Akurasi (%)', 'Lencana'];
 
-        $rows = [];
-        foreach ($students as $student) {
-            $totalAttempts = $student->quizAttempts()->count();
-            $correctAttempts = $student->quizAttempts()->where('is_correct', true)->count();
-            $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100) : 0;
-            $completedLessons = $student->progress()->where('status', 'selesai')->count();
-            $badgeCount = $student->badges()->count();
+        $rows = $students->map(fn (User $student): array => [
+            $student->name,
+            $student->email,
+            'Kelas '.($student->kelas ?? '-').' SD',
+            $student->total_score,
+            "{$student->level_name} (Level {$student->level})",
+            $student->completed_lessons,
+            ($student->total_attempts > 0 ? round(($student->correct_attempts / $student->total_attempts) * 100) : 0).'%',
+            $student->badges_count,
+        ])->all();
 
-            $rows[] = [
-                $student->name,
-                $student->email,
-                "Kelas {$student->kelas} SD",
-                $student->total_score,
-                "{$student->level_name} (Level {$student->level})",
-                $completedLessons,
-                "{$accuracy}%",
-                $badgeCount,
-            ];
-        }
-
-        return SimpleXlsxExporter::download($filename, $headers, $rows, 'Laporan Siswa');
+        return compact('kelasFilter', 'headers', 'rows');
     }
 }

@@ -35,6 +35,7 @@
                 @error('name')<p class="text-xs text-rose-500 mt-1.5 font-semibold">{{ $message }}</p>@enderror
             </div>
 
+            @if($user->isAdmin())
             <div>
                 <label class="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Email <span class="text-rose-500">*</span></label>
                 <input type="email" name="email" value="{{ old('email', $user->email) }}"
@@ -60,6 +61,24 @@
                     </div>
                 </div>
             </div>
+            @else
+            {{-- Email & password read-only untuk Guru dan Siswa --}}
+            <div>
+                <label class="block text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Email</label>
+                <div class="w-full px-4 py-3.5 border border-slate-200 rounded-[18px] bg-slate-100 font-bold text-slate-500 select-none">
+                    {{ $user->email }}
+                </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+                <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
+                </svg>
+                <p class="text-xs text-amber-800 font-medium leading-relaxed">
+                    <strong class="font-bold">Email dan password</strong> hanya dapat diubah oleh admin. Hubungi admin sekolah Anda jika perlu mengubah informasi login.
+                </p>
+            </div>
+            @endif
 
             <div class="flex items-center gap-3 pt-3">
                 <button type="submit"
