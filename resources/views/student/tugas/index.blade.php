@@ -69,10 +69,11 @@
         <div class="text-6xl mb-4">📭</div>
         <h3 class="font-black text-slate-700 text-xl">Belum Ada Tugas</h3>
         <p class="text-slate-500 mt-1 text-sm">Guru Anda belum membuat tugas. Pastikan Anda sudah bergabung ke kelas!</p>
-        <a href="{{ route('siswa.kelas.join') }}"
-           class="inline-block mt-5 px-6 py-2.5 bg-amber-400 text-amber-900 font-bold rounded-2xl hover:bg-amber-500 transition-colors">
+        <button type="button"
+           @click="$dispatch('open-class-join-modal')"
+           class="mt-5 inline-block rounded-2xl bg-amber-400 px-6 py-2.5 font-bold text-amber-900 transition-colors hover:bg-amber-500">
             Gabung Kelas
-        </a>
+        </button>
     </div>
     @endforelse
 

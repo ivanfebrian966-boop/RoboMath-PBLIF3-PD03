@@ -83,13 +83,14 @@
                 </button>
             </div>
 
-            <a href="{{ route('siswa.kelas.join') }}"
+            <button type="button"
+               @click="$dispatch('open-class-join-modal')"
                class="inline-flex min-h-10 flex-1 items-center justify-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-xs font-black text-teal-800 transition hover:border-teal-300 hover:bg-teal-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 sm:flex-none"
                aria-label="Masuk kelas dengan kode dari guru untuk mendapatkan akses soal">
-                <span>🏫</span>
+                <span aria-hidden="true">🏫</span>
                 <span>Masuk Kelas dengan Kode</span>
-                <span aria-hidden="true">&rarr;</span>
-            </a>
+                <span aria-hidden="true">+</span>
+            </button>
         </div>
 
         {{-- Status Filter Buttons (Semua, Belum selesai, Selesai) --}}

@@ -45,6 +45,10 @@
     <!-- Footer -->
     @include('partials.footer')
 
+    @if(auth()->check() && auth()->user()->isSiswa())
+        @include('components.student-class-join-modal')
+    @endif
+
     @stack('scripts')
 </body>
 </html>

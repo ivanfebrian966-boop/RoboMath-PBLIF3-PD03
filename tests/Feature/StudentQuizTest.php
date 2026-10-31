@@ -19,6 +19,20 @@ class StudentQuizTest extends TestCase
         $response->assertOk()
             ->assertSee('Cari topik latihan...')
             ->assertSee('Masuk Kelas dengan Kode')
-            ->assertSee(route('siswa.kelas.join'), false);
+            ->assertSee('role="dialog"', false)
+            ->assertSee('Gabung & Mulai Belajar', false)
+            ->assertDontSee('href="'.route('siswa.kelas.join').'"', false);
+    }
+
+    public function test_student_can_open_the_class_code_modal_from_the_empty_tasks_page(): void
+    {
+        $student = User::factory()->create(['role' => 'siswa']);
+
+        $response = $this->actingAs($student)->get(route('siswa.tugas.index'));
+
+        $response->assertOk()
+            ->assertSee('Gabung Kelas')
+            ->assertSee('role="dialog"', false)
+            ->assertDontSee('href="'.route('siswa.kelas.join').'"', false);
     }
 }

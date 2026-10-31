@@ -202,6 +202,6 @@ class ClassRoomController extends Controller
             $message .= 'Topik soal AI dari gurumu akan segera tersedia di kelas ini! ✨';
         }
 
-        return redirect()->route('siswa.kelas.join')->with('success', $message);
+        return back()->with('success', $message);
     }
 }
