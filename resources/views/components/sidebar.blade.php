@@ -21,8 +21,8 @@
                         {{-- Dashboard Siswa --}}
                         @php $isActive = request()->routeIs('siswa.dashboard') || request()->routeIs('siswa.achievements'); @endphp
                         <a href="{{ route('siswa.dashboard') }}"
-                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF8A00] text-[#001738] font-black shadow-[0_12px_24px_rgba(255,138,0,0.38)]' : 'text-[#001738] font-black border border-transparent hover:border-orange-200 hover:bg-orange-50 hover:shadow-xs' }} active:scale-95 group">
-                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-[#FFA834] text-[#001738]' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }}">
+                           class="flex items-center gap-3.5 px-3 py-2.5 rounded-[22px] text-sm transition-all duration-200 {{ $isActive ? 'bg-[#EF383A] text-white font-black shadow-[0_12px_24px_rgba(239,56,58,0.32)]' : 'text-[#001738] font-black border border-transparent hover:border-orange-200 hover:bg-orange-50 hover:shadow-xs' }} active:scale-95 group">
+                            <span class="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }}">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5 12 3l9 7.5v10.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10.5Z" />
                                 </svg>
@@ -365,8 +365,8 @@
                     @php $isActive = request()->routeIs('siswa.dashboard') || request()->routeIs('siswa.achievements'); @endphp
                     <a href="{{ route('siswa.dashboard') }}"
                        @click="mobileSidebarOpen = false"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF8A00] text-[#001738] font-black shadow-[0_8px_20px_rgba(255,138,0,0.35)]' : 'text-[#001738] font-bold hover:bg-orange-50 hover:text-orange-900' }} active:scale-95 group">
-                        <span class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-[#FFA834] text-[#001738]' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }}">
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#EF383A] text-white font-black shadow-[0_8px_20px_rgba(239,56,58,0.32)]' : 'text-[#001738] font-bold hover:bg-orange-50 hover:text-orange-900' }} active:scale-95 group">
+                        <span class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform {{ $isActive ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }}">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5 12 3l9 7.5v10.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10.5Z" />
                             </svg>

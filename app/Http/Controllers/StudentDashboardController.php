@@ -37,8 +37,8 @@ class StudentDashboardController extends Controller
                 'quizzes' => fn ($query) => $query->where('is_active', true)->where('review_status', 'approved'),
             ])
             ->orderBy('order')
-            ->get()
-            ->map(function ($topic) use ($user) {
+            ->paginate(4)
+            ->through(function ($topic) use ($user) {
                 $completedInTopic = Progress::where('user_id', $user->id)
                     ->where('topic_id', $topic->id)
                     ->where('status', 'selesai')

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ClassRoom;
 use App\Models\QuizAttempt;
 use App\Models\Topic;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -203,5 +204,40 @@ class ClassRoomController extends Controller
         }
 
         return back()->with('success', $message);
+    }
+
+    public function previewJoin(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'size:6', 'regex:/^[A-Za-z0-9]{6}$/'],
+        ]);
+
+        $user = $request->user();
+        $classRoom = ClassRoom::query()
+            ->where('code', strtoupper($validated['code']))
+            ->where('is_active', true)
+            ->with('teacher:id,name')
+            ->first();
+
+        if (! $classRoom) {
+            return response()->json([
+                'message' => 'Kode kelas tidak ditemukan. Periksa kembali kode dari gurumu.',
+            ], 404);
+        }
+
+        $canJoin = ! $user->kelas || (int) $user->kelas === (int) $classRoom->kelas_level;
+
+        return response()->json([
+            'class' => [
+                'name' => $classRoom->name,
+                'teacher' => $classRoom->teacher?->name ?? 'Guru',
+                'kelas_level' => $classRoom->kelas_level,
+            ],
+            'can_join' => $canJoin,
+            'already_joined' => $classRoom->students()->whereKey($user->id)->exists(),
+            'message' => $canJoin
+                ? null
+                : "Tingkat kelasmu (Kelas {$user->kelas} SD) tidak sesuai dengan kelas ini.",
+        ]);
     }
 }

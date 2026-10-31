@@ -66,6 +66,7 @@ Route::middleware(['auth', RoleMiddleware::class.':siswa'])->prefix('siswa')->na
 
     // Kelas
     Route::get('/kelas/join', [ClassRoomController::class, 'joinForm'])->name('kelas.join');
+    Route::post('/kelas/preview', [ClassRoomController::class, 'previewJoin'])->middleware('throttle:10,1')->name('kelas.join.preview');
     Route::post('/kelas/join', [ClassRoomController::class, 'join'])->name('kelas.join.store');
 
     // Tugas (siswa)

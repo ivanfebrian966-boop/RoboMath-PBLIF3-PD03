@@ -20,7 +20,7 @@ class StudentQuizTest extends TestCase
             ->assertSee('Cari topik latihan...')
             ->assertSee('Masuk Kelas dengan Kode')
             ->assertSee('role="dialog"', false)
-            ->assertSee('Gabung & Mulai Belajar', false)
+            ->assertSee('Masuk ke kelas', false)
             ->assertDontSee('href="'.route('siswa.kelas.join').'"', false);
     }
 
@@ -34,5 +34,17 @@ class StudentQuizTest extends TestCase
             ->assertSee('Gabung Kelas')
             ->assertSee('role="dialog"', false)
             ->assertDontSee('href="'.route('siswa.kelas.join').'"', false);
+    }
+
+    public function test_student_class_join_modal_has_six_character_inputs_and_paste_action(): void
+    {
+        $student = User::factory()->create(['role' => 'siswa']);
+
+        $this->actingAs($student)
+            ->get(route('siswa.quiz'))
+            ->assertSee('Kode kelas dari guru')
+            ->assertSee('Tempel kode')
+            ->assertSee('Batal')
+            ->assertSee('Masuk ke kelas');
     }
 }
