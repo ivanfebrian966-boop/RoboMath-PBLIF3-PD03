@@ -125,7 +125,19 @@ class LeaderboardController extends Controller
         $totalSiswa = $leaderboard->count();
         $avgScore = $leaderboard->avg('total_score') ?? 0;
         $avgAccuracy = $leaderboard->avg('accuracy') ?? 0;
+        $topStudent = $leaderboard->first();
+        $runnerUp = $leaderboard->get(1);
+        $studentsNeedingAttention = $leaderboard->where('accuracy', 0)->take(2);
 
-        return view('teacher.leaderboard', compact('leaderboard', 'kelasFilter', 'totalSiswa', 'avgScore', 'avgAccuracy'));
+        return view('teacher.leaderboard', compact(
+            'leaderboard',
+            'kelasFilter',
+            'totalSiswa',
+            'avgScore',
+            'avgAccuracy',
+            'topStudent',
+            'runnerUp',
+            'studentsNeedingAttention'
+        ));
     }
 }

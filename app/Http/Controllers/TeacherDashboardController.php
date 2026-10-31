@@ -127,47 +127,85 @@ class TeacherDashboardController extends Controller
             abort(404);
         }
 
+        $studentAttempts = QuizAttempt::where('user_id', $student->id);
+        $totalAttempts = (clone $studentAttempts)->count();
+        $correctAttempts = (clone $studentAttempts)->where('is_correct', true)->count();
+        $accuracy = $totalAttempts > 0 ? round(($correctAttempts / $totalAttempts) * 100) : 0;
+        $sessionCount = SesiBelajar::where('user_id', $student->id)->count();
+        $completedLessons = Progress::where('user_id', $student->id)
+            ->where('status', 'selesai')
+            ->count();
+
+        $rankQuery = User::where('role', 'siswa')
+            ->where('is_active', true)
+            ->where('kelas', $student->kelas)
+            ->when($user->isGuru(), fn ($query) => $query->whereHas(
+                'classRooms',
+                fn ($classRooms) => $classRooms->where('kelas.teacher_id', $user->id)
+            ));
+        $rank = (clone $rankQuery)
+            ->where('total_score', '>', $student->total_score)
+            ->count() + 1;
+
         $topics = Topic::where('kelas_level', $student->kelas)
             ->where('is_active', true)
             ->where('review_status', 'approved')
             ->when($user->isGuru(), fn ($query) => $query->whereHas('classRooms', fn ($classRooms) => $classRooms
                 ->where('kelas.teacher_id', $user->id)
                 ->whereHas('students', fn ($students) => $students->whereKey($student->id))))
-            ->get()
-            ->map(function ($topic) use ($student) {
-                $attempts = QuizAttempt::where('user_id', $student->id)
-                    ->whereHas('quiz', fn ($q) => $q->where('topic_id', $topic->id))
-                    ->get();
-                $topic->total_attempts = $attempts->count();
-                $topic->correct_attempts = $attempts->where('is_correct', true)->count();
-                $topic->accuracy = $topic->total_attempts > 0
-                    ? round(($topic->correct_attempts / $topic->total_attempts) * 100) : 0;
-
-                $completedLessons = Progress::where('user_id', $student->id)
-                    ->where('topic_id', $topic->id)
-                    ->where('status', 'selesai')
-                    ->count();
-                $totalLessons = $topic->lessons()->count();
-                $topic->lesson_progress = $totalLessons > 0
-                    ? round(($completedLessons / $totalLessons) * 100) : 0;
-
-                return $topic;
-            });
-
-        $recentAttempts = QuizAttempt::where('user_id', $student->id)
-            ->with('quiz.topic')
-            ->latest()
-            ->take(10)
+            ->withCount('lessons')
+            ->orderBy('order')
             ->get();
+        $topicIds = $topics->modelKeys();
+
+        $attemptStats = QuizAttempt::query()
+            ->join('soal', 'soal.id', '=', 'percobaan_soal.quiz_id')
+            ->where('percobaan_soal.user_id', $student->id)
+            ->whereIn('soal.topic_id', $topicIds)
+            ->selectRaw('soal.topic_id, COUNT(*) as total_attempts, SUM(percobaan_soal.is_correct) as correct_attempts')
+            ->groupBy('soal.topic_id')
+            ->get()
+            ->keyBy('topic_id');
+
+        $lessonStats = Progress::where('user_id', $student->id)
+            ->where('status', 'selesai')
+            ->whereIn('topic_id', $topicIds)
+            ->selectRaw('topic_id, COUNT(*) as completed_lessons')
+            ->groupBy('topic_id')
+            ->get()
+            ->keyBy('topic_id');
+
+        $topics = $topics->map(function ($topic) use ($attemptStats, $lessonStats) {
+            $attemptStat = $attemptStats->get($topic->id);
+            $totalAttempts = (int) ($attemptStat->total_attempts ?? 0);
+            $correctAttempts = (int) ($attemptStat->correct_attempts ?? 0);
+            $completedLessons = (int) ($lessonStats->get($topic->id)->completed_lessons ?? 0);
+
+            $topic->accuracy = $totalAttempts > 0
+                ? round(($correctAttempts / $totalAttempts) * 100)
+                : 0;
+            $topic->lesson_progress = $topic->lessons_count > 0
+                ? round(($completedLessons / $topic->lessons_count) * 100)
+                : 0;
+
+            return $topic;
+        });
+
         $recentSessions = SesiBelajar::where('user_id', $student->id)
             ->with('topic')
             ->latest('dimulai_pada')
             ->take(10)
             ->get();
 
-        $badges = $student->badges;
-
-        return view('teacher.students.show', compact('student', 'topics', 'recentAttempts', 'recentSessions', 'badges'));
+        return view('teacher.students.show', compact(
+            'student',
+            'topics',
+            'recentSessions',
+            'accuracy',
+            'sessionCount',
+            'completedLessons',
+            'rank'
+        ));
     }
 
     /**

@@ -23,6 +23,12 @@ class TeacherLeaderboardTest extends TestCase
             'kelas' => 4,
             'total_score' => 250,
         ]);
+        $runnerUp = User::factory()->create([
+            'name' => 'Siswa Posisi Dua',
+            'role' => 'siswa',
+            'kelas' => 4,
+            'total_score' => 100,
+        ]);
         $otherStudent = User::factory()->create([
             'name' => 'Siswa Guru Lain',
             'email' => 'guru-lain@example.test',
@@ -42,18 +48,24 @@ class TeacherLeaderboardTest extends TestCase
             'kelas_level' => 4,
         ]);
         $teacherClass->students()->attach($student->id);
+        $teacherClass->students()->attach($runnerUp->id);
         $otherClass->students()->attach($otherStudent->id);
 
         $response = $this->actingAs($teacher)->get(route('guru.leaderboard'));
 
         $response->assertOk()
             ->assertSee('Leaderboard')
-            ->assertSee('Unduh Laporan Excel')
+            ->assertSee('Unduh Excel')
             ->assertSee('laporan/download/pdf?kelas=all')
             ->assertSee('Tingkat kelas')
-            ->assertSee('papan peringkat siswa')
+            ->assertSee('Papan peringkat siswa')
+            ->assertSee('Juara kelas')
+            ->assertSee('Unggul 150 poin dari peringkat kedua.')
+            ->assertSee('Perlu perhatian')
+            ->assertSee('Akurasi 0%')
             ->assertSee('Siswa Pantauan')
             ->assertSee('pantauan@example.test')
+            ->assertSee('Siswa Posisi Dua')
             ->assertDontSee('Siswa Guru Lain')
             ->assertDontSee('guru-lain@example.test');
     }
