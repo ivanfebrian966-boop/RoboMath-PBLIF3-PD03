@@ -70,6 +70,17 @@ class DocumentSummarizerService
         // Fallback title formatting
         $cleanTitle = ucwords(str_replace(['-', '_'], ' ', $title));
         $extractedText = trim($extractedText);
+
+        // Validate extracted text quality; clear garbled/unreadable text so the caller
+        // can surface a meaningful error instead of generating nonsensical quiz questions.
+        if ($extractedText !== '' && ! $this->isTextQualityAcceptable($extractedText)) {
+            Log::warning('DocumentSummarizer: extracted text quality too low (likely garbled PDF encoding), clearing text.', [
+                'file' => $originalName,
+                'sample' => mb_substr($extractedText, 0, 200),
+            ]);
+            $extractedText = '';
+        }
+
         $wordCount = $extractedText !== '' ? str_word_count(strip_tags($extractedText)) : 0;
 
         return [
@@ -81,6 +92,36 @@ class DocumentSummarizerService
             'raw_base64' => $size <= 8 * 1024 * 1024 ? base64_encode(file_get_contents($path)) : null,
             'mime_type' => $mimeType,
         ];
+    }
+
+    /**
+     * Determine whether extracted text is readable and usable for AI question generation.
+     *
+     * Garbled PDF output (from non-standard font encoding) typically consists mostly of
+     * characters outside the printable Latin/Indonesian character range. We accept the text
+     * only when at least 60 % of its characters are printable ASCII or common Indonesian
+     * Unicode letters, digits, punctuation, or whitespace.
+     */
+    protected function isTextQualityAcceptable(string $text): bool
+    {
+        $totalChars = mb_strlen($text);
+        if ($totalChars === 0) {
+            return false;
+        }
+
+        // Count characters that are clearly "normal" (ASCII printable + common UTF-8 Latin)
+        $normalCount = preg_match_all(
+            '/[\x20-\x7E\xC0-\xFF\s]/u',
+            $text,
+            $dummy
+        );
+
+        $ratio = $normalCount / $totalChars;
+
+        // Also require at least a handful of Indonesian/Latin alphabetic words
+        $wordMatches = preg_match_all('/\b[a-zA-Z]{3,}\b/u', $text, $dummy2);
+
+        return $ratio >= 0.60 && $wordMatches >= 5;
     }
 
     /**
@@ -261,14 +302,22 @@ class DocumentSummarizerService
         string $style = 'kuis_latihan',
         string $length = 'sedang',
         ?string $focus = null,
-        ?User $user = null
+        ?User $user = null,
+        ?string $rawBase64 = null,
+        ?string $mimeType = null
     ): array {
         $text = trim($text);
+        $hasVisionInput = ! empty($rawBase64) && ! empty($mimeType);
 
-        if (empty($text)) {
+        if (empty($text) && ! $hasVisionInput) {
             return [
-                'summary' => 'Dokumen tidak mengandung teks yang cukup untuk dibuatkan soal. Pastikan dokumen memuat teks dan bukan hanya gambar pindaian murni.',
-                'key_points' => ['Tidak ada teks yang dapat dianalisis.'],
+                'summary' => "## ⚠️ Dokumen Tidak Dapat Dibaca\n\n"
+                    ."Maaf, teks dalam dokumen ini **tidak dapat diekstrak** karena menggunakan encoding font khusus atau merupakan hasil pindaian gambar (scanned PDF) yang tidak memiliki lapisan teks.\n\n"
+                    ."**Solusi yang disarankan:**\n"
+                    ."- Gunakan PDF yang memiliki teks asli (bukan hasil scan).\n"
+                    ."- Konversi dokumen ke format **DOCX** atau **TXT** terlebih dahulu.\n"
+                    .'- Pastikan file tidak diproteksi atau terenkripsi.',
+                'key_points' => ['Dokumen tidak dapat diekstrak — gunakan PDF berteks atau format DOCX/TXT.'],
                 'provider' => 'system',
                 'tokens_used' => 0,
                 'word_count' => 0,
@@ -335,6 +384,10 @@ FMT;
             $instruction .= "\nFokus Topik: Berikan penekanan utama pada materi: \"{$focus}\".";
         }
 
+        $documentContentContext = ! empty($truncatedText)
+            ? "ISI DOKUMEN MATERI (HASIL EKSTRAKSI TEKS):\n---\n{$truncatedText}\n---"
+            : 'Dokumen ini dikirimkan langsung sebagai berkas PDF/Gambar visual (terlampir). Analisislah seluruh teks, ilustrasi, diagram, dan soal matematika yang ada di dalam gambar/dokumen terlampir.';
+
         $prompt = <<<EOT
 Anda adalah Guru Matematika & Sahabat Belajar Anak SD di RoboMath.
 Tugas Anda: Meringkas dokumen berjudul "{$title}" LANGSUNG MENJADI PAKET SOAL LATIHAN ANAK SD YANG RAPI, CERIA, DAN MENARIK.
@@ -344,6 +397,7 @@ ATURAN UTAMA (SANGAT PENTING):
 2. LANGSUNG MULAI dari judul dokumen: "## 🌟 Paket Soal: {$title}".
 3. Gaya Bahasa: Ramah, santun, ceria, dan mudah dipahami oleh anak-anak Sekolah Dasar (SD). Gunakan analogi konkret dan situasi sehari-hari yang menyenangkan.
 4. {$instruction}
+5. Jika dokumen berupa pindaian/scan atau memiliki ilustrasi/diagram gambar dalam berkas terlampir, pahami dan gunakan isi gambar/diagram tersebut untuk menyusun soal matematika kontekstual.
 
 {$formatGuide}
 
@@ -353,10 +407,7 @@ DI AKHIR TANGGAPAN:
 - [Poin kesimpulan materi 2]
 - [Poin kesimpulan materi 3]
 
-ISI DOKUMEN MATERI:
----
-{$truncatedText}
----
+{$documentContentContext}
 
 Mulai paket soal sekarang (tanpa pembuka basa-basi):
 EOT;
@@ -366,8 +417,21 @@ EOT;
         $tokensUsed = null;
 
         try {
-            // Send request to AI Manager
-            $response = $this->aiManager->chat($prompt, $user, 'raw');
+            // Prioritize multimodal/vision mode when base64 file data is available and text is sparse/garbled
+            // or directly send document to multimodal model (e.g. Gemini)
+            if ($hasVisionInput && (empty($text) || mb_strlen($text) < 150)) {
+                $response = $this->aiManager->chatWithDocument(
+                    message: $prompt,
+                    base64Data: (string) $rawBase64,
+                    mimeType: (string) $mimeType,
+                    user: $user,
+                    context: 'raw'
+                );
+            } else {
+                // Standard text chat
+                $response = $this->aiManager->chat($prompt, $user, 'raw');
+            }
+
             $summaryText = $this->stripIntroPreamble($response->text);
 
             // If user explicitly requested essay/uraian, sanitize any accidental multiple choice options
@@ -517,7 +581,9 @@ EOT;
         $filteredWords = array_diff($words, $stopWords);
         $wordFreq = array_count_values(array_filter($filteredWords, fn ($w) => strlen($w) > 4));
         arsort($wordFreq);
-        $topKeywords = array_values(array_slice(array_keys($wordFreq), 0, 10));
+        // Only keep words that look like real Latin/Indonesian words (no garbled characters)
+        $cleanKeywords = array_filter(array_keys($wordFreq), fn ($w) => preg_match('/^[a-z\x{00C0}-\x{024F}]+$/u', $w));
+        $topKeywords = array_values(array_slice($cleanKeywords, 0, 10));
 
         $keywords = [
             $topKeywords[0] ?? 'Konsep Dasar',

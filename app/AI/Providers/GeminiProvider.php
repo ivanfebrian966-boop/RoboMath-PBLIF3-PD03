@@ -64,13 +64,74 @@ class GeminiProvider implements AIProviderInterface
             'generationConfig' => $generationConfig,
         ];
 
+        return $this->sendPayload($url, $payload, $user, $context);
+    }
+
+    public function chatWithDocument(string $message, string $base64Data, string $mimeType, ?User $user = null, ?string $context = null): AIChatResponse
+    {
+        if (empty($this->apiKey)) {
+            Log::warning('Gemini API key not configured, cannot use vision mode.');
+
+            return $this->fallback($message, $user, $context);
+        }
+
+        $systemInstruction = match ($context) {
+            'json' => 'You are an expert AI assistant and educational assessment specialist. Always output valid JSON strictly as requested.',
+            'raw' => 'You are an expert AI document summarizer and education assistant for RoboMath. Follow all formatting and summarization guidelines provided in the prompt accurately in Indonesian.',
+            default => RoboBotPrompt::systemPrompt($user, $context),
+        };
+
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
+
+        $generationConfig = [
+            'temperature' => $context === 'json' ? 0.2 : 0.4,
+            'topP' => 0.8,
+            'topK' => 40,
+        ];
+
+        if ($context === 'json') {
+            $generationConfig['responseMimeType'] = 'application/json';
+        }
+
+        // Build multimodal payload: file first, then the text prompt
+        $payload = [
+            'system_instruction' => [
+                'parts' => [
+                    ['text' => $systemInstruction],
+                ],
+            ],
+            'contents' => [
+                [
+                    'role' => 'user',
+                    'parts' => [
+                        [
+                            'inline_data' => [
+                                'mime_type' => $mimeType,
+                                'data' => $base64Data,
+                            ],
+                        ],
+                        ['text' => $message],
+                    ],
+                ],
+            ],
+            'generationConfig' => $generationConfig,
+        ];
+
+        return $this->sendPayload($url, $payload, $user, $context);
+    }
+
+    /**
+     * Execute the HTTP request to the Gemini generateContent endpoint and return a response.
+     */
+    protected function sendPayload(string $url, array $payload, ?User $user, ?string $context): AIChatResponse
+    {
         try {
             $attempts = 0;
             $response = null;
 
             while ($attempts < 3) {
                 $attempts++;
-                $response = Http::timeout(45)->post($url, $payload);
+                $response = Http::timeout(60)->post($url, $payload);
 
                 if ($response->successful()) {
                     break;
@@ -103,7 +164,7 @@ class GeminiProvider implements AIProviderInterface
             Log::error('Gemini Provider Exception: '.$e->getMessage());
         }
 
-        return $this->fallback($message, $user, $context);
+        return $this->fallback('', $user, $context);
     }
 
     /**

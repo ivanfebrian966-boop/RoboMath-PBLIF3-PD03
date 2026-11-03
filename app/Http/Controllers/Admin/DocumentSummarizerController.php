@@ -143,16 +143,24 @@ class DocumentSummarizerController extends Controller
         $length = $request->input('summary_length', ! empty($customPrompt) ? 'kustom' : '5_soal');
 
         try {
+            $rawBase64 = null;
+            $mimeType = null;
+
             if ($file) {
                 $extracted = $this->summarizerService->extractContent($file);
                 $extractedText = $extracted['text'];
                 $title = $request->input('custom_title') ?: $extracted['title'];
                 $fileType = $extracted['file_type'];
                 $fileSize = $extracted['file_size'];
+                $rawBase64 = $extracted['raw_base64'] ?? null;
+                $mimeType = $extracted['mime_type'] ?? null;
             }
 
             $wordCountOriginal = str_word_count(strip_tags($extractedText));
-            if (empty($extractedText) || $wordCountOriginal < 5) {
+            $hasVisionFallback = ! empty($rawBase64) && ! empty($mimeType);
+
+            // Only fail if text is insufficient AND no visual/multimodal base64 data is present
+            if ((empty($extractedText) || $wordCountOriginal < 5) && ! $hasVisionFallback) {
                 $summaryModel->update([
                     'title' => $title,
                     'file_type' => $fileType,
@@ -184,7 +192,9 @@ class DocumentSummarizerController extends Controller
                 style: $style,
                 length: $length,
                 focus: $request->input('focus_topic'),
-                user: Auth::user()
+                user: Auth::user(),
+                rawBase64: $rawBase64,
+                mimeType: $mimeType
             );
 
             $wordCountSummary = $aiResult['word_count'];

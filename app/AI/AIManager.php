@@ -38,4 +38,12 @@ class AIManager
     {
         return $this->driver($driver)->chat($message, $user, $context);
     }
+
+    /**
+     * Helper shortcut to send multimodal (document/image) message using configured provider.
+     */
+    public function chatWithDocument(string $message, string $base64Data, string $mimeType, ?User $user = null, ?string $context = null, ?string $driver = null): AIChatResponse
+    {
+        return $this->driver($driver)->chatWithDocument($message, $base64Data, $mimeType, $user, $context);
+    }
 }

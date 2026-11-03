@@ -24,6 +24,14 @@ class HuggingFaceProvider implements AIProviderInterface
         $this->baseUrl = $baseUrl ?? config('services.huggingface.base_url', env('HUGGINGFACE_BASE_URL', 'https://router.huggingface.co/v1'));
     }
 
+    public function chatWithDocument(string $message, string $base64Data, string $mimeType, ?User $user = null, ?string $context = null): AIChatResponse
+    {
+        // HuggingFace Inference API does not support inline PDF/image; fall back to text-only
+        Log::info('HuggingFace: vision not supported, using text-only chat.');
+
+        return $this->chat($message, $user, $context);
+    }
+
     public function chat(string $message, ?User $user = null, ?string $context = null): AIChatResponse
     {
         if (empty($this->apiKey)) {

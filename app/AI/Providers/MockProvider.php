@@ -8,6 +8,15 @@ use App\Models\User;
 
 class MockProvider implements AIProviderInterface
 {
+    public function chatWithDocument(string $message, string $base64Data, string $mimeType, ?User $user = null, ?string $context = null): AIChatResponse
+    {
+        // Mock provider does not support vision — return a helpful stub
+        return new AIChatResponse(
+            text: "## ⚠️ Mode Vision Tidak Tersedia (Offline)\n\nProvider AI saat ini (Mock/Offline) tidak mendukung pembacaan gambar atau PDF visual. Pastikan API Gemini atau OpenAI dikonfigurasi dengan benar.",
+            provider: 'mock'
+        );
+    }
+
     public function chat(string $message, ?User $user = null, ?string $context = null): AIChatResponse
     {
         if ($context === 'json') {
