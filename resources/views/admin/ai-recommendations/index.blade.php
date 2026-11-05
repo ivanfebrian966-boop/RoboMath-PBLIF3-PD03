@@ -19,12 +19,12 @@
     {{-- ============================= --}}
     {{-- 1. HEADER BANNER              --}}
     {{-- ============================= --}}
-    <div class="rounded-[28px] bg-[#1A3C9C] p-6 sm:p-8 text-white shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="rounded-[28px] bg-[#3B82F6] p-6 sm:p-8 text-white shadow-[0_8px_20px_rgba(59,130,246,0.32)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                 Verifikasi Soal AI &amp; Rekomendasi
             </h1>
-            <p class="text-blue-200 text-xs sm:text-sm font-normal mt-2 max-w-2xl leading-relaxed">
+            <p class="text-blue-50/95 text-xs sm:text-sm font-medium mt-2 max-w-2xl leading-relaxed">
                 Tinjau jawaban dan pembahasan buatan AI, lalu setujui sebelum soal tampil ke siswa.
             </p>
         </div>
@@ -174,7 +174,7 @@
                 {{-- Topic filter --}}
                 @foreach($topics->take(5) as $t)
                 <a href="{{ route('admin.ai-recommendations.index', ['status' => $statusFilter, 'topic_id' => $t->id]) }}"
-                   class="px-3.5 py-1.5 rounded-full font-bold transition border {{ $topicFilter == $t->id ? 'bg-[#1A3C9C] text-white border-transparent' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' }}">
+                   class="px-3.5 py-1.5 rounded-full font-bold transition border {{ $topicFilter == $t->id ? 'bg-[#3B82F6] text-white border-transparent' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' }}">
                     {{ $t->title }}
                 </a>
                 @endforeach

@@ -93,7 +93,7 @@
             @keydown.window.escape="mobileMenuOpen = false">
         <nav class="bg-white/95 backdrop-blur-md rounded-full px-3.5 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between border transition-all duration-300 shadow-md"
              :class="{
-                 'border-red-200/90 shadow-[0_6px_25px_rgba(255,59,48,0.12)]': activeNav === 'hero',
+                 'border-amber-200/90 shadow-[0_6px_25px_rgba(255,149,0,0.12)]': activeNav === 'hero',
                  'border-blue-200/90 shadow-[0_6px_25px_rgba(52,120,246,0.12)]': activeNav === 'fitur',
                  'border-emerald-200/90 shadow-[0_6px_25px_rgba(16,185,129,0.12)]': activeNav === 'modul',
                  'border-amber-200/90 shadow-[0_6px_25px_rgba(255,149,0,0.12)]': activeNav === 'prestasi',
@@ -105,10 +105,10 @@
 
             {{-- Nav Links Desktop / Tablet --}}
             <div class="hidden md:flex items-center gap-1 sm:gap-2 text-xs font-semibold overflow-x-auto no-scrollbar py-0.5">
-                {{-- Beranda: Merah #FF3B30 --}}
+                {{-- Beranda: Oranye #FF9500 --}}
                 <a href="#hero"
                    @click="activeNav = 'hero'"
-                   :class="activeNav === 'hero' ? 'border border-[#FF3B30] text-[#FF3B30] bg-red-50/80 shadow-xs font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-[#FF3B30] hover:bg-red-50/50 px-3 py-1 rounded-full transition-colors'"
+                   :class="activeNav === 'hero' ? 'border border-[#FF9500] text-[#FF9500] bg-amber-50/80 shadow-xs font-bold px-3.5 py-1 rounded-full' : 'text-slate-600 hover:text-[#FF9500] hover:bg-amber-50/50 px-3 py-1 rounded-full transition-colors'"
                    class="transition-all duration-200 whitespace-nowrap">
                     Beranda
                 </a>
@@ -146,14 +146,9 @@
                         Dashboard &rarr;
                     </a>
                 @else
+                    {{-- Tombol Masuk: Hijau #10B981 --}}
                     <a href="{{ route('login') }}"
-                       :class="{
-                           'border-[#FF3B30]/60 text-[#FF3B30] hover:bg-[#FF3B30]': activeNav === 'hero',
-                           'border-[#3478F6]/60 text-[#3478F6] hover:bg-[#3478F6]': activeNav === 'fitur',
-                           'border-[#10B981]/60 text-[#10B981] hover:bg-[#10B981]': activeNav === 'modul',
-                           'border-[#FF9500]/60 text-[#FF9500] hover:bg-[#FF9500]': activeNav === 'prestasi',
-                       }"
-                       class="border hover:text-white px-3 sm:px-4 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap">
+                       class="border border-[#10B981] text-[#10B981] hover:bg-[#10B981] hover:text-white px-3 sm:px-4 py-1.5 rounded-full transition-all duration-200 whitespace-nowrap font-bold">
                         Masuk
                     </a>
                 @endauth
@@ -183,12 +178,12 @@
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 -translate-y-3 scale-95"
              class="md:hidden mt-2 bg-white/95 backdrop-blur-md rounded-3xl border border-amber-200/80 shadow-xl p-3 space-y-1.5">
-            {{-- Beranda --}}
+            {{-- Beranda: Oranye #FF9500 --}}
             <a href="#hero"
                @click="activeNav = 'hero'; mobileMenuOpen = false"
-               :class="activeNav === 'hero' ? 'bg-red-50 text-[#FF3B30] font-black border border-red-200' : 'text-slate-700 hover:bg-red-50/50 font-bold'"
+               :class="activeNav === 'hero' ? 'bg-amber-50 text-[#FF9500] font-black border border-amber-200' : 'text-slate-700 hover:bg-amber-50/50 font-bold'"
                class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm transition-all duration-200">
-                <span class="w-2 h-2 rounded-full bg-[#FF3B30]"></span>
+                <span class="w-2 h-2 rounded-full bg-[#FF9500]"></span>
                 <span>Beranda</span>
             </a>
 
@@ -310,14 +305,14 @@
         <div class="space-y-4">
             {{-- Row 1: Left tall red card (5 cols) + Right stack (7 cols) --}}
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-                {{-- Card 1: Red (Adaptive Questions) --}}
+                {{-- Card 1: Red #FF3B30 (Membuat Soal Adaptif dari AI) --}}
                 <div class="card-hover md:col-span-6 bg-[#FF3B30] text-white p-7 rounded-3xl flex flex-col justify-between min-h-[260px] relative overflow-hidden">
                     <div>
                         <h3 class="text-xl sm:text-2xl font-black leading-snug">
-                            Soal yang menyesuaikan kemampuan anak
+                            Membuat Soal Adaptif dari AI
                         </h3>
                         <p class="text-xs sm:text-sm font-medium text-white/90 leading-relaxed mt-3 max-w-md">
-                            AI menganalisis kelemahan siswa dan memberi soal pilihan ganda yang sesuai dengan tingkat kemampuannya.
+                            AI menganalisis materi dan kemampuan siswa, lalu membuat butir soal pilihan ganda otomatis yang ramah anak.
                         </p>
                     </div>
 
@@ -561,10 +556,10 @@
                             TAUTAN CEPAT
                         </h4>
                         <ul class="space-y-2.5 text-xs font-medium text-slate-600">
-                            <li><a href="#hero" class="hover:text-[#FF3B30] transition-colors">Beranda</a></li>
-                            <li><a href="#fitur" class="hover:text-[#FF3B30] transition-colors">Fitur AI</a></li>
-                            <li><a href="#modul" class="hover:text-[#FF3B30] transition-colors">Modul SD</a></li>
-                            <li><a href="{{ route('login') }}" class="hover:text-[#FF3B30] transition-colors">Masuk</a></li>
+                            <li><a href="#hero" class="hover:text-[#FF9500] transition-colors">Beranda</a></li>
+                            <li><a href="#fitur" class="hover:text-[#3478F6] transition-colors">Fitur AI</a></li>
+                            <li><a href="#modul" class="hover:text-[#10B981] transition-colors">Modul SD</a></li>
+                            <li><a href="{{ route('login') }}" class="hover:text-[#10B981] transition-colors">Masuk</a></li>
                         </ul>
                     </div>
 

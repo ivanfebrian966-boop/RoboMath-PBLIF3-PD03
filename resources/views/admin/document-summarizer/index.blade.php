@@ -19,11 +19,11 @@
     <!-- ======================================================== -->
     <!-- 1. HEADER HERO BANNER -->
     <!-- ======================================================== -->
-    <div class="rounded-[28px] bg-[#2563EB] p-6 sm:p-8 text-white shadow-md shadow-blue-500/10">
+    <div class="rounded-[28px] bg-[#FF9500] p-6 sm:p-8 text-white shadow-[0_8px_20px_rgba(255,149,0,0.32)]">
         <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
             Kelola Materi
         </h1>
-        <p class="text-blue-100 text-xs sm:text-sm font-normal mt-2 max-w-2xl leading-relaxed">
+        <p class="text-orange-50/95 text-xs sm:text-sm font-medium mt-2 max-w-2xl leading-relaxed">
             Unggah dokumen materi, lalu biarkan AI meringkasnya menjadi paket soal yang siap dipakai siswa.
         </p>
     </div>

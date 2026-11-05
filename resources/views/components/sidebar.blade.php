@@ -136,25 +136,25 @@
                             <span>Dashboard Admin</span>
                         </a>
 
-                        {{-- Kelola Materi (Tema Oranye) --}}
+                        {{-- Kelola Materi (Tema Oranye - Ikon AI Sparkle) --}}
                         @php $isActive = request()->routeIs('admin.document-summarizer*') || request()->routeIs('admin.lessons*'); @endphp
                         <a href="{{ route('admin.document-summarizer.index') }}"
                            class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF9500] text-white font-black shadow-[0_8px_20px_rgba(255,149,0,0.32)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-orange-50/70 hover:text-orange-950 hover:scale-[1.01]' }} active:scale-95 group">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }} transition-transform">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
                                 </svg>
                             </span>
                             <span>Kelola Materi</span>
                         </a>
 
-                        {{-- Review AI (Tema Biru Muda) --}}
+                        {{-- Review AI (Tema Biru - Ikon Review / Clipboard Check) --}}
                         @php $isActive = request()->routeIs('admin.ai-recommendations*') || request()->routeIs('admin.quizzes*'); @endphp
                         <a href="{{ route('admin.ai-recommendations.index') }}"
                            class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#3B82F6] text-white font-black shadow-[0_8px_20px_rgba(59,130,246,0.35)] hover:scale-[1.02]' : 'text-slate-800 font-bold hover:bg-blue-50/70 hover:text-blue-950 hover:scale-[1.01]' }} active:scale-95 group">
                             <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-500 group-hover:scale-105' }} transition-transform">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4"/>
                                 </svg>
                             </span>
                             <span>Review AI</span>
@@ -490,27 +490,27 @@
                         <span>Dashboard Admin</span>
                     </a>
 
-                    {{-- Kelola Materi --}}
+                    {{-- Kelola Materi (Ikon AI Sparkle) --}}
                     @php $isActive = request()->routeIs('admin.document-summarizer*') || request()->routeIs('admin.lessons*'); @endphp
                     <a href="{{ route('admin.document-summarizer.index') }}"
                        @click="mobileSidebarOpen = false"
                        class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#FF9500] text-white font-black shadow-[0_8px_20px_rgba(255,149,0,0.32)]' : 'text-slate-800 font-bold hover:bg-orange-50 hover:text-orange-950' }} active:scale-95 group">
                         <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-orange-100 text-orange-600 group-hover:scale-105' }} transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
                             </svg>
                         </span>
                         <span>Kelola Materi</span>
                     </a>
 
-                    {{-- Review AI --}}
+                    {{-- Review AI (Ikon Clipboard Check / Review) --}}
                     @php $isActive = request()->routeIs('admin.ai-recommendations*') || request()->routeIs('admin.quizzes*'); @endphp
                     <a href="{{ route('admin.ai-recommendations.index') }}"
                        @click="mobileSidebarOpen = false"
                        class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-sm transition-all duration-200 {{ $isActive ? 'bg-[#3B82F6] text-white font-black shadow-[0_8px_20px_rgba(59,130,246,0.35)]' : 'text-slate-800 font-bold hover:bg-blue-50 hover:text-blue-950' }} active:scale-95 group">
                         <span class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {{ $isActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-500 group-hover:scale-105' }} transition-transform">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4"/>
                             </svg>
                         </span>
                         <span>Review AI</span>

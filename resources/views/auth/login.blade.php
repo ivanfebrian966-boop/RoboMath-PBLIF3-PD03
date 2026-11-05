@@ -107,14 +107,14 @@ input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(52,1
 .toggle:focus-visible{outline:3px solid var(--blue)}
 .msg{color:#d92d20;font-size:13px;margin:8px 0 0 6px}
 .remember{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin:4px 0 24px;cursor:pointer}
-.remember input{width:20px;height:20px;accent-color:var(--red);border-radius:6px}
+.remember input{width:20px;height:20px;accent-color:var(--blue);border-radius:6px}
 .btn{
   width:100%;height:56px;border:0;border-radius:999px;color:#fff;cursor:pointer;
   font:700 16px 'Poppins',sans-serif;letter-spacing:-.01em;
-  background:linear-gradient(135deg,var(--red),#ff6a3d);
-  box-shadow:0 14px 24px -10px rgba(255,59,48,.6);transition:transform .15s, box-shadow .15s;
+  background:linear-gradient(135deg,#1D78F5,#3478F6);
+  box-shadow:0 14px 24px -10px rgba(52,120,246,.55);transition:transform .15s, box-shadow .15s;
 }
-.btn:hover{transform:translateY(-2px);box-shadow:0 18px 28px -10px rgba(255,59,48,.65)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 18px 28px -10px rgba(52,120,246,.65)}
 .btn:active{transform:translateY(0)}
 .btn:focus-visible{outline:4px solid rgba(52,120,246,.4);outline-offset:3px}
 .back{display:block;text-align:center;margin-top:22px;font-size:14px;font-weight:600;color:var(--muted);text-decoration:none}
