@@ -24,6 +24,76 @@ class OpenAIProvider implements AIProviderInterface
         $this->baseUrl = $baseUrl ?? config('services.openai.base_url', env('OPENAI_BASE_URL', 'https://api.openai.com/v1'));
     }
 
+    public function chatWithDocument(string $message, string $base64Data, string $mimeType, ?User $user = null, ?string $context = null): AIChatResponse
+    {
+        if (empty($this->apiKey)) {
+            return $this->fallback($message, $user, $context);
+        }
+
+        // OpenAI vision: only image types are supported via inline base64 (not PDF)
+        // For PDF, fall back to text-only with a note
+        if (! str_starts_with($mimeType, 'image/')) {
+            Log::info('OpenAI vision: non-image document passed, falling back to text-only chat.');
+
+            return $this->chat($message, $user, $context);
+        }
+
+        $systemInstruction = match ($context) {
+            'json' => 'You are an expert educational assessment specialist and mathematics teacher. You MUST always output valid pure JSON strictly following the requested structure, with no markdown code blocks and no surrounding text.',
+            'raw' => 'You are an expert AI document summarizer and education assistant for RoboMath. Follow all formatting and summarization guidelines provided in the prompt accurately in Indonesian.',
+            default => RoboBotPrompt::systemPrompt($user, $context),
+        };
+
+        $payload = [
+            'model' => $this->model,
+            'messages' => [
+                [
+                    'role' => 'system',
+                    'content' => $systemInstruction,
+                ],
+                [
+                    'role' => 'user',
+                    'content' => [
+                        [
+                            'type' => 'image_url',
+                            'image_url' => [
+                                'url' => "data:{$mimeType};base64,{$base64Data}",
+                            ],
+                        ],
+                        [
+                            'type' => 'text',
+                            'text' => $message,
+                        ],
+                    ],
+                ],
+            ],
+            'temperature' => $context === 'json' ? 0.2 : 0.4,
+            'max_tokens' => $context === 'raw' ? 4000 : 1500,
+        ];
+
+        try {
+            $endpoint = rtrim($this->baseUrl, '/').'/chat/completions';
+            $response = Http::withToken($this->apiKey)->timeout(120)->post($endpoint, $payload);
+
+            if ($response->successful()) {
+                $rawContent = $response->json('choices.0.message.content') ?? '';
+                $cleanText = trim(preg_replace('/<think>[\s\S]*?<\/think>/i', '', $rawContent));
+
+                return new AIChatResponse(
+                    text: $cleanText ?: $rawContent,
+                    provider: 'openai',
+                    tokensUsed: $response->json('usage.total_tokens')
+                );
+            }
+
+            Log::error('OpenAI Vision API Error: '.$response->body());
+        } catch (\Throwable $e) {
+            Log::error('OpenAI Vision Exception: '.$e->getMessage());
+        }
+
+        return $this->fallback($message, $user, $context);
+    }
+
     public function chat(string $message, ?User $user = null, ?string $context = null): AIChatResponse
     {
         if (empty($this->apiKey)) {

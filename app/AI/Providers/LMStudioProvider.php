@@ -22,6 +22,13 @@ class LMStudioProvider implements AIProviderInterface
         $this->model = $model ?? config('services.lmstudio.model', env('LMSTUDIO_MODEL', null));
     }
 
+    public function chatWithDocument(string $message, string $base64Data, string $mimeType, ?User $user = null, ?string $context = null): AIChatResponse
+    {
+        Log::info('LMStudio: vision not supported in local model endpoint, fallback to text chat.');
+
+        return $this->chat($message, $user, $context);
+    }
+
     public function chat(string $message, ?User $user = null, ?string $context = null): AIChatResponse
     {
         $systemInstruction = match ($context) {
