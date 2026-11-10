@@ -433,8 +433,9 @@
                    class="flex items-center justify-between p-2 rounded-2xl hover:bg-slate-50 transition-colors group">
                     <div class="flex items-center gap-3.5 min-w-0">
                         <div class="w-10 h-10 rounded-2xl bg-[#DCFCE7] text-[#059669] flex items-center justify-center flex-shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
                             </svg>
                         </div>
                         <div class="min-w-0">

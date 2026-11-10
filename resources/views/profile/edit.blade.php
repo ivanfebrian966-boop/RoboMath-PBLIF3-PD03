@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends($user->isAdmin() ? 'layouts.admin' : 'layouts.app')
 
 @section('title', 'Edit Profil - RoboMath')
 
