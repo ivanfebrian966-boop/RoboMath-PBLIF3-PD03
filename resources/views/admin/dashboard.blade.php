@@ -215,15 +215,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Zm6 12 .9 2.1L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.9L18 15Z" />
                     </svg>
                 </span>
-                <div class="min-w-0">
-                    <p class="text-[10px] font-black uppercase tracking-wider text-slate-500">Menunggu Review AI</p>
-                    <p class="text-3xl font-black leading-tight text-slate-800">{{ $pendingAiRecommendations }}</p>
-                    <p class="text-xs font-medium text-slate-500">soal dan rekomendasi menunggu persetujuan</p>
-                    <a href="{{ route('admin.ai-recommendations.index') }}" class="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-700 px-4 py-2 text-xs font-black text-white transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-300">
-                        Buka Review AI
-                        <span aria-hidden="true">&rarr;</span>
-                    </a>
-                </div>
             </section>
 
             <section class="space-y-4 rounded-3xl border border-amber-200 bg-white p-5 shadow-sm sm:p-6">
