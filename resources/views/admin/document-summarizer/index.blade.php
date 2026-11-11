@@ -320,8 +320,10 @@
                                     <td class="py-3.5 px-2 text-center">
                                         @if($item->status === 'selesai')
                                             <span class="px-3.5 py-1 rounded-full bg-[#E1F8EC] text-[#059669] text-xs font-bold inline-block">Siap</span>
+                                        @elseif($item->status === 'ditolak')
+                                            <span class="px-3.5 py-1 rounded-full bg-[#FEE2E2] text-[#DC2626] text-xs font-bold inline-block" title="{{ $item->error_message }}">Ditolak</span>
                                         @elseif($item->status === 'gagal')
-                                            <span class="px-3.5 py-1 rounded-full bg-[#FEE2E2] text-[#EF4444] text-xs font-bold inline-block">Gagal</span>
+                                            <span class="px-3.5 py-1 rounded-full bg-[#FEE2E2] text-[#EF4444] text-xs font-bold inline-block" title="{{ $item->error_message }}">Gagal</span>
                                         @else
                                             <span class="px-3.5 py-1 rounded-full bg-[#FEF3C7] text-[#D97706] text-xs font-bold inline-block">Proses</span>
                                         @endif
@@ -544,33 +546,33 @@
 <!-- ============================================================ -->
 <!-- MODAL: PUBLISH SOAL KE REVIEW AI -->
 <!-- ============================================================ -->
-<div id="publish-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-5 overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
-    <div class="bg-[#FAF6EF] rounded-[30px] shadow-2xl w-full max-w-3xl max-h-[94vh] overflow-y-auto p-6 sm:p-10 space-y-5 relative my-auto">
+<div id="publish-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4 overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-[#FAF6EF] rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4 relative my-auto">
         <!-- Modal Header -->
         <div class="flex items-center justify-between gap-3">
             <div>
-                <h3 class="text-2xl sm:text-3xl font-black tracking-tight text-[#17182F]">Ajukan soal ke Review AI</h3>
+                <h3 class="text-lg sm:text-xl font-black tracking-tight text-[#17182F]">Ajukan soal ke Review AI</h3>
             </div>
-            <button type="button" onclick="closePublishModal()" aria-label="Tutup" class="w-12 h-12 rounded-full bg-white border-2 border-[#E9E0D4] hover:bg-slate-100 text-slate-900 flex items-center justify-center font-black text-2xl transition-all">&times;</button>
+            <button type="button" onclick="closePublishModal()" aria-label="Tutup" class="w-8 h-8 rounded-full bg-white border border-[#E9E0D4] hover:bg-slate-100 text-slate-700 flex items-center justify-center font-black text-lg transition-all">&times;</button>
         </div>
 
         <!-- Info Card -->
-        <div class="p-4 sm:p-5 rounded-3xl bg-[#DBEAFE] text-sm sm:text-base font-medium text-blue-900 leading-relaxed">
+        <div class="p-3 sm:p-3.5 rounded-2xl bg-[#DBEAFE] text-xs sm:text-sm font-medium text-blue-900 leading-relaxed">
             Soal disimpan dengan status <strong>“Menunggu tinjauan”</strong> di halaman Review AI sebelum dikerjakan siswa.
         </div>
 
         <!-- Preview -->
-        <div id="publish-preview" class="hidden flex p-4 sm:p-5 rounded-3xl bg-[#ECFDF5] border-2 border-emerald-300 text-base sm:text-xl font-black text-slate-900 items-center gap-4">
-            <svg class="w-8 h-8 text-emerald-700 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.75 2.25 2.25L15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        <div id="publish-preview" class="hidden flex p-3 rounded-2xl bg-[#ECFDF5] border border-emerald-300 text-xs sm:text-sm font-black text-slate-900 items-center gap-2.5">
+            <svg class="w-5 h-5 text-emerald-700 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 12.75 2.25 2.25L15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
             <span id="publish-preview-text"></span>
         </div>
 
         <!-- Form Fields -->
-        <div class="space-y-5">
+        <div class="space-y-3.5">
             <!-- Pilih Topik -->
             <div>
-                <label class="block text-xs sm:text-sm font-black text-slate-600 mb-2 uppercase tracking-wider">Topik tujuan <span class="text-[#EF342B]">*</span></label>
-                <select id="publish-topic-id" class="w-full px-5 py-4 rounded-2xl border-2 border-[#E9E0D4] focus:border-[#2563EB] bg-white font-bold text-slate-800 text-base outline-none transition-all">
+                <label class="block text-[11px] sm:text-xs font-black text-slate-600 mb-1.5 uppercase tracking-wider">Topik tujuan <span class="text-[#EF342B]">*</span></label>
+                <select id="publish-topic-id" class="w-full px-3.5 py-2.5 rounded-xl border border-[#E9E0D4] focus:border-[#2563EB] bg-white font-bold text-slate-800 text-xs sm:text-sm outline-none transition-all">
                     <option value="">Pilih topik</option>
                     @foreach(\App\Models\Topic::where('is_active', true)->orderBy('kelas_level')->orderBy('order')->get() as $t)
                         <option value="{{ $t->id }}">{{ $t->title }} (Kelas {{ $t->kelas_level }})</option>
@@ -580,13 +582,13 @@
 
             <!-- Format Soal -->
             <div>
-                <label class="block text-xs sm:text-sm font-black text-slate-600 mb-2 uppercase tracking-wider">Format soal</label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-emerald-300 has-[:checked]:bg-[#CFFAE9] has-[:checked]:text-emerald-950">
+                <label class="block text-[11px] sm:text-xs font-black text-slate-600 mb-1.5 uppercase tracking-wider">Format soal</label>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <label class="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-[#E8E1D5] bg-white text-xs sm:text-sm font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-emerald-300 has-[:checked]:bg-[#CFFAE9] has-[:checked]:text-emerald-950">
                         <input type="radio" name="publish-type" value="essay" id="publish-type-essay" class="sr-only" checked>
                         <span>Essay / Uraian</span>
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-[#2563EB] has-[:checked]:bg-[#2563EB] has-[:checked]:text-white">
+                    <label class="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-[#E8E1D5] bg-white text-xs sm:text-sm font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-[#2563EB] has-[:checked]:bg-[#2563EB] has-[:checked]:text-white">
                         <input type="radio" name="publish-type" value="pilihan_ganda" id="publish-type-mcq" class="sr-only">
                         <span>Pilihan Ganda (A-D)</span>
                     </label>
@@ -595,15 +597,15 @@
 
             <!-- Tingkat Kesulitan -->
             <div>
-                <label class="block text-xs sm:text-sm font-black text-slate-600 mb-2 uppercase tracking-wider">Tingkat kesulitan</label>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-emerald-300 has-[:checked]:bg-[#CFFAE9] has-[:checked]:text-emerald-950">
+                <label class="block text-[11px] sm:text-xs font-black text-slate-600 mb-1.5 uppercase tracking-wider">Tingkat kesulitan</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <label class="flex items-center justify-center gap-1 px-2.5 py-2 rounded-xl border border-[#E8E1D5] bg-white text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-emerald-300 has-[:checked]:bg-[#CFFAE9] has-[:checked]:text-emerald-950">
                         <input type="radio" name="publish-difficulty" value="mudah" class="sr-only" checked> Mudah
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-amber-300 has-[:checked]:bg-amber-100">
+                    <label class="flex items-center justify-center gap-1 px-2.5 py-2 rounded-xl border border-[#E8E1D5] bg-white text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-amber-300 has-[:checked]:bg-amber-100">
                         <input type="radio" name="publish-difficulty" value="sedang" class="sr-only"> Sedang
                     </label>
-                    <label class="flex items-center justify-center gap-1.5 px-4 py-4 rounded-2xl border-2 border-[#E8E1D5] bg-white text-sm sm:text-base font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-rose-300 has-[:checked]:bg-rose-100">
+                    <label class="flex items-center justify-center gap-1 px-2.5 py-2 rounded-xl border border-[#E8E1D5] bg-white text-xs font-black text-[#17182F] cursor-pointer transition-all has-[:checked]:border-rose-300 has-[:checked]:bg-rose-100">
                         <input type="radio" name="publish-difficulty" value="sulit" class="sr-only"> Sulit
                     </label>
                 </div>
@@ -611,12 +613,12 @@
 
             <!-- Poin per Soal -->
             <div>
-                <label class="block text-xs sm:text-sm font-black text-slate-600 mb-2 uppercase tracking-wider">Poin per soal</label>
-                <div class="flex items-center gap-4">
+                <label class="block text-[11px] sm:text-xs font-black text-slate-600 mb-1.5 uppercase tracking-wider">Poin per soal</label>
+                <div class="flex items-center gap-3">
                     <input type="range" id="publish-points" min="5" max="50" step="5" value="10"
                            oninput="document.getElementById('publish-points-label').textContent = this.value"
                            class="flex-1 accent-[#2563EB]">
-                    <span class="w-24 shrink-0 text-center font-black text-amber-800 text-base sm:text-lg bg-[#FEF3C7] px-4 py-3 rounded-2xl">
+                    <span class="w-20 shrink-0 text-center font-black text-amber-800 text-xs sm:text-sm bg-[#FEF3C7] px-3 py-1.5 rounded-xl">
                         <span id="publish-points-label">10</span> Poin
                     </span>
                 </div>
@@ -624,12 +626,12 @@
         </div>
 
         <!-- Modal Actions -->
-        <div class="flex flex-col-reverse sm:flex-row items-center gap-3 pt-2">
-            <button type="button" onclick="closePublishModal()" class="flex-1 w-full px-6 py-4 rounded-full bg-white border-2 border-[#E9E0D4] hover:bg-slate-100 text-slate-900 font-black text-base transition-all">
+        <div class="flex flex-col-reverse sm:flex-row items-center gap-2.5 pt-1">
+            <button type="button" onclick="closePublishModal()" class="flex-1 w-full px-4 py-2.5 rounded-full bg-white border border-[#E9E0D4] hover:bg-slate-100 text-slate-800 font-black text-xs sm:text-sm transition-all">
                 Batal
             </button>
             <button type="button" onclick="submitPublishToStudents()" id="btn-publish-confirm"
-                    class="flex-1 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full bg-slate-900 hover:bg-slate-700 text-white font-black text-base shadow-xs transition-all">
+                    class="flex-1 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-slate-900 hover:bg-slate-700 text-white font-black text-xs sm:text-sm shadow-xs transition-all">
                 <span>Ajukan ke Review AI</span>
             </button>
         </div>
@@ -1014,6 +1016,26 @@
                     const data = await response.json();
 
                     if (!response.ok || !data.success) {
+                        if (data && data.rejected) {
+                            let detailHtml = `<p class="text-sm text-slate-700 leading-relaxed mb-4">${data.message || data.reason}</p>`;
+                            if (data.suggested_materials && data.suggested_materials.length > 0) {
+                                detailHtml += `<div class="text-left text-xs bg-amber-50 p-3.5 rounded-2xl border border-amber-200 text-amber-900">
+                                    <strong class="block mb-1.5 font-bold text-amber-950">💡 Contoh materi yang sesuai dataset kurikulum matematika SD:</strong>
+                                    <ul class="list-disc list-inside space-y-1">
+                                        ${data.suggested_materials.map(m => `<li>${m}</li>`).join('')}
+                                    </ul>
+                                </div>`;
+                            }
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Dokumen Ditolak AI',
+                                html: detailHtml,
+                                confirmButtonText: 'Pahami & Unggah Materi Baru',
+                                confirmButtonColor: '#EF4444'
+                            });
+                            return;
+                        }
+
                         let errorMsg = data.message || 'Terjadi kesalahan saat memproses ringkasan dokumen.';
                         if (data.errors) {
                             const validationMessages = Object.values(data.errors).flat();
@@ -1076,8 +1098,8 @@
                 const messages = [
                     'Membaca berkas dokumen...',
                     'Mengekstrak materi dokumen...',
-                    'Mengirim materi ke model AI...',
-                    'AI sedang menganalisis materi dan merancang butir soal...',
+                    'AI sedang memvalidasi kesesuaian dokumen dengan dataset matematika SD...',
+                    'AI menyusun dan merancang butir soal kontekstual...',
                     'Menyusun opsi jawaban, kunci, dan pembahasan...',
                     'Hampir selesai, memformat paket soal...'
                 ];
@@ -1094,7 +1116,7 @@
                         progressLabel.textContent = [
                             'Menyiapkan dokumen',
                             'Membaca dokumen',
-                            'Menganalisis materi',
+                            'Memvalidasi dataset AI',
                             'Menyusun butir soal',
                             'Memeriksa kunci dan pembahasan',
                             'Menyelesaikan paket soal',

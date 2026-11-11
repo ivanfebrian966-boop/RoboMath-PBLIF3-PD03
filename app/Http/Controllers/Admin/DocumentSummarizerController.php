@@ -185,6 +185,45 @@ class DocumentSummarizerController extends Controller
                 'word_count_original' => $wordCountOriginal,
             ]);
 
+            // ── AI Dataset Validation Guardrail ──────────────────────────────
+            // Evaluasi dokumen terhadap dataset resmi kurikulum matematika SD
+            // sebelum pembuatan soal dimulai. Jika dokumen tidak sesuai dataset,
+            // sistem MENOLAK pembuatan soal.
+            $validation = $this->summarizerService->validateAgainstDataset(
+                text: $extractedText,
+                title: $title,
+                rawBase64: $rawBase64,
+                mimeType: $mimeType,
+                user: Auth::user()
+            );
+
+            if (! $validation['is_valid']) {
+                $rejectionReason = $validation['reason'] ?? 'Dokumen tidak berkaitan dengan materi matematika SD.';
+                $suggestedMaterials = $this->summarizerService->getSuggestedDatasetMaterials();
+
+                $summaryModel->update([
+                    'title' => $title,
+                    'file_type' => $fileType,
+                    'file_size' => $fileSize,
+                    'extracted_text' => mb_substr($extractedText, 0, 50000),
+                    'word_count_original' => $wordCountOriginal,
+                    'summary' => "## ❌ Dokumen Ditolak oleh AI\n\n{$rejectionReason}\n\n**Materi yang disarankan sesuai dataset kurikulum SD:**\n- ".implode("\n- ", $suggestedMaterials),
+                    'status' => 'ditolak',
+                    'error_message' => $rejectionReason,
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'rejected' => true,
+                    'status' => 'ditolak',
+                    'title' => $title,
+                    'message' => "AI menolak pembuatan soal: {$rejectionReason}",
+                    'reason' => $rejectionReason,
+                    'suggested_materials' => $suggestedMaterials,
+                ], 422);
+            }
+            // ────────────────────────────────────────────────────────────────
+
             $aiResult = $this->summarizerService->summarize(
                 text: $extractedText,
                 title: $title,
@@ -206,7 +245,7 @@ class DocumentSummarizerController extends Controller
                     'extracted_text' => mb_substr($extractedText, 0, 50000),
                     'word_count_original' => $wordCountOriginal,
                     'summary' => $aiResult['summary'],
-                    'status' => 'gagal',
+                    'status' => 'ditolak',
                     'error_message' => 'Dokumen tidak berkaitan dengan matematika SD.',
                 ]);
 

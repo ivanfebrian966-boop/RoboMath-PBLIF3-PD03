@@ -208,15 +208,6 @@
             @endif
         </section>
 
-        <aside class="space-y-4">
-            <section class="flex items-center gap-4 rounded-3xl border border-blue-200 bg-white p-5 shadow-sm sm:p-6">
-                <span class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white">
-                    <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Zm6 12 .9 2.1L21 18l-2.1.9L18 21l-.9-2.1L15 18l2.1-.9L18 15Z" />
-                    </svg>
-                </span>
-            </section>
-
             <section class="space-y-4 rounded-3xl border border-amber-200 bg-white p-5 shadow-sm sm:p-6">
                 <div class="flex items-center justify-between gap-3">
                     <h2 class="text-lg font-black text-slate-800">Akurasi per Tingkat</h2>

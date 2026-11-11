@@ -46,6 +46,41 @@ class MockProvider implements AIProviderInterface
     {
         $lower = strtolower($prompt);
 
+        if (str_contains($lower, 'validator kurikulum matematika sd') || str_contains($lower, 'dataset materi resmi')) {
+            $isInvalid = str_contains($lower, 'fotosintesis')
+                || str_contains($lower, 'slide 1')
+                || str_contains($lower, 'team pbl')
+                || str_contains($lower, 'project owner')
+                || str_contains($lower, 'scrum master')
+                || str_contains($lower, 'ipa')
+                || str_contains($lower, 'sejarah')
+                || (! str_contains($lower, 'pecahan') && ! str_contains($lower, 'penjumlahan') && ! str_contains($lower, 'pengurangan') && ! str_contains($lower, 'perkalian') && ! str_contains($lower, 'pembagian') && ! str_contains($lower, 'bilangan') && ! str_contains($lower, 'bangun datar') && ! str_contains($lower, 'nilai tempat'));
+
+            if ($isInvalid) {
+                return new AIChatResponse(
+                    text: json_encode([
+                        'is_valid' => false,
+                        'matched_material' => null,
+                        'grade_level' => null,
+                        'confidence_score' => 15,
+                        'reason' => 'Dokumen ini bukan materi pembelajaran matematika SD yang sesuai dengan kurikulum/dataset resmi RoboMath.',
+                    ], JSON_PRETTY_PRINT),
+                    provider: 'mock'
+                );
+            }
+
+            return new AIChatResponse(
+                text: json_encode([
+                    'is_valid' => true,
+                    'matched_material' => 'Pecahan / Operasi Hitung Matematika SD',
+                    'grade_level' => 4,
+                    'confidence_score' => 95,
+                    'reason' => 'Dokumen terverifikasi memuat konsep materi pembelajaran matematika SD yang selaras dengan dataset kurikulum.',
+                ], JSON_PRETTY_PRINT),
+                provider: 'mock'
+            );
+        }
+
         if (str_contains($lower, 'analisis teks soal')) {
             $mockAnalysis = [
                 'grade' => 3,

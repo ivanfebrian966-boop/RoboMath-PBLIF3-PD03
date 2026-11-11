@@ -101,6 +101,34 @@ class MathDatasetService
     }
 
     /**
+     * Determine whether the given text appears to be a project presentation,
+     * software specification, or non-curricular report.
+     */
+    public function isPresentationOrTechnicalDocument(string $text): bool
+    {
+        $lower = mb_strtolower($text);
+
+        $presentationMarkers = [
+            'slide 1', 'slide 2', 'team pbl', 'project owner', 'scrum master',
+            'functional requirements', 'non-functional requirements',
+            'user stories', 'sprint 1', 'sprint 2', 'use case', 'erd diagram',
+            'arsitektur sistem', 'backend', 'frontend', 'framework',
+        ];
+
+        $markerHits = 0;
+        foreach ($presentationMarkers as $marker) {
+            if (str_contains($lower, $marker)) {
+                $markerHits++;
+                if ($markerHits >= 2) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Determine whether the given text appears to be math-related, based on keywords
      * extracted from the official dataset's material names and common math vocabulary.
      *
@@ -109,6 +137,11 @@ class MathDatasetService
     public function isMathRelated(string $text, int $threshold = 2): bool
     {
         if (empty(trim($text))) {
+            return false;
+        }
+
+        // Fast rejection for project pitch / presentations / technical software docs
+        if ($this->isPresentationOrTechnicalDocument($text)) {
             return false;
         }
 
@@ -130,15 +163,17 @@ class MathDatasetService
             return array_values(array_unique($keywords));
         });
 
-        // Core math vocabulary always checked regardless of dataset
+        // Core math vocabulary strictly related to elementary mathematics concepts
+        // Note: Generic words like 'soal', 'latihan', 'kuis', 'ujian' are intentionally excluded
+        // because non-math project docs and quizzes also frequently mention them.
         $coreKeywords = [
-            'matematika', 'matematik', 'bilangan', 'hitung', 'penjumlahan', 'pengurangan',
+            'bilangan', 'hitung', 'penjumlahan', 'pengurangan',
             'perkalian', 'pembagian', 'pecahan', 'desimal', 'persen', 'geometri', 'bangun',
             'luas', 'keliling', 'volume', 'sudut', 'segitiga', 'persegi', 'lingkaran',
-            'diagram', 'grafik', 'data', 'statistik', 'rata-rata', 'median', 'modus',
+            'kubus', 'balok', 'nilai tempat', 'bangun datar', 'bangun ruang',
+            'diagram', 'grafik', 'statistik', 'rata-rata', 'median', 'modus',
             'kpk', 'fpb', 'prima', 'faktor', 'kelipatan', 'pangkat', 'akar', 'koordinat',
-            'skala', 'rasio', 'proporsi', 'aljabar', 'persamaan', 'pertidaksamaan',
-            'soal', 'latihan', 'kuis', 'ujian', 'ulangan', 'matematika',
+            'skala', 'rasio', 'proporsi', 'satuan panjang', 'satuan berat',
         ];
 
         $allKeywords = array_values(array_unique(array_merge($coreKeywords, $datasetKeywords)));
@@ -154,6 +189,28 @@ class MathDatasetService
         }
 
         return false;
+    }
+
+    /**
+     * Return a preview list of sample materials from the dataset.
+     *
+     * @return list<string>
+     */
+    public function sampleMaterials(int $limit = 6): array
+    {
+        $materials = $this->materials();
+        if (empty($materials)) {
+            return [
+                'Penjumlahan & Pengurangan Bilangan Cacah',
+                'Nilai Tempat & Membandingkan Bilangan',
+                'Pecahan Sederhana & Desimal',
+                'Bangun Datar (Segitiga, Persegi, Lingkaran)',
+                'Pengukuran Panjang, Berat & Waktu',
+                'Penyajian Data & Diagram Gambar',
+            ];
+        }
+
+        return array_slice($materials, 0, $limit);
     }
 
     /**
