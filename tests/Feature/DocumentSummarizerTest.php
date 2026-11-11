@@ -143,6 +143,28 @@ class DocumentSummarizerTest extends TestCase
         ]);
     }
 
+    public function test_non_math_document_is_rejected_with_422(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
+            'direct_text' => 'Fotosintesis adalah proses pembuatan makanan pada tumbuhan dengan menggunakan cahaya matahari, air, dan karbon dioksida untuk menghasilkan glukosa dan oksigen.',
+            'custom_title' => 'Proses Fotosintesis IPA',
+        ]);
+
+        $response->assertUnprocessable();
+        $response->assertJson([
+            'success' => false,
+            'rejected' => true,
+        ]);
+        $this->assertDatabaseHas('dokumen', [
+            'user_id' => $admin->id,
+            'title' => 'Proses Fotosintesis IPA',
+            'status' => 'gagal',
+            'error_message' => 'Dokumen tidak berkaitan dengan matematika SD.',
+        ]);
+    }
+
     public function test_admin_must_approve_topic_before_ai_quizzes_can_be_published(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);

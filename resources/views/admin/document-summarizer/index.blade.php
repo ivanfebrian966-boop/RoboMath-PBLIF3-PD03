@@ -754,11 +754,22 @@
             return bytes + ' B';
         }
 
+        function cleanLatexInJs(text) {
+            if (!text) return '';
+            return text
+                .replace(/\\?frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}/gi, '$1/$2')
+                .replace(/\\times/gi, 'x')
+                .replace(/\\div/gi, ':')
+                .replace(/\$([^\$]+)\$/g, '$1')
+                .replace(/\$/g, '')
+                .replace(/\\/g, '');
+        }
+
         // Markdown / Question Parser
         function parseMarkdownToHtml(markdownText) {
             if (!markdownText) return '';
 
-            let cleaned = markdownText.replace(/^(?:Sebagai\s+Asisten|Tentu|Halo|Berikut\s+adalah|Saya\s+telah|Baiklah|Berikut\s+ini).*?(?=(##|###|📝|Soal\s+1))/is, '').trim();
+            let cleaned = cleanLatexInJs(markdownText.replace(/^(?:Sebagai\s+Asisten|Tentu|Halo|Berikut\s+adalah|Saya\s+telah|Baiklah|Berikut\s+ini).*?(?=(##|###|📝|Soal\s+1))/is, '').trim());
 
             try {
                 const questionRegex = /###\s*(?:📝|🌟)?\s*Soal\s*(\d+)[\s\S]*?(?=(?:###\s*(?:📝|🌟)?\s*Soal\s*\d+|###\s*📌|$))/gi;

@@ -64,7 +64,7 @@ class GeminiProvider implements AIProviderInterface
             'generationConfig' => $generationConfig,
         ];
 
-        return $this->sendPayload($url, $payload, $user, $context);
+        return $this->sendPayload($url, $payload, $user, $context, $message);
     }
 
     public function chatWithDocument(string $message, string $base64Data, string $mimeType, ?User $user = null, ?string $context = null): AIChatResponse
@@ -117,13 +117,13 @@ class GeminiProvider implements AIProviderInterface
             'generationConfig' => $generationConfig,
         ];
 
-        return $this->sendPayload($url, $payload, $user, $context);
+        return $this->sendPayload($url, $payload, $user, $context, $message);
     }
 
     /**
      * Execute the HTTP request to the Gemini generateContent endpoint and return a response.
      */
-    protected function sendPayload(string $url, array $payload, ?User $user, ?string $context): AIChatResponse
+    protected function sendPayload(string $url, array $payload, ?User $user, ?string $context, string $originalMessage = ''): AIChatResponse
     {
         try {
             $attempts = 0;
@@ -164,7 +164,7 @@ class GeminiProvider implements AIProviderInterface
             Log::error('Gemini Provider Exception: '.$e->getMessage());
         }
 
-        return $this->fallback('', $user, $context);
+        return $this->fallback($originalMessage, $user, $context);
     }
 
     /**

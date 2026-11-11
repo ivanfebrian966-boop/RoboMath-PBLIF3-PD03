@@ -101,6 +101,62 @@ class MathDatasetService
     }
 
     /**
+     * Determine whether the given text appears to be math-related, based on keywords
+     * extracted from the official dataset's material names and common math vocabulary.
+     *
+     * Returns true when the text contains at least $threshold matching math keywords.
+     */
+    public function isMathRelated(string $text, int $threshold = 2): bool
+    {
+        if (empty(trim($text))) {
+            return false;
+        }
+
+        $lowerText = mb_strtolower($text);
+
+        // Build keyword list from dataset materials (cached alongside dataset)
+        $datasetKeywords = Cache::remember('math_dataset_keywords', $this->cacheTtl, function () {
+            $keywords = [];
+            foreach ($this->materials() as $material) {
+                // Split each material name into individual words (≥4 chars) as keywords
+                $words = preg_split('/[\s,\-\/]+/u', mb_strtolower($material), -1, PREG_SPLIT_NO_EMPTY);
+                foreach ($words as $word) {
+                    if (mb_strlen($word) >= 4) {
+                        $keywords[] = $word;
+                    }
+                }
+            }
+
+            return array_values(array_unique($keywords));
+        });
+
+        // Core math vocabulary always checked regardless of dataset
+        $coreKeywords = [
+            'matematika', 'matematik', 'bilangan', 'hitung', 'penjumlahan', 'pengurangan',
+            'perkalian', 'pembagian', 'pecahan', 'desimal', 'persen', 'geometri', 'bangun',
+            'luas', 'keliling', 'volume', 'sudut', 'segitiga', 'persegi', 'lingkaran',
+            'diagram', 'grafik', 'data', 'statistik', 'rata-rata', 'median', 'modus',
+            'kpk', 'fpb', 'prima', 'faktor', 'kelipatan', 'pangkat', 'akar', 'koordinat',
+            'skala', 'rasio', 'proporsi', 'aljabar', 'persamaan', 'pertidaksamaan',
+            'soal', 'latihan', 'kuis', 'ujian', 'ulangan', 'matematika',
+        ];
+
+        $allKeywords = array_values(array_unique(array_merge($coreKeywords, $datasetKeywords)));
+
+        $hits = 0;
+        foreach ($allKeywords as $keyword) {
+            if (str_contains($lowerText, $keyword)) {
+                $hits++;
+                if ($hits >= $threshold) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Flush all cached dataset data (call after replacing the Excel file).
      */
     public function flushCache(): void
@@ -108,6 +164,7 @@ class MathDatasetService
         Cache::forget('math_dataset_rows');
         Cache::forget('math_dataset_materials');
         Cache::forget('math_dataset_by_grade');
+        Cache::forget('math_dataset_keywords');
     }
 
     /**

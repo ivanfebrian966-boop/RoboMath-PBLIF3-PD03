@@ -11,7 +11,10 @@ use ZipArchive;
 
 class DocumentSummarizerService
 {
-    public function __construct(protected AIManager $aiManager) {}
+    public function __construct(
+        protected AIManager $aiManager,
+        protected MathDatasetService $mathDatasetService,
+    ) {}
 
     /**
      * @return list<string>
@@ -71,6 +74,12 @@ class DocumentSummarizerService
         $cleanTitle = ucwords(str_replace(['-', '_'], ' ', $title));
         $extractedText = trim($extractedText);
 
+        // Sanitize extracted text to valid UTF-8 (PDF parsers can return invalid byte sequences)
+        if ($extractedText !== '') {
+            $extractedText = @iconv('UTF-8', 'UTF-8//IGNORE', $extractedText) ?: mb_convert_encoding($extractedText, 'UTF-8', 'UTF-8');
+            $extractedText = trim($extractedText);
+        }
+
         // Validate extracted text quality; clear garbled/unreadable text so the caller
         // can surface a meaningful error instead of generating nonsensical quiz questions.
         if ($extractedText !== '' && ! $this->isTextQualityAcceptable($extractedText)) {
@@ -104,7 +113,9 @@ class DocumentSummarizerService
      */
     protected function isTextQualityAcceptable(string $text): bool
     {
-        $totalChars = mb_strlen($text);
+        // Ensure clean UTF-8 before evaluating regex
+        $clean = @iconv('UTF-8', 'UTF-8//IGNORE', $text) ?: $text;
+        $totalChars = mb_strlen($clean, 'UTF-8');
         if ($totalChars === 0) {
             return false;
         }
@@ -112,16 +123,21 @@ class DocumentSummarizerService
         // Count characters that are clearly "normal" (ASCII printable + common UTF-8 Latin)
         $normalCount = preg_match_all(
             '/[\x20-\x7E\xC0-\xFF\s]/u',
-            $text,
+            $clean,
             $dummy
         );
 
-        $ratio = $normalCount / $totalChars;
+        if ($normalCount === false) {
+            // Fallback without /u if still has UTF-8 encoding issue
+            $normalCount = preg_match_all('/[\x20-\x7E\s]/', $clean, $dummy);
+        }
+
+        $ratio = ($normalCount ?: 0) / $totalChars;
 
         // Also require at least a handful of Indonesian/Latin alphabetic words
-        $wordMatches = preg_match_all('/\b[a-zA-Z]{3,}\b/u', $text, $dummy2);
+        $wordMatches = preg_match_all('/\b[a-zA-Z]{3,}\b/', $clean, $dummy2);
 
-        return $ratio >= 0.60 && $wordMatches >= 5;
+        return $ratio >= 0.50 && ($wordMatches ?: 0) >= 5;
     }
 
     /**
@@ -195,6 +211,7 @@ class DocumentSummarizerService
         // Primary: use Smalot PDF Parser for full font mapping and decompression
         if (class_exists(Parser::class)) {
             try {
+                @ini_set('memory_limit', '1024M');
                 $parser = new Parser;
                 $pdf = $parser->parseFile($filePath);
                 $text = $pdf->getText();
@@ -292,7 +309,8 @@ class DocumentSummarizerService
      *     key_points: list<string>,
      *     provider: string,
      *     tokens_used: ?int,
-     *     word_count: int
+     *     word_count: int,
+     *     rejected: bool
      * }
      */
     public function summarize(
@@ -321,8 +339,29 @@ class DocumentSummarizerService
                 'provider' => 'system',
                 'tokens_used' => 0,
                 'word_count' => 0,
+                'rejected' => false,
             ];
         }
+
+        // ── Math-only guardrail ──────────────────────────────────────────────
+        // For text-based input, run a fast keyword check first. Skip for pure
+        // vision input (we can't read the image content here).
+        if (! $hasVisionInput && ! empty($text)) {
+            $sampleText = mb_substr($text, 0, 2000).' '.$title;
+            if (! $this->mathDatasetService->isMathRelated($sampleText)) {
+                $rejectionMessage = $this->buildRejectionMessage($title);
+
+                return [
+                    'summary' => $rejectionMessage,
+                    'key_points' => ['Dokumen ini tidak berkaitan dengan matematika SD — RoboMath hanya memproses materi matematika.'],
+                    'provider' => 'system',
+                    'tokens_used' => 0,
+                    'word_count' => str_word_count(strip_tags($rejectionMessage)),
+                    'rejected' => true,
+                ];
+            }
+        }
+        // ────────────────────────────────────────────────────────────────────
 
         // Limit input size to prevent token exhaustion (approx ~25,000 chars)
         $truncatedText = mb_substr($text, 0, 25000);
@@ -349,10 +388,10 @@ class DocumentSummarizerService
             $formatGuide = <<<'FMT'
 FORMAT SETIAP BUTIR SOAL ESSAY / URAIAN (DILARANG MEMBUAT PILIHAN GANDA A, B, C, D):
 ### 📝 Soal [Nomor]
-[Tuliskan pertanyaan essay/uraian yang jelas, kontekstual, dan ramah anak SD tanpa ada pilihan A, B, C, D]
+[Tuliskan pertanyaan essay/uraian yang jelas, kontekstual, dan ramah anak SD tanpa ada pilihan A, B, C, D. Tuliskan pecahan secara natural dan sederhana seperti "1/2" atau "setengah", DILARANG menggunakan kode LaTeX seperti $\frac{1}{2}$]
 
-> **🔑 Kunci Jawaban:** [Model jawaban lengkap yang diharapkan]
-> **💡 Pembahasan & Langkah:** [Penjelasan langkah-langkah penyelesaian terinci]
+> **🔑 Kunci Jawaban:** [Model jawaban lengkap yang diharapkan. Gunakan format pecahan biasa seperti 1/2]
+> **💡 Pembahasan & Langkah:** [Penjelasan langkah-langkah penyelesaian terinci dengan bahasa ramah anak]
 FMT;
         } elseif ($hasCustomPrompt) {
             $countText = $requestedCount ? "TEPAT {$requestedCount}" : 'sejumlah yang diminta';
@@ -369,7 +408,7 @@ FMT;
             $formatGuide = <<<'FMT'
 FORMAT SETIAP BUTIR SOAL (Pilihan Ganda):
 ### 📝 Soal [Nomor]
-[Tuliskan pertanyaan dengan jelas dan ramah anak]
+[Tuliskan pertanyaan dengan jelas dan ramah anak. Tuliskan pecahan secara natural dan sederhana seperti "1/2" atau "1/3", DILARANG menggunakan kode LaTeX seperti $\frac{1}{2}$]
 - A. [Pilihan A]
 - B. [Pilihan B]
 - C. [Pilihan C]
@@ -390,7 +429,32 @@ FMT;
 
         $prompt = <<<EOT
 Anda adalah Guru Matematika & Sahabat Belajar Anak SD di RoboMath.
-Tugas Anda: Meringkas dokumen berjudul "{$title}" LANGSUNG MENJADI PAKET SOAL LATIHAN ANAK SD YANG RAPI, CERIA, DAN MENARIK.
+Tugas Anda: Meringkas dokumen berjudul "{$title}" LANGSUNG MENJADI PAKET SOAL LATIHAN MATEMATIKA ANAK SD YANG RAPI, CERIA, DAN MENARIK.
+
+═══════════════════════════════════════════════════════
+GUARDRAIL WAJIB — BACA SEBELUM MELANJUTKAN
+═══════════════════════════════════════════════════════
+RoboMath adalah aplikasi latihan MATEMATIKA SD. Anda HANYA boleh membuat soal yang berkaitan dengan
+materi matematika Sekolah Dasar (operasi hitung, pecahan, geometri, pengukuran, data/statistik, dll.).
+
+Jika isi dokumen ini BUKAN tentang matematika (misalnya: IPA, IPS, Bahasa Indonesia, Sejarah,
+Agama, Olahraga, Pemrograman, dsb.), JANGAN buat soal sama sekali. Sebagai gantinya, tuliskan
+PERSIS kalimat berikut (tanpa perubahan apapun):
+
+## ❌ Dokumen Bukan Materi Matematika
+
+Maaf, RoboMath hanya dapat memproses dokumen materi **matematika SD** 📐🔢
+Dokumen "{$title}" tampaknya berisi materi di luar matematika.
+
+**Silakan unggah dokumen yang berisi:**
+- Operasi hitung (penjumlahan, pengurangan, perkalian, pembagian)
+- Pecahan, desimal, atau persen
+- Geometri dan pengukuran (bangun datar/ruang, luas, keliling, volume)
+- Data dan statistik (diagram, grafik, rata-rata)
+- Bilangan (cacah, bulat, prima, KPK, FPB)
+- Materi matematika SD lainnya
+
+═══════════════════════════════════════════════════════
 
 ATURAN UTAMA (SANGAT PENTING):
 1. DILARANG KERAS menyertakan kalimat pembuka/sapaan formal/basa-basi robotik (JANGAN tulis "Sebagai Asisten...", "Saya telah menganalisis...", "Berikut ini adalah...", dll).
@@ -398,6 +462,8 @@ ATURAN UTAMA (SANGAT PENTING):
 3. Gaya Bahasa: Ramah, santun, ceria, dan mudah dipahami oleh anak-anak Sekolah Dasar (SD). Gunakan analogi konkret dan situasi sehari-hari yang menyenangkan.
 4. {$instruction}
 5. Jika dokumen berupa pindaian/scan atau memiliki ilustrasi/diagram gambar dalam berkas terlampir, pahami dan gunakan isi gambar/diagram tersebut untuk menyusun soal matematika kontekstual.
+6. SELURUH soal WAJIB berkaitan dengan matematika. Jika materi dokumen menyinggung topik non-matematika, ubah/adaptasi soal agar tetap berbasis perhitungan atau konsep matematika yang relevan.
+7. PENULISAN SIMBOL/PECAHAN: DILARANG menggunakan notasi LaTeX (seperti $\frac{a}{b}$ atau $\times$). Gunakan penulisan teks biasa yang mudah dibaca anak SD: tulis pecahan sebagai "1/2", "1/3", atau "setengah"; perkalian sebagai "x"; pembagian sebagai ":" atau "bagi".
 
 {$formatGuide}
 
@@ -445,8 +511,26 @@ EOT;
             Log::error('AI Document Summarizer Error: '.$e->getMessage());
         }
 
-        // If AI provider failed or returned generic mock fallback, provide enhanced structured questions
-        if (empty($summaryText) || str_contains($summaryText, 'koneksi ke otak AI RoboBot di server sedang mengalami antrean padat')) {
+        // If AI provider failed, returned generic conversational mock fallback, or didn't generate questions, provide enhanced structured questions
+        $hasQuestionSection = preg_match('/###\s*(?:📝|🌟)?\s*Soal/i', $summaryText);
+
+        // Check whether the AI itself rejected the document as non-math content
+        $aiRejectedAsMathIrrelevant = str_contains($summaryText, '❌ Dokumen Bukan Materi Matematika');
+
+        if ($aiRejectedAsMathIrrelevant) {
+            $wordCountSummary = str_word_count(strip_tags($summaryText));
+
+            return [
+                'summary' => $summaryText,
+                'key_points' => ['Dokumen ini tidak berkaitan dengan matematika SD — RoboMath hanya memproses materi matematika.'],
+                'provider' => $providerName,
+                'tokens_used' => $tokensUsed,
+                'word_count' => $wordCountSummary,
+                'rejected' => true,
+            ];
+        }
+
+        if (empty($summaryText) || ! $hasQuestionSection || str_contains($summaryText, 'koneksi ke otak AI RoboBot di server sedang mengalami antrean padat')) {
             $fallback = $this->generateLocalStructuredSummary($title, $truncatedText, $customPrompt);
             $summaryText = $fallback['summary'];
             $keyPoints = $fallback['key_points'];
@@ -455,6 +539,7 @@ EOT;
             $keyPoints = $this->extractKeyPointsFromMarkdown($summaryText);
         }
 
+        $summaryText = $this->cleanLatexNotation($summaryText);
         $wordCountSummary = str_word_count(strip_tags($summaryText));
 
         return [
@@ -463,7 +548,58 @@ EOT;
             'provider' => $providerName,
             'tokens_used' => $tokensUsed,
             'word_count' => $wordCountSummary,
+            'rejected' => false,
         ];
+    }
+
+    /**
+     * Clean raw LaTeX notation like $\frac{a}{b}$ into plain human-readable math like a/b.
+     */
+    protected function cleanLatexNotation(string $text): string
+    {
+        // Replace \frac{a}{b} with a/b (handle optional spacing or escaped slashes)
+        $text = preg_replace_callback('/\\\\?frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}/i', function ($m) {
+            return trim($m[1]).'/'.trim($m[2]);
+        }, $text);
+
+        // Replace common LaTeX symbols
+        $replacements = [
+            '\\times' => 'x',
+            '\\div' => ':',
+            '\\pm' => '±',
+            '\\le' => '≤',
+            '\\ge' => '≥',
+            '\\neq' => '≠',
+            '\\approx' => '≈',
+        ];
+        $text = str_replace(array_keys($replacements), array_values($replacements), $text);
+
+        // Strip lone $ or \$ delimiters wrapping math expressions: $ 1/2 $ -> 1/2
+        $text = preg_replace('/(?<!\\\\)\$([^\$]+)\$/', '$1', $text);
+        $text = str_replace(['\$', '\\\\'], ['', ''], $text);
+
+        return $text;
+    }
+
+    /**
+     * Build a user-facing rejection message for documents that are not math-related.
+     */
+    protected function buildRejectionMessage(string $title): string
+    {
+        return <<<MD
+## ❌ Dokumen Bukan Materi Matematika
+
+Maaf, RoboMath hanya dapat memproses dokumen materi **matematika SD** 📐🔢
+Dokumen "{$title}" tidak terdeteksi sebagai materi matematika.
+
+**Silakan unggah dokumen yang berisi:**
+- Operasi hitung (penjumlahan, pengurangan, perkalian, pembagian)
+- Pecahan, desimal, atau persen
+- Geometri dan pengukuran (bangun datar/ruang, luas, keliling, volume)
+- Data dan statistik (diagram, grafik, rata-rata)
+- Bilangan (cacah, bulat, prima, KPK, FPB)
+- Materi matematika SD lainnya
+MD;
     }
 
     /**
@@ -606,20 +742,29 @@ EOT;
             $targetCount = max(1, min(10, (int) $countMatches[1]));
         }
 
+        $hasMathContext = (bool) preg_match('/(bilangan|cacah|ratusan|puluhan|satuan|angka|nilai\s*tempat|pecahan|hitung|penjumlahan|pengurangan|perkalian|pembagian)/i', $title.' '.$text);
+
         if ($isEssay) {
             $summary = "## 🌟 Paket Soal Essay & Uraian: {$title}\n\n";
             $summary .= "> 💡 **Petunjuk:** Bacalah setiap pertanyaan dengan teliti dan tuliskan penjelasan atau langkah penyelesaianmu secara lengkap ya!\n\n";
 
-            $essayTemplates = [
-                fn ($i, $kw) => "### 📝 Soal {$i}\nJelaskan dengan bahasamu sendiri apa yang dimaksud dengan materi **{$kw}** berdasarkan dokumen di atas, serta berikan 1 contoh konkret dalam kehidupan sehari-hari!\n\n> **🔑 Kunci Jawaban:** Siswa mampu menguraikan definisi {$kw} dengan benar dan menyertakan contoh penerapan nyata yang tepat.\n> **💡 Pembahasan & Langkah:** {$kw} merupakan konsep utama yang menjelaskan prinsip dasar materi sehingga siswa diharapkan memahami maknanya secara menyeluruh.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nTuliskan langkah-langkah yang harus dilakukan saat menyelesaikan persoalan terkait **{$kw}** secara runtut dan sistematis!\n\n> **🔑 Kunci Jawaban:** Siswa menyebutkan tahapan: (1) Memahami informasi soal, (2) Memilih operasi/rumus yang sesuai, (3) Melakukan perhitungan, dan (4) Memeriksa kembali hasil.\n> **💡 Pembahasan & Langkah:** Mengikuti prosedur penyelesaian teratur meminimalisir kesalahan perhitungan pada topik {$kw}.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nBagaimana caramu menerapkan konsep **{$kw}** ketika menghadapi permasalahan nyata di lingkungan sekolah atau rumah?\n\n> **🔑 Kunci Jawaban:** Siswa memberikan ilustrasi pemecahan masalah kontekstual yang relevan dengan prinsip {$kw}.\n> **💡 Pembahasan & Langkah:** {$kw} melatih nalar kritis siswa dalam menghubungkan materi teori dengan situasi nyata.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nMengapa pemahaman terhadap **{$kw}** sangat penting bagi siswa sebelum mempelajari topik matematika tingkat lanjut?\n\n> **🔑 Kunci Jawaban:** Karena {$kw} menjadi prasyarat esensial untuk memahami hubungan antar-konsep dan pemodelan matematis berikutnya.\n> **💡 Pembahasan & Langkah:** Penguasaan {$kw} membangun pondasi penalaran yang kokoh bagi siswa.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nJika kamu diminta menjelaskan **{$kw}** kepada teman sebangkumu, analogi atau cerita sederhana apa yang akan kamu gunakan?\n\n> **🔑 Kunci Jawaban:** Siswa mampu membuat analogi yang mudah dimengerti dan sesuai dengan esensi materi {$kw}.\n> **💡 Pembahasan & Langkah:** Kemampuan menjelaskan ulang konsep menunjukkan pemahaman mendalam siswa terhadap materi.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nAnalisis apa saja kemungkinan kesalahan yang sering dilakukan saat mempelajari materi **{$kw}**, dan bagaimana cara menghindarinya?\n\n> **🔑 Kunci Jawaban:** Siswa memetakan potensi kekeliruan perhitungan atau miskonsepsi pada {$kw} serta memberikan solusi pencegahannya.\n> **💡 Pembahasan & Langkah:** Mengetahui letak kesalahan umum membantu siswa lebih teliti dalam pengerjaan tugas.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nBuatlah sebuah soal cerita buatanmu sendiri yang bertemakan kegiatan sehari-hari berdasarkan konsep **{$kw}** beserta cara penyelesaiannya!\n\n> **🔑 Kunci Jawaban:** Soal cerita memuat narasi yang logis, data bilangan yang relevan, dan kunci langkah penyelesaian yang benar.\n> **💡 Pembahasan & Langkah:** Melatih kreativitas dan kemampuan menyusun model matematis mandiri.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nUraikan hubungan keterkaitan antara topik **{$kw}** dengan materi pelajaran yang pernah kamu pelajari sebelumnya!\n\n> **🔑 Kunci Jawaban:** Siswa menemukan relasi antar topik materi secara logis dan runtut.\n> **💡 Pembahasan & Langkah:** Memperkuat peta konsep belajar yang komprehensif.\n\n",
-            ];
+            if ($hasMathContext) {
+                $essayTemplates = [
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nSebuah bilangan terdiri atas 3 angka yaitu 5 ratusan, 7 puluhan, dan 2 satuan. Berapakah lambang bilangan tersebut dan bagaimana cara membacanya?\n\n> **🔑 Kunci Jawaban:** Lambang bilangannya adalah 572, dibaca lima ratus tujuh puluh dua.\n> **💡 Pembahasan & Langkah:** Nilai tempat: 5 ratusan = 500, 7 puluhan = 70, 2 satuan = 2. Dijumlahkan menjadi 500 + 70 + 2 = 572.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nPerhatikan bilangan 354. Tentukan nilai tempat dari setiap angka penyusun bilangan tersebut (ratusan, puluhan, dan satuan)!\n\n> **🔑 Kunci Jawaban:** Angka 3 menempati nilai tempat ratusan (300), angka 5 menempati puluhan (50), dan angka 4 menempati satuan (4).\n> **💡 Pembahasan & Langkah:** Setiap posisi angka menentukan nilainya: ratusan di depan, puluhan di tengah, dan satuan di paling belakang.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nJelaskan mengapa 10 kumpulan dari 10 satuan dapat membentuk 1 ratusan? Tuliskan penjelasan dan perhitungannya!\n\n> **🔑 Kunci Jawaban:** Karena 10 x 10 satuan = 100 satuan, dan 100 satuan sama dengan 1 ratusan.\n> **💡 Pembahasan & Langkah:** Pengelompokan bilangan: 10 satuan = 1 puluhan, maka 10 puluhan = 100 atau 1 ratusan.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nJika Meutia memiliki 7 lembar kartu ratusan, 5 lembar kartu puluhan, dan 9 lembar kartu satuan, berapa jumlah total nilai kartu yang dimiliki Meutia?\n\n> **🔑 Kunci Jawaban:** Total nilainya adalah 759 (tujuh ratus lima puluh sembilan).\n> **💡 Pembahasan & Langkah:** 7 ratusan = 700, 5 puluhan = 50, 9 satuan = 9. Total = 700 + 50 + 9 = 759.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nBuatlah 2 contoh bilangan tiga angka yang angka puluhannya kurang dari 3 dan jelaskan cara membaca kedua bilangan tersebut!\n\n> **🔑 Kunci Jawaban:** Contoh: 215 (dua ratus lima belas) angka puluhannya 1, dan 408 (empat ratus delapan) angka puluhannya 0.\n> **💡 Pembahasan & Langkah:** Angka puluhan kurang dari 3 adalah 0, 1, atau 2. Siswa dapat menyusun kombinasi bilangan apa saja yang memenuhi syarat tersebut.\n\n",
+                ];
+            } else {
+                $essayTemplates = [
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nJelaskan dengan bahasamu sendiri apa yang dimaksud dengan materi **{$kw}** berdasarkan dokumen di atas, serta berikan 1 contoh konkret dalam kehidupan sehari-hari!\n\n> **🔑 Kunci Jawaban:** Siswa mampu menguraikan definisi {$kw} dengan benar dan menyertakan contoh penerapan nyata yang tepat.\n> **💡 Pembahasan & Langkah:** {$kw} merupakan konsep utama yang menjelaskan prinsip dasar materi sehingga siswa diharapkan memahami maknanya secara menyeluruh.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nTuliskan langkah-langkah yang harus dilakukan saat menyelesaikan persoalan terkait **{$kw}** secara runtut dan sistematis!\n\n> **🔑 Kunci Jawaban:** Siswa menyebutkan tahapan: (1) Memahami informasi soal, (2) Memilih operasi/rumus yang sesuai, (3) Melakukan perhitungan, dan (4) Memeriksa kembali hasil.\n> **💡 Pembahasan & Langkah:** Mengikuti prosedur penyelesaian teratur meminimalisir kesalahan perhitungan pada topik {$kw}.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nBagaimana caramu menerapkan konsep **{$kw}** ketika menghadapi permasalahan nyata di lingkungan sekolah atau rumah?\n\n> **🔑 Kunci Jawaban:** Siswa memberikan ilustrasi pemecahan masalah kontekstual yang relevan dengan prinsip {$kw}.\n> **💡 Pembahasan & Langkah:** {$kw} melatih nalar kritis siswa dalam menghubungkan materi teori dengan situasi nyata.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nMengapa pemahaman terhadap **{$kw}** sangat penting bagi siswa sebelum mempelajari topik matematika tingkat lanjut?\n\n> **🔑 Kunci Jawaban:** Karena {$kw} menjadi prasyarat esensial untuk memahami hubungan antar-konsep dan pemodelan matematis berikutnya.\n> **💡 Pembahasan & Langkah:** Penguasaan {$kw} membangun pondasi penalaran yang kokoh bagi siswa.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nJika kamu diminta menjelaskan **{$kw}** kepada teman sebangkumu, analogi atau cerita sederhana apa yang akan kamu gunakan?\n\n> **🔑 Kunci Jawaban:** Siswa mampu membuat analogi yang mudah dimengerti dan sesuai dengan esensi materi {$kw}.\n> **💡 Pembahasan & Langkah:** Kemampuan menjelaskan ulang konsep menunjukkan pemahaman mendalam siswa terhadap materi.\n\n",
+                ];
+            }
 
             for ($idx = 0; $idx < $targetCount; $idx++) {
                 $num = $idx + 1;
@@ -629,15 +774,25 @@ EOT;
             }
         } else {
             $summary = "## 🎯 Paket Soal Pilihan Ganda: {$title}\n\n";
-            $summary .= "> **Intisari Pembelajaran:** Soal dirancang berdasarkan topik esensial dokumen: **{$keywords[0]}**, **{$keywords[1]}**, dan **{$keywords[2]}**.\n\n";
+            $summary .= "> **Intisari Pembelajaran:** Soal dirancang berdasarkan konsep matematika SD: Nilai Tempat, Lambang Bilangan, dan Operasi Hitung.\n\n";
 
-            $mcTemplates = [
-                fn ($i, $kw) => "### 📝 Soal {$i}\nBerdasarkan materi pada dokumen, apa definisi atau gagasan utama yang paling tepat mengenai **{$kw}**?\n- A. Landasan konsep utama yang mendasari seluruh pembahasan materi\n- B. Langkah opsional yang tidak mempengaruhi hasil akhir\n- C. Istilah pelengkap tanpa makna konseptual\n- D. Rumus turunan yang hanya dipakai pada kondisi khusus\n\n> **🔑 Kunci Jawaban:** A. Landasan konsep utama yang mendasari seluruh pembahasan materi\n> **💡 Pembahasan:** {$kw} adalah elemen fundamental yang dijelaskan secara rinci dalam dokumen sebagai fondasi pemahaman materi.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nDalam kaitannya dengan **{$kw}**, langkah pemecahan masalah yang paling sistematis adalah...\n- A. Mengabaikan data awal dan langsung menebak solusi\n- B. Mengidentifikasi informasi penting, menentukan operasi yang sesuai, lalu mengevaluasi hasil\n- C. Menyelesaikan secara acak tanpa memperhatikan urutan operasi\n- D. Menggunakan rumus yang tidak relevan dengan persoalan\n\n> **🔑 Kunci Jawaban:** B. Mengidentifikasi informasi penting, menentukan operasi yang sesuai, lalu mengevaluasi hasil\n> **💡 Pembahasan:** Penerapan {$kw} menuntut pendekatan terstruktur mulai dari pemahaman data hingga verifikasi hasil akhir.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nManakah dari pernyataan berikut yang paling tepat mencerminkan implementasi **{$kw}** dalam kehidupan sehari-hari?\n- A. Membantu memecahkan masalah kontekstual dengan pemikiran logis dan terukur\n- B. Hanya berguna dalam ujian tertulis tanpa relevansi praktis\n- C. Menghambat proses pengambilan keputusan yang cepat\n- D. Mengganti semua prinsip dasar matematika yang telah ada\n\n> **🔑 Kunci Jawaban:** A. Membantu memecahkan masalah kontekstual dengan pemikiran logis dan terukur\n> **💡 Pembahasan:** Materi {$kw} dirancang untuk melatih kemampuan nalar siswa dalam menyelesaikan studi kasus konkret.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nMengapa penguasaan terhadap aspek **{$kw}** penting sebelum melangkah ke topik yang lebih kompleks?\n- A. Agar siswa dapat membaca, menafsirkan, dan menarik kesimpulan yang akurat dari informasi yang diberikan\n- B. Karena aspek ini merupakan satu-satunya materi yang diujikan\n- C. Untuk memperpanjang waktu belajar tanpa tujuan khusus\n- D. Karena materi ini tidak membutuhkan pemahaman konsep sebelumnya\n\n> **🔑 Kunci Jawaban:** A. Agar siswa dapat membaca, menafsirkan, dan menarik kesimpulan yang akurat dari informasi yang diberikan\n> **💡 Pembahasan:** Pemahaman {$kw} menjadi jembatan antara konsep teoretis dan penalaran analitis siswa.\n\n",
-                fn ($i, $kw) => "### 📝 Soal {$i}\nStrategi terbaik dalam mengembangkan **{$kw}** saat menghadapi soal cerita adalah...\n- A. Membaca soal secara cermat, menuliskan hal yang diketahui dan ditanyakan, serta menyusun model penyelesaian\n- B. Memilih opsi jawaban terpanjang tanpa membaca pertanyaan\n- C. Mengabaikan instruksi dan langsung menjawab sembarangan\n- D. Menyerah sebelum mencoba menganalisis informasi\n\n> **🔑 Kunci Jawaban:** A. Membaca soal secara cermat, menuliskan hal yang diketahui dan ditanyakan, serta menyusun model penyelesaian\n> **💡 Pembahasan:** Logika penyelesaian terstruktur membantu siswa merumuskan strategi pengerjaan yang efektif dan meminimalkan kesalahan.\n\n",
-            ];
+            if ($hasMathContext) {
+                $mcTemplates = [
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nBilangan 671 dibaca sebagai...\n- A. Enam ratus tujuh belas\n- B. Enam ratus tujuh puluh satu\n- C. Tujuh ratus enam puluh satu\n- D. Enam puluh tujuh satu\n\n> **🔑 Kunci Jawaban:** B. Enam ratus tujuh puluh satu\n> **💡 Pembahasan:** 671 terdiri dari 6 ratusan (600), 7 puluhan (70), dan 1 satuan (1), sehingga dibaca enam ratus tujuh puluh satu.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nPada bilangan 405, angka 0 menempati nilai tempat...\n- A. Ratusan\n- B. Puluhan\n- C. Satuan\n- D. Ribuan\n\n> **🔑 Kunci Jawaban:** B. Puluhan\n> **💡 Pembahasan:** Urutan nilai tempat dari kanan ke kiri adalah satuan (5), puluhan (0), dan ratusan (4).\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nBerapakah hasil dari 2 ratusan + 3 puluhan + 6 satuan?\n- A. 236\n- B. 263\n- C. 326\n- D. 632\n\n> **🔑 Kunci Jawaban:** A. 236\n> **💡 Pembahasan:** 2 ratusan = 200, 3 puluhan = 30, 6 satuan = 6. Dijumlahkan menjadi 200 + 30 + 6 = 236.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\n10 tumpukan dari 10 satuan kubus setara dengan...\n- A. 10 satuan\n- B. 50 satuan\n- C. 100 satuan (1 ratusan)\n- D. 1.000 satuan\n\n> **🔑 Kunci Jawaban:** C. 100 satuan (1 ratusan)\n> **💡 Pembahasan:** 10 tumpukan yang masing-masing berisi 10 satuan menghasilkan 10 x 10 = 100 satuan atau 1 ratusan.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nManakah dari bilangan berikut yang memiliki angka ratusan kurang dari 5?\n- A. 759\n- B. 634\n- C. 912\n- D. 239\n\n> **🔑 Kunci Jawaban:** D. 239\n> **💡 Pembahasan:** Angka ratusan pada 239 adalah 2, dan 2 kurang dari 5.\n\n",
+                ];
+            } else {
+                $mcTemplates = [
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nBerdasarkan materi pada dokumen, apa definisi atau gagasan utama yang paling tepat mengenai **{$kw}**?\n- A. Landasan konsep utama yang mendasari seluruh pembahasan materi\n- B. Langkah opsional yang tidak mempengaruhi hasil akhir\n- C. Istilah pelengkap tanpa makna konseptual\n- D. Rumus turunan yang hanya dipakai pada kondisi khusus\n\n> **🔑 Kunci Jawaban:** A. Landasan konsep utama yang mendasari seluruh pembahasan materi\n> **💡 Pembahasan:** {$kw} adalah elemen fundamental yang dijelaskan secara rinci dalam dokumen sebagai fondasi pemahaman materi.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nDalam kaitannya dengan **{$kw}**, langkah pemecahan masalah yang paling sistematis adalah...\n- A. Mengabaikan data awal dan langsung menebak solusi\n- B. Mengidentifikasi informasi penting, menentukan operasi yang sesuai, lalu mengevaluasi hasil\n- C. Menyelesaikan secara acak tanpa memperhatikan urutan operasi\n- D. Menggunakan rumus yang tidak relevan dengan persoalan\n\n> **🔑 Kunci Jawaban:** B. Mengidentifikasi informasi penting, menentukan operasi yang sesuai, lalu mengevaluasi hasil\n> **💡 Pembahasan:** Penerapan {$kw} menuntut pendekatan terstruktur mulai dari pemahaman data hingga verifikasi hasil akhir.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nManakah dari pernyataan berikut yang paling tepat mencerminkan implementasi **{$kw}** dalam kehidupan sehari-hari?\n- A. Membantu memecahkan masalah kontekstual dengan pemikiran logis dan terukur\n- B. Hanya berguna dalam ujian tertulis tanpa relevansi praktis\n- C. Menghambat proses pengambilan keputusan yang cepat\n- D. Mengganti semua prinsip dasar matematika yang telah ada\n\n> **🔑 Kunci Jawaban:** A. Membantu memecahkan masalah kontekstual dengan pemikiran logis dan terukur\n> **💡 Pembahasan:** Materi {$kw} dirancang untuk melatih kemampuan nalar siswa dalam menyelesaikan studi kasus konkret.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nMengapa penguasaan terhadap aspek **{$kw}** penting sebelum melangkah ke topik yang lebih kompleks?\n- A. Agar siswa dapat membaca, menafsirkan, dan menarik kesimpulan yang akurat dari informasi yang diberikan\n- B. Karena aspek ini merupakan satu-satunya materi yang diujikan\n- C. Untuk memperpanjang waktu belajar tanpa tujuan khusus\n- D. Karena materi ini tidak membutuhkan pemahaman konsep sebelumnya\n\n> **🔑 Kunci Jawaban:** A. Agar siswa dapat membaca, menafsirkan, dan menarik kesimpulan yang akurat dari informasi yang diberikan\n> **💡 Pembahasan:** Pemahaman {$kw} menjadi jembatan antara konsep teoretis dan penalaran analitis siswa.\n\n",
+                    fn ($i, $kw) => "### 📝 Soal {$i}\nStrategi terbaik dalam mengembangkan **{$kw}** saat menghadapi soal cerita adalah...\n- A. Membaca soal secara cermat, menuliskan hal yang diketahui dan ditanyakan, serta menyusun model penyelesaian\n- B. Memilih opsi jawaban terpanjang tanpa membaca pertanyaan\n- C. Mengabaikan instruksi dan langsung menjawab sembarangan\n- D. Menyerah sebelum mencoba menganalisis informasi\n\n> **🔑 Kunci Jawaban:** A. Membaca soal secara cermat, menuliskan hal yang diketahui dan ditanyakan, serta menyusun model penyelesaian\n> **💡 Pembahasan:** Logika penyelesaian terstruktur membantu siswa merumuskan strategi pengerjaan yang efektif dan meminimalkan kesalahan.\n\n",
+                ];
+            }
 
             for ($idx = 0; $idx < $targetCount; $idx++) {
                 $num = $idx + 1;

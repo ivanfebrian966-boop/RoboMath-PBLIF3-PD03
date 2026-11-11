@@ -197,6 +197,26 @@ class DocumentSummarizerController extends Controller
                 mimeType: $mimeType
             );
 
+            // The AI (or the keyword guardrail) rejected the document as non-math content.
+            if (! empty($aiResult['rejected'])) {
+                $summaryModel->update([
+                    'title' => $title,
+                    'file_type' => $fileType,
+                    'file_size' => $fileSize,
+                    'extracted_text' => mb_substr($extractedText, 0, 50000),
+                    'word_count_original' => $wordCountOriginal,
+                    'summary' => $aiResult['summary'],
+                    'status' => 'gagal',
+                    'error_message' => 'Dokumen tidak berkaitan dengan matematika SD.',
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'rejected' => true,
+                    'message' => 'Dokumen ini tidak terdeteksi sebagai materi matematika SD. RoboMath hanya memproses dokumen matematika (operasi hitung, pecahan, geometri, data, dll). Silakan unggah dokumen matematika yang sesuai.',
+                ], 422);
+            }
+
             $wordCountSummary = $aiResult['word_count'];
             $hasMultipleChoiceOptions = (bool) preg_match('/(?:^|\n)\s*[-*]?\s*[A-D][\.\)]\s+/i', $aiResult['summary']);
             $preserveEssay = ! $hasMultipleChoiceOptions
