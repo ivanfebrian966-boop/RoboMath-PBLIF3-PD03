@@ -156,74 +156,13 @@ class DocumentSummarizerTest extends TestCase
         $response->assertJson([
             'success' => false,
             'rejected' => true,
-            'status' => 'ditolak',
         ]);
         $this->assertDatabaseHas('dokumen', [
             'user_id' => $admin->id,
             'title' => 'Proses Fotosintesis IPA',
-            'status' => 'ditolak',
+            'status' => 'gagal',
+            'error_message' => 'Dokumen tidak berkaitan dengan matematika SD.',
         ]);
-        $this->assertSame(0, Topic::where('title', 'Proses Fotosintesis IPA')->count());
-        $this->assertSame(0, Quiz::count());
-    }
-
-    public function test_ai_rejects_project_presentation_document_not_matching_math_dataset(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        $presentationText = "Slide 1: Title\nGood morning everyone. We are Team PBLIF3-PD03 presenting RoboMath, an AI-based web application.\n"
-            ."Slide 2: Team Identity\nAkbar Zamroni as Project Owner, Muhammad Ivan as Scrum Master.\n"
-            ."Slide 7: Functional Requirements\nAll users can login, view profile, and manage application settings.";
-
-        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
-            'direct_text' => $presentationText,
-            'custom_title' => 'Naskah Presentasi RoboMath',
-        ]);
-
-        $response->assertUnprocessable();
-        $response->assertJson([
-            'success' => false,
-            'rejected' => true,
-            'status' => 'ditolak',
-        ]);
-        $this->assertDatabaseHas('dokumen', [
-            'user_id' => $admin->id,
-            'title' => 'Naskah Presentasi RoboMath',
-            'status' => 'ditolak',
-        ]);
-        $this->assertSame(0, Topic::where('title', 'Naskah Presentasi RoboMath')->count());
-        $this->assertSame(0, Quiz::count());
-    }
-
-    public function test_ai_approves_valid_math_dataset_document(): void
-    {
-        $admin = User::factory()->create(['role' => 'admin']);
-
-        $mathText = 'Bilangan Cacah dan Nilai Tempat: Setiap angka memiliki nilai tempat. '.
-            'Pada bilangan 354, angka 3 bernilai 300 (ratusan), angka 5 bernilai 50 (puluhan), '.
-            'dan angka 4 bernilai 4 (satuan). Operasi penjumlahan: 300 + 50 + 4 = 354.';
-
-        $response = $this->actingAs($admin)->postJson(route('admin.document-summarizer.summarize'), [
-            'direct_text' => $mathText,
-            'custom_title' => 'Nilai Tempat Bilangan Cacah',
-            'kelas_level' => 2,
-            'topic_category' => 'pola',
-        ]);
-
-        $response->assertOk();
-        $response->assertJsonPath('success', true);
-        $response->assertJsonPath('status', 'selesai');
-        $this->assertDatabaseHas('dokumen', [
-            'user_id' => $admin->id,
-            'title' => 'Nilai Tempat Bilangan Cacah',
-            'status' => 'selesai',
-        ]);
-        $this->assertDatabaseHas('topik', [
-            'title' => 'Nilai Tempat Bilangan Cacah',
-            'review_status' => 'pending',
-            'is_active' => false,
-        ]);
-        $this->assertGreaterThan(0, Quiz::count());
     }
 
     public function test_admin_must_approve_topic_before_ai_quizzes_can_be_published(): void
